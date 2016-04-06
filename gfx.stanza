@@ -10,6 +10,9 @@ defpackage gfx:
 public defn gl-color (v:V3f) :
   gl-color3f(x(v), y(v), z(v))
 
+public defn gl-color (v:V4f) :
+  gl-color4f(x(v), y(v), z(v), a(v))
+
 public defn gl-vertex (v:V3f) :
   gl-vertex3f(x(v), y(v), z(v))
 

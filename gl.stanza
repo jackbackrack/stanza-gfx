@@ -16,6 +16,7 @@ extern glTranslatef: (float, float, float) -> int
 extern glScalef: (float, float, float) -> int
 extern glBegin: (int) -> int
 extern glColor3f: (float, float, float) -> int
+extern glColor4f: (float, float, float, float) -> int
 extern glVertex3f: (float, float, float) -> int
 extern glVertex2f: (float, float) -> int
 extern glEnd: () -> int
@@ -74,6 +75,10 @@ public lostanza defn gl-pop-attrib (a:ref<Int>) -> ref<False> :
 
 public lostanza defn gl-color3f (r:ref<Float>, g:ref<Float>, b:ref<Float>) -> ref<False> :
   call-c glColor3f(r.value, g.value, b.value)
+  return false
+
+public lostanza defn gl-color4f (r:ref<Float>, g:ref<Float>, b:ref<Float>, a:ref<Float>) -> ref<False> :
+  call-c glColor4f(r.value, g.value, b.value, a.value)
   return false
 
 public lostanza defn gl-vertex3f (x:ref<Float>, y:ref<Float>, z:ref<Float>) -> ref<False> :

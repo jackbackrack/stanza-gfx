@@ -1,0 +1,165 @@
+defpackage gfx:
+  import core
+  import math
+  import collections
+  import geom
+  import glfw
+  import font
+
+public defn gl-color (v:V3f) :
+  gl-color3f(x(v), y(v), z(v))
+
+public defn gl-vertex (v:V3f) :
+  gl-vertex3f(x(v), y(v), z(v))
+
+public defn gl-translate (v:V3f) :
+  gl-translatef(x(v), y(v), z(v))
+
+public defn gl-scale (v:V3f) :
+  gl-scalef(x(v), y(v), z(v))
+
+public defn gl-rotate (a:Float, v:V3f) :
+  gl-rotatef(a, x(v), y(v), z(v))
+
+defn do-draw-rect (w:Float, h:Float, k:Int) :
+  gl-push-matrix()
+  gl-scalef(w * 0.5f, h * 0.5f, 1.0f)
+  gl-begin(k)
+  gl-vertex2f(-1.0f, -1.0f)
+  gl-vertex2f(-1.0f,  1.0f)
+  gl-vertex2f( 1.0f,  1.0f)
+  gl-vertex2f( 1.0f, -1.0f)
+  gl-end()
+  gl-pop-matrix()
+
+public defn draw-rect (w:Float, h:Float) : do-draw-rect(w, h, GL-LINE-LOOP)
+public defn draw-quad (w:Float, h:Float) : do-draw-rect(w, h, GL-QUADS)
+
+val N-CIRCLE-VERTICES = 16
+val circle-vertices = Vector<V3f>()
+for i in 0 to N-CIRCLE-VERTICES do :
+  val f = to-float(i) / to-float(N-CIRCLE-VERTICES - 1)
+  val t = 2.0f * 3.1415f * (1.0f - f)
+  add(circle-vertices, V3f(sin(t), cos(t)))
+
+public defn draw-circle (r:Float) :
+  gl-push-matrix()
+  gl-scalef(r, r, r)
+  gl-begin(GL-LINE-LOOP)
+  for v in circle-vertices do :
+    gl-vertex(v)
+  gl-end()
+  gl-pop-matrix()
+
+defn stroke-char (glyph:Glyph) :
+  for stroke in strokes(polyline(glyph)) do :
+    gl-begin(GL-LINE-STRIP)
+    do(gl-vertex, stroke)
+    gl-end()
+
+defn stroke-text (s:Seqable<Glyph>) :
+  for g in s do :
+    val w = width(g)
+    gl-translatef(0.5f * w, 0.0f, 0.0f)
+    stroke-char(g)
+    gl-translatef(0.5f * w, 0.0f, 0.0f)
+
+defn draw-text-at (tx:Float, ty:Float, sx:Float, sy:Float, s:Seqable<Glyph>) :
+  gl-push-matrix()
+  gl-translatef(tx, ty, 0.0f)
+  gl-scalef(sx, sy, 1.0f)
+  stroke-text(s)
+  gl-pop-matrix()
+
+public defn glyphs-width (ts:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> Float :
+  val ttw = reduce(plus, 0.0f, seq({ width(glyphs(font)[_]) }, tstr))
+  val tw  = reduce(plus, 0.0f, seq({ width(glyphs(font)[_]) }, str))
+  ts * tw
+  
+public defn glyphs-width (ts:Float, font:Font, s:Collection<Char>) -> Float :
+  glyphs-width(ts, font, s, seq({ _ }, s))
+
+public defn glyphs-mag (w:Float, h:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> Float :
+  val ttw = reduce(plus, 0.0f, seq({ width(glyphs(font)[_]) }, tstr))
+  val th = height(font)
+  min(w / ttw, h / th)
+
+public defn glyphs-mag (w:Float, h:Float, font:Font, s:Collection<Char>) -> Float :
+  glyphs-mag(w, h, font, s, seq({ _ }, s))
+
+public defn font-size (w:Float, h:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> [Float, Float, Float] :
+  val ttw = reduce(plus, 0.0f, seq({ width(glyphs(font)[_]) }, tstr))
+  val th = height(font)
+  val ts = min(w / ttw, h / th)
+  val tw = reduce(plus, 0.0f, seq({ width(glyphs(font)[_]) }, str))
+  val aw = ts * tw
+  val ah = ts * th
+  [aw, ah, ts]
+
+public defn font-size (w:Float, h:Float, font:Font, s:Collection<Char>) -> [Float, Float, Float] :
+  font-size(w, h, font, s, seq({ _ }, s))
+
+public defn draw-text-mag (w:Float, ts:Float, font:Font, s:Collection<Char>&Lengthable) :
+  val aw = glyphs-width(ts, font, s)
+  draw-text-at(-0.5f * aw, 0.0f, ts, ts, seq({ glyphs(font)[_] }, s))
+
+public defn draw-text-left-mag (w:Float, ts:Float, font:Font, s:Collection<Char>&Lengthable) :
+  val aw = glyphs-width(ts, font, s)
+  draw-text-at(-0.5f * w, 0.0f, ts, ts, seq({ glyphs(font)[_] }, s))
+
+public defn draw-text-right-mag (w:Float, ts:Float, font:Font, s:Collection<Char>&Lengthable) :
+  val aw = glyphs-width(ts, font, s)
+  draw-text-at(0.5f * w - aw, 0.0f, ts, ts, seq({ glyphs(font)[_] }, s))
+
+public defn draw-text (w:Float, h:Float, font:Font, s:Collection<Char>&Lengthable) :
+  draw-text-mag(w, glyphs-mag(w, h, font, s), font, s)
+
+public defn draw-text-left (w:Float, h:Float, font:Font, s:Collection<Char>&Lengthable) :
+  draw-text-left-mag(w, glyphs-mag(w, h, font, s), font, s)
+
+public defn draw-text-right (w:Float, h:Float, font:Font, s:Collection<Char>&Lengthable) :
+  draw-text-right-mag(w, glyphs-mag(w, h, font, s), font, s)
+
+defn clip (x:Float, mn:Float, mx:Float) : max(mn, min(mx, x))
+
+;; Convert hue/saturation/value to red/green/blue.  Output returned in args.
+public defn hsv-to-rgb (h:Float, sa:Float, v:Float) -> [Float, Float, Float] :
+  val s = clip(sa, 0.0f, 1.0f);
+  val [rt, gt, bt] = 
+    if s == 0.0f :
+      [v, v, v]
+    else :
+      val h_temp = (if h == 360.0f : 0.0f else: h) / 60.0f
+      val i = to-int(h_temp)
+      val f = h_temp - to-float(i)
+      val p = v * (1.0f - s)
+      val q = v * (1.0f - (s * f))
+      val t = v * (1.0f - (s * (1.0f - f)));
+      if i == 0 : [v, t, p]
+      else if i == 1 : [q, v, p]
+      else if i == 2 : [p, v, t]
+      else if i == 3 : [p, q, v]
+      else if i == 4 : [v, p, q]
+      else  : [v, p, q] ;; if i == 5
+  [clip(rt, 0.0f, 255.0f), clip(gt, 0.0f, 255.0f), clip(bt, 0.0f, 255.0f)]
+
+;; Convert hue/saturation/value to red/green/blue.  Output returned in args.
+public defn rgb-to-hsv (r:Float, g:Float, b:Float) -> [Float, Float, Float] :
+  val mn    = min(r, min(g, b));
+  val mx    = max(r, max(g, b));
+  val delta = mx - mn
+  val v     = mx / 255.0f
+  if mx == 0.0f :
+    [0.0f, 0.0f, v]
+  else :
+    val s = delta / mx
+    val h0 = 
+      if r == mx :
+        (g - b) / delta
+      else if g == mx :
+        2.0f + (b - r) / delta
+      else :
+        4.0f + (r - g) / delta
+    val h1 = h0 * 60.0f
+    val h = if h1 < 0.0f : h1 + 360.f else : h1
+    [h, s, v]

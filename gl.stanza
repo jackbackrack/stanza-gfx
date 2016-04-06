@@ -1,0 +1,118 @@
+defpackage gl :
+  import core
+  import collections
+
+extern glViewport: (int, int, int, int) -> int
+extern glClear: (int) -> int
+extern glMatrixMode: (int) -> int
+extern glPushMatrix: () -> int
+extern glPopMatrix: () -> int
+extern glPushAttrib: (int) -> int
+extern glPopAttrib: (int) -> int
+extern glLoadIdentity: () -> int
+extern glOrtho: (float, float, float, float, float, float) -> int
+extern glRotatef: (float, float, float, float) -> int
+extern glTranslatef: (float, float, float) -> int
+extern glScalef: (float, float, float) -> int
+extern glBegin: (int) -> int
+extern glColor3f: (float, float, float) -> int
+extern glVertex3f: (float, float, float) -> int
+extern glVertex2f: (float, float) -> int
+extern glEnd: () -> int
+
+public lostanza defn gl-viewport (x:ref<Int>, y:ref<Int>, w:ref<Int>, h:ref<Int>) -> ref<False> :
+  val res = call-c glViewport(x.value, y.value, w.value, h.value)
+  return false
+
+public lostanza defn gl-clear (m:ref<Int>) -> ref<False> :
+  call-c glClear(m.value)
+  return false
+
+public lostanza defn gl-matrix-mode (m:ref<Int>) -> ref<False> :
+  call-c glMatrixMode(m.value)
+  return false
+
+public lostanza defn gl-load-identity () -> ref<False> :
+  call-c glLoadIdentity()
+  return false
+
+public lostanza defn gl-ortho (a:ref<Float>, b:ref<Float>, c:ref<Float>, d:ref<Float>, e:ref<Float>, f:ref<Float>) -> ref<False> :
+  call-c glOrtho(a.value, b.value, c.value, d.value, e.value, f.value)
+  return false
+
+public lostanza defn gl-rotatef (a:ref<Float>, x:ref<Float>, y:ref<Float>, z:ref<Float>) -> ref<False> :
+  call-c glRotatef(a.value, x.value, y.value, z.value)
+  return false
+
+public lostanza defn gl-translatef (x:ref<Float>, y:ref<Float>, z:ref<Float>) -> ref<False> :
+  call-c glTranslatef(x.value, y.value, z.value)
+  return false
+
+public lostanza defn gl-scalef (x:ref<Float>, y:ref<Float>, z:ref<Float>) -> ref<False> :
+  call-c glScalef(x.value, y.value, z.value)
+  return false
+
+public lostanza defn gl-begin (m:ref<Int>) -> ref<False> :
+  call-c glBegin(m.value)
+  return false
+
+public lostanza defn gl-push-matrix () -> ref<False> :
+  call-c glPushMatrix()
+  return false
+
+public lostanza defn gl-pop-matrix () -> ref<False> :
+  call-c glPopMatrix()
+  return false
+
+public lostanza defn gl-push-attrib (a:ref<Int>) -> ref<False> :
+  call-c glPushAttrib(a.value)
+  return false
+
+public lostanza defn gl-pop-attrib (a:ref<Int>) -> ref<False> :
+  call-c glPopAttrib(a.value)
+  return false
+
+public lostanza defn gl-color3f (r:ref<Float>, g:ref<Float>, b:ref<Float>) -> ref<False> :
+  call-c glColor3f(r.value, g.value, b.value)
+  return false
+
+public lostanza defn gl-vertex3f (x:ref<Float>, y:ref<Float>, z:ref<Float>) -> ref<False> :
+  call-c glVertex3f(x.value, y.value, z.value)
+  return false
+
+public lostanza defn gl-vertex2f (x:ref<Float>, y:ref<Float>) -> ref<False> :
+  call-c glVertex2f(x.value, y.value)
+  return false
+
+public lostanza defn gl-end () -> ref<False> :
+  call-c glEnd()
+  return false
+
+public val GL-DEPTH-BUFFER-BIT = 256
+public val GL-STENCIL-BUFFER-BIT = 1024
+public val GL-COLOR-BUFFER-BIT = 16384
+public val GL-CURRENT-BIT = 1
+public val GL-MODELVIEW = 5888
+public val GL-PROJECTION = 5889
+public val GL-TEXTURE = 5890
+public val GL-POINTS = 0
+public val GL-LINES = 1
+public val GL-LINE-LOOP = 2
+public val GL-LINE-STRIP = 3
+public val GL-TRIANGLES = 4
+public val GL-TRIANGLE-STRIP = 5
+public val GL-TRIANGLE-FAN = 6
+public val GL-QUADS = 7
+public val GL-FALSE = 0
+public val GL-TRUE = 1
+
+public defn with-matrix (f:() -> False) -> False :
+  gl-push-matrix()
+  f()
+  gl-pop-matrix()
+
+public defn with-attrib (a:Int, f:() -> False) -> False :
+  gl-push-attrib(a)
+  f()
+  gl-pop-attrib(a)
+

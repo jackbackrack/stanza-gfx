@@ -1,0 +1,281 @@
+defpackage glfw :
+  import core
+  import collections
+  import gl
+
+extern glfwSetErrorCallback: (ptr<((int,ptr<byte>) -> int)>) -> int
+extern glfwInit: () -> int
+extern glfwCreateWindow: (int, int, ptr<byte>, ptr<?>, ptr<?>) -> ptr<?>
+extern glfwGetPrimaryMonitor: () -> ptr<?>
+extern glfwTerminate: () -> int
+extern glfwMakeContextCurrent: (ptr<?>) -> int
+extern glfwSwapInterval: (int) -> int
+extern glfwSetKeyCallback: (ptr<?>,ptr<((ptr<?>,int,int,int,int) -> int)>) -> int
+extern glfwSetMouseButtonCallback: (ptr<?>,ptr<((ptr<?>,int,int,int) -> int)>) -> int
+extern glfwSetCursorPosCallback: (ptr<?>,ptr<((ptr<?>,double,double) -> int)>) -> int
+extern glfwWindowShouldClose: (ptr<?>) -> int
+extern glfwSetWindowShouldClose: (ptr<?>, int) -> int
+extern glfwGetFramebufferSize: (ptr<?>, ptr<?>, ptr<?>) -> int
+extern glfwGetTime: () -> double
+extern glfwSwapBuffers: (ptr<?>) -> int
+extern glfwPollEvents: () -> int
+extern glfwDestroyWindow: (ptr<?>) -> int
+
+public lostanza deftype Window :
+  value: ptr<?>
+
+public lostanza deftype Monitor :
+  value: ptr<?>
+
+public val GUI-RELEASE = 0
+public val GUI-PRESS = 1
+public val GUI-REPEAT = 2
+
+public val GUI-MOD-SHIFT = 1
+public val GUI-MOD-CONTROL = 2
+public val GUI-MOD-ALT = 4
+public val GUI-MOD-SUPER = 8
+
+public val GUI-KEY-UNKNOWN =  -1
+public val GUI-KEY-SPACE =  32
+public val GUI-KEY-APOSTROPHE =  39 ;; '
+public val GUI-KEY-COMMA =  44 ;; ,
+public val GUI-KEY-MINUS =  45 ;; -
+public val GUI-KEY-PERIOD =  46 ;; .
+public val GUI-KEY-SLASH =  47 ;; /
+public val GUI-KEY-0 =  48
+public val GUI-KEY-1 =  49
+public val GUI-KEY-2 =  50
+public val GUI-KEY-3 =  51
+public val GUI-KEY-4 =  52
+public val GUI-KEY-5 =  53
+public val GUI-KEY-6 =  54
+public val GUI-KEY-7 =  55
+public val GUI-KEY-8 =  56
+public val GUI-KEY-9 =  57
+public val GUI-KEY-SEMICOLON =  59 ;; ;
+public val GUI-KEY-EQUAL =  61 ;; =
+public val GUI-KEY-A =  65
+public val GUI-KEY-B =  66
+public val GUI-KEY-C =  67
+public val GUI-KEY-D =  68
+public val GUI-KEY-E =  69
+public val GUI-KEY-F =  70
+public val GUI-KEY-G =  71
+public val GUI-KEY-H =  72
+public val GUI-KEY-I =  73
+public val GUI-KEY-J =  74
+public val GUI-KEY-K =  75
+public val GUI-KEY-L =  76
+public val GUI-KEY-M =  77
+public val GUI-KEY-N =  78
+public val GUI-KEY-O =  79
+public val GUI-KEY-P =  80
+public val GUI-KEY-Q =  81
+public val GUI-KEY-R =  82
+public val GUI-KEY-S =  83
+public val GUI-KEY-T =  84
+public val GUI-KEY-U =  85
+public val GUI-KEY-V =  86
+public val GUI-KEY-W =  87
+public val GUI-KEY-X =  88
+public val GUI-KEY-Y =  89
+public val GUI-KEY-Z =  90
+public val GUI-KEY-LEFT-BRACKET =  91 ;; [
+public val GUI-KEY-BACKSLASH =  92 ;; \
+public val GUI-KEY-RIGHT-BRACKET =  93 ;; ]
+public val GUI-KEY-GRAVE-ACCENT =  96 ;; `
+public val GUI-KEY-WORLD-1 =  161 ;; non-US #1
+public val GUI-KEY-WORLD-2 =  162 ;; non-US #2
+public val GUI-KEY-ESCAPE =  256
+public val GUI-KEY-ENTER =  257
+public val GUI-KEY-TAB =  258
+public val GUI-KEY-BACKSPACE =  259
+public val GUI-KEY-INSERT =  260
+public val GUI-KEY-DELETE =  261
+public val GUI-KEY-RIGHT =  262
+public val GUI-KEY-LEFT =  263
+public val GUI-KEY-DOWN =  264
+public val GUI-KEY-UP =  265
+public val GUI-KEY-PAGE-UP =  266
+public val GUI-KEY-PAGE-DOWN =  267
+public val GUI-KEY-HOME =  268
+public val GUI-KEY-END =  269
+public val GUI-KEY-CAPS-LOCK =  280
+public val GUI-KEY-SCROLL-LOCK =  281
+public val GUI-KEY-NUM-LOCK =  282
+public val GUI-KEY-PRINT-SCREEN =  283
+public val GUI-KEY-PAUSE =  284
+public val GUI-KEY-F1 =  290
+public val GUI-KEY-F2 =  291
+public val GUI-KEY-F3 =  292
+public val GUI-KEY-F4 =  293
+public val GUI-KEY-F5 =  294
+public val GUI-KEY-F6 =  295
+public val GUI-KEY-F7 =  296
+public val GUI-KEY-F8 =  297
+public val GUI-KEY-F9 =  298
+public val GUI-KEY-F10 =  299
+public val GUI-KEY-F11 =  300
+public val GUI-KEY-F12 =  301
+public val GUI-KEY-F13 =  302
+public val GUI-KEY-F14 =  303
+public val GUI-KEY-F15 =  304
+public val GUI-KEY-F16 =  305
+public val GUI-KEY-F17 =  306
+public val GUI-KEY-F18 =  307
+public val GUI-KEY-F19 =  308
+public val GUI-KEY-F20 =  309
+public val GUI-KEY-F21 =  310
+public val GUI-KEY-F22 =  311
+public val GUI-KEY-F23 =  312
+public val GUI-KEY-F24 =  313
+public val GUI-KEY-F25 =  314
+public val GUI-KEY-KP-0 =  320
+public val GUI-KEY-KP-1 =  321
+public val GUI-KEY-KP-2 =  322
+public val GUI-KEY-KP-3 =  323
+public val GUI-KEY-KP-4 =  324
+public val GUI-KEY-KP-5 =  325
+public val GUI-KEY-KP-6 =  326
+public val GUI-KEY-KP-7 =  327
+public val GUI-KEY-KP-8 =  328
+public val GUI-KEY-KP-9 =  329
+public val GUI-KEY-KP-DECIMAL =  330
+public val GUI-KEY-KP-DIVIDE =  331
+public val GUI-KEY-KP-MULTIPLY =  332
+public val GUI-KEY-KP-SUBTRACT =  333
+public val GUI-KEY-KP-ADD =  334
+public val GUI-KEY-KP-ENTER =  335
+public val GUI-KEY-KP-EQUAL =  336
+public val GUI-KEY-LEFT-SHIFT =  340
+public val GUI-KEY-LEFT-CONTROL =  341
+public val GUI-KEY-LEFT-ALT =  342
+public val GUI-KEY-LEFT-SUPER =  343
+public val GUI-KEY-RIGHT-SHIFT =  344
+public val GUI-KEY-RIGHT-CONTROL =  345
+public val GUI-KEY-RIGHT-ALT =  346
+public val GUI-KEY-RIGHT-SUPER =  347
+public val GUI-KEY-MENU =  348
+public val GUI-KEY-LAST = GUI-KEY-MENU
+
+public lostanza defn gui-init () -> ref<True> :
+  val res = call-c glfwInit()
+  return true
+
+;; if res == 0L: return true else: return false
+
+public lostanza defn gui-terminate () -> ref<False> :
+  call-c glfwTerminate()
+  return false
+
+public lostanza defn gui-create-window (w:ref<Int>, h:ref<Int>, name:ref<String>) -> ref<Window> :
+  val res = call-c glfwCreateWindow(w.value, h.value, addr!(name.chars), 0L as ptr<?>, 0L as ptr<?>)
+  return new Window{res}
+
+public lostanza defn gui-create-window (w:ref<Int>, h:ref<Int>, name:ref<String>, monitor:ref<Monitor>) -> ref<Window> :
+  val res = call-c glfwCreateWindow(w.value, h.value, addr!(name.chars), monitor.value, 0L as ptr<?>)
+  return new Window{res}
+
+public lostanza defn gui-get-primary-monitor () -> ref<Monitor> :
+  val res = call-c glfwGetPrimaryMonitor()
+  return new Monitor{res}
+
+public lostanza defn gui-make-context-current (w:ref<Window>) -> ref<False> :
+  call-c glfwMakeContextCurrent(w.value)
+  return false
+
+defn default-key-callback (w:Window, key:Int, scancode:Int, action:Int, mods:Int) -> False: false
+
+var *key-callback*:((Window,Int,Int,Int,Int) -> False) = default-key-callback
+
+extern defn do_key_callback (w:ptr<?>, key:int, scancode:int, action:int, mods:int) -> int :
+  val win = new Window{w}
+  [*key-callback*](win, new Int{key}, new Int{scancode}, new Int{action}, new Int{mods})
+  return 0
+
+public lostanza defn gui-set-key-callback (w:ref<Window>,f:ref<((Window,Int,Int,Int,Int) -> False)>) -> ref<False> :
+  *key-callback* = f
+  call-c glfwSetKeyCallback(w.value, addr(do_key_callback))
+  return false
+
+defn default-mouse-button-callback (w:Window, button:Int, action:Int, mods:Int) -> False: false
+
+var *mouse-button-callback*:((Window,Int,Int,Int) -> False) = default-mouse-button-callback
+
+extern defn do_mouse_button_callback (w:ptr<?>, button:int, action:int, mods:int) -> int :
+  val win = new Window{w}
+  [*mouse-button-callback*](win, new Int{button}, new Int{action}, new Int{mods})
+  return 0
+
+public lostanza defn gui-set-cursor-callback (w:ref<Window>,f:ref<((Window,Int,Int,Int) -> False)>) -> ref<False> :
+  *mouse-button-callback* = f
+  call-c glfwSetCursorPosCallback(w.value, addr(do_cursor_pos_callback))
+  return false
+
+defn default-cursor-pos-callback (w:Window, x:Float, y:Float) -> False: false
+
+var *cursor-pos-callback*:((Window,Float,Float) -> False) = default-cursor-pos-callback
+
+extern defn do_cursor_pos_callback (w:ptr<?>, x:double, y:double) -> int :
+  val win = new Window{w}
+  [*cursor-pos-callback*](win, new Float{x as float}, new Float{y as float})
+  return 0
+
+public lostanza defn gui-set-cursor-callback (w:ref<Window>,f:ref<((Window,Float,Float) -> False)>) -> ref<False> :
+  *cursor-pos-callback* = f
+  call-c glfwSetCursorPosCallback(w.value, addr(do_cursor_pos_callback))
+  return false
+
+defn default-error-callback (error:Int, description:String) -> False : false
+
+var *error-callback*:((Int,String) -> False) = default-error-callback
+
+extern defn do_error_callback (error:int, description:ptr<byte>) -> int :
+  val e = new Int{error}
+  val s = String(description)
+  [*error-callback*](e, s)
+  return 0
+
+public lostanza defn gui-set-error-callback (f:ref<((Int,String) -> False)>) -> ref<False> :
+  *error-callback* = f
+  call-c glfwSetErrorCallback(addr(do_error_callback))
+  return false
+
+public lostanza defn gui-window-should-close (w:ref<Window>) -> ref<True|False> :
+  val res = call-c glfwWindowShouldClose(w.value)
+  if res == 1 : return true else: return false
+
+public lostanza defn gui-set-window-should-close (w:ref<Window>,b:ref<Int>) -> ref<False> :
+  call-c glfwSetWindowShouldClose(w.value, b.value)
+  return false
+
+public lostanza defn gui-swap-buffers (w:ref<Window>) -> ref<False> :
+  call-c glfwSwapBuffers(w.value)
+  return false
+
+lostanza var FRAMEBUFFER_WIDTH:int
+lostanza var FRAMEBUFFER_HEIGHT:int
+
+public lostanza defn gui-get-framebuffer-size (w:ref<Window>) -> ref<[Int,Int]> :
+  call-c glfwGetFramebufferSize(w.value, addr(FRAMEBUFFER_WIDTH), addr(FRAMEBUFFER_HEIGHT))
+  val FRAMEBUFFER-WIDTH  = new Int{FRAMEBUFFER_WIDTH}
+  val FRAMEBUFFER-HEIGHT = new Int{FRAMEBUFFER_HEIGHT}
+  return (new Tuple{2, FRAMEBUFFER-WIDTH, FRAMEBUFFER-HEIGHT}) as ref<[Int, Int]>
+
+public lostanza defn gui-swap-interval (i:ref<Int>) -> ref<False> :
+  call-c glfwSwapInterval(i.value)
+  return false
+
+public lostanza defn gui-get-time () -> ref<Int> :
+  val res = call-c glfwGetTime()
+  return new Int{(res * 1000000.0) as int}
+
+public lostanza defn gui-poll-events () -> ref<False> :
+  val res = call-c glfwPollEvents()
+  return false
+
+public lostanza defn gui-destroy-window (w:ref<Window>) -> ref<False> :
+  val res = call-c glfwDestroyWindow(w.value)
+  return false
+

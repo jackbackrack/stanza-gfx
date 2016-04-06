@@ -3,6 +3,7 @@ defpackage gfx:
   import math
   import collections
   import geom
+  import gl
   import glfw
   import font
 

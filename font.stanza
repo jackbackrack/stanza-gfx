@@ -40,6 +40,9 @@ defn get (entries:Tuple<KeyValue<Char, Float>>, c:Char) -> Float :
 
 val glyphs-3x3 = [
   '*' => Glyph(2.4f, 2.4f, [[L C R C] [L B R T] [L T R B]])
+  ' ' => Glyph(2.4f, 2.4f, [])
+  '"' => Glyph(2.4f, 2.4f, [[L T L C] [C T C C] [R T R C]])
+  '\'' => Glyph(2.4f, 2.4f, [[C T C C]])
   '-' => Glyph(2.4f, 2.4f, [[L C R C]]),
   '.' => Glyph(2.4f, 2.4f, [[L B R B] [C B C C]]),
   '>' => Glyph(2.4f, 2.4f, [[L B R C L T]]),
@@ -221,5 +224,5 @@ val hershey-glyphs = [
 
 public val hershey-font = Font(32.0f, 7.0f - 32.0f / 2.0f, hershey-glyphs)
 
-;; public var *font* = font-3x3
-public var *font* = hershey-font
+public var *font* = font-3x3
+;; public var *font* = hershey-font

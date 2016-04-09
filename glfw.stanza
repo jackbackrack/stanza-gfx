@@ -177,6 +177,9 @@ public lostanza defn gui-create-window (w:ref<Int>, h:ref<Int>, name:ref<String>
   val res = call-c glfwCreateWindow(w.value, h.value, addr!(name.chars), monitor.value, 0L as ptr<?>)
   return new Window{res}
 
+public lostanza defn gui-null-monitor () -> ref<Monitor> :
+  return new Monitor{0L as ptr<?>}
+
 public lostanza defn gui-get-primary-monitor () -> ref<Monitor> :
   val res = call-c glfwGetPrimaryMonitor()
   return new Monitor{res}

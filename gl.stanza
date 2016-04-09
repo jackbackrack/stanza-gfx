@@ -1,9 +1,11 @@
 defpackage gl :
   import core
   import collections
+  import utils
 
 extern glViewport: (int, int, int, int) -> int
 extern glClear: (int) -> int
+extern glHint: (int, int) -> int
 extern glMatrixMode: (int) -> int
 extern glPushMatrix: () -> int
 extern glPopMatrix: () -> int
@@ -23,6 +25,10 @@ extern glEnd: () -> int
 
 public lostanza defn gl-viewport (x:ref<Int>, y:ref<Int>, w:ref<Int>, h:ref<Int>) -> ref<False> :
   val res = call-c glViewport(x.value, y.value, w.value, h.value)
+  return false
+
+public lostanza defn gl-hint (target:ref<Int>, mode:ref<Int>) -> ref<False> :
+  call-c glHint(target.value, mode.value)
   return false
 
 public lostanza defn gl-clear (m:ref<Int>) -> ref<False> :
@@ -93,23 +99,299 @@ public lostanza defn gl-end () -> ref<False> :
   call-c glEnd()
   return false
 
-public val GL-DEPTH-BUFFER-BIT = 256
-public val GL-STENCIL-BUFFER-BIT = 1024
-public val GL-COLOR-BUFFER-BIT = 16384
-public val GL-CURRENT-BIT = 1
-public val GL-MODELVIEW = 5888
-public val GL-PROJECTION = 5889
-public val GL-TEXTURE = 5890
-public val GL-POINTS = 0
-public val GL-LINES = 1
-public val GL-LINE-LOOP = 2
-public val GL-LINE-STRIP = 3
-public val GL-TRIANGLES = 4
-public val GL-TRIANGLE-STRIP = 5
-public val GL-TRIANGLE-FAN = 6
-public val GL-QUADS = 7
-public val GL-FALSE = 0
-public val GL-TRUE = 1
+public val GL-DEPTH-BUFFER-BIT =               hex-to-int("0x00000100")
+public val GL-STENCIL-BUFFER-BIT =             hex-to-int("0x00000400")
+public val GL-COLOR-BUFFER-BIT =               hex-to-int("0x00004000")
+public val GL-CURRENT-BIT =                    1
+
+public val GL-FALSE =                          0
+public val GL-TRUE =                           1
+
+public val GL-POINTS =                         hex-to-int("0x0000")
+public val GL-LINES =                          hex-to-int("0x0001")
+public val GL-LINE-LOOP =                      hex-to-int("0x0002")
+public val GL-LINE-STRIP =                     hex-to-int("0x0003")
+public val GL-TRIANGLES =                      hex-to-int("0x0004")
+public val GL-TRIANGLE-STRIP =                 hex-to-int("0x0005")
+public val GL-TRIANGLE-FAN =                   hex-to-int("0x0006")
+public val GL-QUADS =                          hex-to-int("0x0007")
+
+public val GL-COMPILE =                        4864
+
+public val GL-NEVER =                          hex-to-int("0x0200")
+public val GL-LESS =                           hex-to-int("0x0201")
+public val GL-EQUAL =                          hex-to-int("0x0202")
+public val GL-LEQUAL =                         hex-to-int("0x0203")
+public val GL-GREATER =                        hex-to-int("0x0204")
+public val GL-NOTEQUAL =                       hex-to-int("0x0205")
+public val GL-GEQUAL =                         hex-to-int("0x0206")
+public val GL-ALWAYS =                         hex-to-int("0x0207")
+
+public val GL-ZERO =                           0
+public val GL-ONE =                            1
+public val GL-SRC-COLOR =                      hex-to-int("0x0300")
+public val GL-ONE-MINUS-SRC-COLOR =            hex-to-int("0x0301")
+public val GL-SRC-ALPHA =                      hex-to-int("0x0302")
+public val GL-ONE-MINUS-SRC-ALPHA =            hex-to-int("0x0303")
+public val GL-DST-ALPHA =                      hex-to-int("0x0304")
+public val GL-ONE-MINUS-DST-ALPHA =            hex-to-int("0x0305")
+
+public val GL-DST-COLOR =                      hex-to-int("0x0306")
+public val GL-ONE-MINUS-DST-COLOR =            hex-to-int("0x0307")
+public val GL-SRC-ALPHA-SATURATE =             hex-to-int("0x0308")
+
+public val GL-FRONT =                          hex-to-int("0x0404")
+public val GL-BACK =                           hex-to-int("0x0405")
+public val GL-FRONT-AND-BACK =                 hex-to-int("0x0408")
+
+public val GL-FOG =                            hex-to-int("0x0B60")
+public val GL-LIGHTING =                       hex-to-int("0x0B50")
+public val GL-TEXTURE-2D =                     hex-to-int("0x0DE1")
+public val GL-CULL-FACE =                      hex-to-int("0x0B44")
+public val GL-ALPHA-TEST =                     hex-to-int("0x0BC0")
+public val GL-BLEND =                          hex-to-int("0x0BE2")
+public val GL-COLOR-LOGIC-OP =                 hex-to-int("0x0BF2")
+public val GL-DITHER =                         hex-to-int("0x0BD0")
+public val GL-STENCIL-TEST =                   hex-to-int("0x0B90")
+public val GL-DEPTH-TEST =                     hex-to-int("0x0B71")
+
+public val GL-POINT-SMOOTH =                   hex-to-int("0x0B10")
+public val GL-LINE-SMOOTH =                    hex-to-int("0x0B20")
+public val GL-SCISSOR-TEST =                   hex-to-int("0x0C11")
+public val GL-COLOR-MATERIAL =                 hex-to-int("0x0B57")
+public val GL-NORMALIZE =                      hex-to-int("0x0BA1")
+public val GL-RESCALE-NORMAL =                 hex-to-int("0x803A")
+public val GL-POLYGON-OFFSET-FILL =            hex-to-int("0x8037")
+public val GL-VERTEX-ARRAY =                   hex-to-int("0x8074")
+public val GL-NORMAL-ARRAY =                   hex-to-int("0x8075")
+public val GL-COLOR-ARRAY =                    hex-to-int("0x8076")
+public val GL-TEXTURE-COORD-ARRAY =            hex-to-int("0x8078")
+public val GL-MULTISAMPLE =                    hex-to-int("0x809D")
+public val GL-SAMPLE-ALPHA-TO-COVERAGE =       hex-to-int("0x809E")
+public val GL-SAMPLE-ALPHA-TO-ONE =            hex-to-int("0x809F")
+public val GL-SAMPLE-COVERAGE =                hex-to-int("0x80A0")
+
+public val GL-NO-ERROR =                       0
+public val GL-INVALID-ENUM =                   hex-to-int("0x0500")
+public val GL-INVALID-VALUE =                  hex-to-int("0x0501")
+public val GL-INVALID-OPERATION =              hex-to-int("0x0502")
+public val GL-STACK-OVERFLOW =                 hex-to-int("0x0503")
+public val GL-STACK-UNDERFLOW =                hex-to-int("0x0504")
+public val GL-OUT-OF-MEMORY =                  hex-to-int("0x0505")
+
+public val GL-EXP =                            hex-to-int("0x0800")
+public val GL-EXP2 =                           hex-to-int("0x0801")
+
+public val GL-FOG-DENSITY =                    hex-to-int("0x0B62")
+public val GL-FOG-START =                      hex-to-int("0x0B63")
+public val GL-FOG-END =                        hex-to-int("0x0B64")
+public val GL-FOG-MODE =                       hex-to-int("0x0B65")
+public val GL-FOG-COLOR =                      hex-to-int("0x0B66")
+
+public val GL-CW =                             hex-to-int("0x0900")
+public val GL-CCW =                            hex-to-int("0x0901")
+
+public val GL-SMOOTH-POINT-SIZE-RANGE =        hex-to-int("0x0B12")
+public val GL-SMOOTH-LINE-WIDTH-RANGE =        hex-to-int("0x0B22")
+public val GL-ALIASED-POINT-SIZE-RANGE =       hex-to-int("0x846D")
+public val GL-ALIASED-LINE-WIDTH-RANGE =       hex-to-int("0x846E")
+public val GL-IMPLEMENTATION-COLOR-READ-TYPE-OES = hex-to-int("0x8B9A")
+public val GL-IMPLEMENTATION-COLOR-READ-FORMAT-OES = hex-to-int("0x8B9B")
+public val GL-MAX-LIGHTS =                     hex-to-int("0x0D31")
+public val GL-MAX-TEXTURE-SIZE =               hex-to-int("0x0D33")
+public val GL-MAX-MODELVIEW-STACK-DEPTH =      hex-to-int("0x0D36")
+public val GL-MAX-PROJECTION-STACK-DEPTH =     hex-to-int("0x0D38")
+public val GL-MAX-TEXTURE-STACK-DEPTH =        hex-to-int("0x0D39")
+public val GL-MAX-VIEWPORT-DIMS =              hex-to-int("0x0D3A")
+public val GL-MAX-ELEMENTS-VERTICES =          hex-to-int("0x80E8")
+public val GL-MAX-ELEMENTS-INDICES =           hex-to-int("0x80E9")
+public val GL-MAX-TEXTURE-UNITS =              hex-to-int("0x84E2")
+public val GL-NUM-COMPRESSED-TEXTURE-FORMATS = hex-to-int("0x86A2")
+public val GL-COMPRESSED-TEXTURE-FORMATS =     hex-to-int("0x86A3")
+public val GL-SUBPIXEL-BITS =                  hex-to-int("0x0D50")
+public val GL-RED-BITS =                       hex-to-int("0x0D52")
+public val GL-GREEN-BITS =                     hex-to-int("0x0D53")
+public val GL-BLUE-BITS =                      hex-to-int("0x0D54")
+public val GL-ALPHA-BITS =                     hex-to-int("0x0D55")
+public val GL-DEPTH-BITS =                     hex-to-int("0x0D56")
+public val GL-STENCIL-BITS =                   hex-to-int("0x0D57")
+
+public val GL-DONT-CARE =                      hex-to-int("0x1100")
+public val GL-FASTEST =                        hex-to-int("0x1101")
+public val GL-NICEST =                         hex-to-int("0x1102")
+
+public val GL-PERSPECTIVE-CORRECTION-HINT =    hex-to-int("0x0C50")
+public val GL-POINT-SMOOTH-HINT =              hex-to-int("0x0C51")
+public val GL-LINE-SMOOTH-HINT =               hex-to-int("0x0C52")
+public val GL-POLYGON-SMOOTH-HINT =            hex-to-int("0x0C53")
+public val GL-FOG-HINT =                       hex-to-int("0x0C54")
+
+public val GL-LIGHT-MODEL-AMBIENT =            hex-to-int("0x0B53")
+public val GL-LIGHT-MODEL-TWO-SIDE =           hex-to-int("0x0B52")
+
+public val GL-AMBIENT =                        hex-to-int("0x1200")
+public val GL-DIFFUSE =                        hex-to-int("0x1201")
+public val GL-SPECULAR =                       hex-to-int("0x1202")
+public val GL-POSITION =                       hex-to-int("0x1203")
+public val GL-SPOT-DIRECTION =                 hex-to-int("0x1204")
+public val GL-SPOT-EXPONENT =                  hex-to-int("0x1205")
+public val GL-SPOT-CUTOFF =                    hex-to-int("0x1206")
+public val GL-CONSTANT-ATTENUATION =           hex-to-int("0x1207")
+public val GL-LINEAR-ATTENUATION =             hex-to-int("0x1208")
+public val GL-QUADRATIC-ATTENUATION =          hex-to-int("0x1209")
+
+public val GL-BYTE =                           hex-to-int("0x1400")
+public val GL-UNSIGNED-BYTE =                  hex-to-int("0x1401")
+public val GL-SHORT =                          hex-to-int("0x1402")
+public val GL-UNSIGNED-SHORT =                 hex-to-int("0x1403")
+public val GL-FLOAT =                          hex-to-int("0x1406")
+public val GL-FIXED =                          hex-to-int("0x140C")
+
+public val GL-CLEAR =                          hex-to-int("0x1500")
+public val GL-AND =                            hex-to-int("0x1501")
+public val GL-AND-REVERSE =                    hex-to-int("0x1502")
+public val GL-COPY =                           hex-to-int("0x1503")
+public val GL-AND-INVERTED =                   hex-to-int("0x1504")
+public val GL-NOOP =                           hex-to-int("0x1505")
+public val GL-XOR =                            hex-to-int("0x1506")
+public val GL-OR =                             hex-to-int("0x1507")
+public val GL-NOR =                            hex-to-int("0x1508")
+public val GL-EQUIV =                          hex-to-int("0x1509")
+public val GL-INVERT =                         hex-to-int("0x150A")
+public val GL-OR-REVERSE =                     hex-to-int("0x150B")
+public val GL-COPY-INVERTED =                  hex-to-int("0x150C")
+public val GL-OR-INVERTED =                    hex-to-int("0x150D")
+public val GL-NAND =                           hex-to-int("0x150E")
+public val GL-SET =                            hex-to-int("0x150F")
+
+public val GL-EMISSION =                       hex-to-int("0x1600")
+public val GL-SHININESS =                      hex-to-int("0x1601")
+public val GL-AMBIENT-AND-DIFFUSE =            hex-to-int("0x1602")
+
+public val GL-MODELVIEW =                      hex-to-int("0x1700")
+public val GL-PROJECTION =                     hex-to-int("0x1701")
+public val GL-TEXTURE =                        hex-to-int("0x1702")
+
+public val GL-ALPHA =                          hex-to-int("0x1906")
+public val GL-RGB =                            hex-to-int("0x1907")
+public val GL-RGBA =                           hex-to-int("0x1908")
+public val GL-LUMINANCE =                      hex-to-int("0x1909")
+public val GL-LUMINANCE-ALPHA =                hex-to-int("0x190A")
+
+public val GL-UNPACK-ALIGNMENT =               hex-to-int("0x0CF5")
+public val GL-PACK-ALIGNMENT =                 hex-to-int("0x0D05")
+
+public val GL-UNSIGNED-SHORT-4-4-4-4 =         hex-to-int("0x8033")
+public val GL-UNSIGNED-SHORT-5-5-5-1 =         hex-to-int("0x8034")
+public val GL-UNSIGNED-SHORT-5-6-5 =           hex-to-int("0x8363")
+
+public val GL-FLAT =                           hex-to-int("0x1D00")
+public val GL-SMOOTH =                         hex-to-int("0x1D01")
+
+public val GL-KEEP =                           hex-to-int("0x1E00")
+public val GL-REPLACE =                        hex-to-int("0x1E01")
+public val GL-INCR =                           hex-to-int("0x1E02")
+public val GL-DECR =                           hex-to-int("0x1E03")
+
+public val GL-VENDOR =                         hex-to-int("0x1F00")
+public val GL-RENDERER =                       hex-to-int("0x1F01")
+public val GL-VERSION =                        hex-to-int("0x1F02")
+public val GL-EXTENSIONS =                     hex-to-int("0x1F03")
+
+public val GL-MODULATE =                       hex-to-int("0x2100")
+public val GL-DECAL =                          hex-to-int("0x2101")
+public val GL-ADD =                            hex-to-int("0x0104")
+
+public val GL-TEXTURE-ENV-MODE =               hex-to-int("0x2200")
+public val GL-TEXTURE-ENV-COLOR =              hex-to-int("0x2201")
+
+public val GL-TEXTURE-ENV =                    hex-to-int("0x2300")
+
+public val GL-NEAREST =                        hex-to-int("0x2600")
+public val GL-LINEAR =                         hex-to-int("0x2601")
+
+public val GL-NEAREST-MIPMAP-NEAREST =         hex-to-int("0x2700")
+public val GL-LINEAR-MIPMAP-NEAREST =          hex-to-int("0x2701")
+public val GL-NEAREST-MIPMAP-LINEAR =          hex-to-int("0x2702")
+public val GL-LINEAR-MIPMAP-LINEAR =           hex-to-int("0x2703")
+
+public val GL-TEXTURE-MAG-FILTER =             hex-to-int("0x2800")
+public val GL-TEXTURE-MIN-FILTER =             hex-to-int("0x2801")
+public val GL-TEXTURE-WRAP-S =                 hex-to-int("0x2802")
+public val GL-TEXTURE-WRAP-T =                 hex-to-int("0x2803")
+
+public val GL-TEXTURE0 =                       hex-to-int("0x84C0")
+public val GL-TEXTURE1 =                       hex-to-int("0x84C1")
+public val GL-TEXTURE2 =                       hex-to-int("0x84C2")
+public val GL-TEXTURE3 =                       hex-to-int("0x84C3")
+public val GL-TEXTURE4 =                       hex-to-int("0x84C4")
+public val GL-TEXTURE5 =                       hex-to-int("0x84C5")
+public val GL-TEXTURE6 =                       hex-to-int("0x84C6")
+public val GL-TEXTURE7 =                       hex-to-int("0x84C7")
+public val GL-TEXTURE8 =                       hex-to-int("0x84C8")
+public val GL-TEXTURE9 =                       hex-to-int("0x84C9")
+public val GL-TEXTURE10 =                      hex-to-int("0x84CA")
+public val GL-TEXTURE11 =                      hex-to-int("0x84CB")
+public val GL-TEXTURE12 =                      hex-to-int("0x84CC")
+public val GL-TEXTURE13 =                      hex-to-int("0x84CD")
+public val GL-TEXTURE14 =                      hex-to-int("0x84CE")
+public val GL-TEXTURE15 =                      hex-to-int("0x84CF")
+public val GL-TEXTURE16 =                      hex-to-int("0x84D0")
+public val GL-TEXTURE17 =                      hex-to-int("0x84D1")
+public val GL-TEXTURE18 =                      hex-to-int("0x84D2")
+public val GL-TEXTURE19 =                      hex-to-int("0x84D3")
+public val GL-TEXTURE20 =                      hex-to-int("0x84D4")
+public val GL-TEXTURE21 =                      hex-to-int("0x84D5")
+public val GL-TEXTURE22 =                      hex-to-int("0x84D6")
+public val GL-TEXTURE23 =                      hex-to-int("0x84D7")
+public val GL-TEXTURE24 =                      hex-to-int("0x84D8")
+public val GL-TEXTURE25 =                      hex-to-int("0x84D9")
+public val GL-TEXTURE26 =                      hex-to-int("0x84DA")
+public val GL-TEXTURE27 =                      hex-to-int("0x84DB")
+public val GL-TEXTURE28 =                      hex-to-int("0x84DC")
+public val GL-TEXTURE29 =                      hex-to-int("0x84DD")
+public val GL-TEXTURE30 =                      hex-to-int("0x84DE")
+public val GL-TEXTURE31 =                      hex-to-int("0x84DF")
+
+public val GL-REPEAT =                         hex-to-int("0x2901")
+public val GL-CLAMP-TO-EDGE =                  hex-to-int("0x812F")
+
+public val GL-PALETTE4-RGB8-OES =              hex-to-int("0x8B90")
+public val GL-PALETTE4-RGBA8-OES =             hex-to-int("0x8B91")
+public val GL-PALETTE4-R5-G6-B5-OES =          hex-to-int("0x8B92")
+public val GL-PALETTE4-RGBA4-OES =             hex-to-int("0x8B93")
+public val GL-PALETTE4-RGB5-A1-OES =           hex-to-int("0x8B94")
+public val GL-PALETTE8-RGB8-OES =              hex-to-int("0x8B95")
+public val GL-PALETTE8-RGBA8-OES =             hex-to-int("0x8B96")
+public val GL-PALETTE8-R5-G6-B5-OES =          hex-to-int("0x8B97")
+public val GL-PALETTE8-RGBA4-OES =             hex-to-int("0x8B98")
+public val GL-PALETTE8-RGB5-A1-OES =           hex-to-int("0x8B99")
+
+public val GL-LIGHT0 =                         hex-to-int("0x4000")
+public val GL-LIGHT1 =                         hex-to-int("0x4001")
+public val GL-LIGHT2 =                         hex-to-int("0x4002")
+public val GL-LIGHT3 =                         hex-to-int("0x4003")
+public val GL-LIGHT4 =                         hex-to-int("0x4004")
+public val GL-LIGHT5 =                         hex-to-int("0x4005")
+public val GL-LIGHT6 =                         hex-to-int("0x4006")
+public val GL-LIGHT7 =                         hex-to-int("0x4007")
+
+public val GLU-TESS-BEGIN =                    100100
+public val GLU-BEGIN =                         100100
+public val GLU-TESS-VERTEX =                   100101
+public val GLU-VERTEX =                        100101
+public val GLU-TESS-END =                      100102
+public val GLU-END =                           100102
+public val GLU-TESS-ERROR =                    100103
+public val GLU-TESS-EDGE-FLAG =                100104
+public val GLU-EDGE-FLAG =                     100104
+public val GLU-TESS-COMBINE =                  100105
+public val GLU-TESS-BEGIN-DATA =               100106
+public val GLU-TESS-VERTEX-DATA =              100107
+public val GLU-TESS-END-DATA =                 100108
+public val GLU-TESS-ERROR-DATA =               100109
+public val GLU-TESS-EDGE-FLAG-DATA =           100110
+public val GLU-TESS-COMBINE-DATA =             100111
 
 public defn with-matrix (f:() -> False) -> False :
   gl-push-matrix()

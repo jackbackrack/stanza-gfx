@@ -2,10 +2,12 @@ defpackage glfw :
   import core
   import collections
   import gl
+  import utils
 
 extern glfwSetErrorCallback: (ptr<((int,ptr<byte>) -> int)>) -> int
 extern glfwInit: () -> int
 extern glfwCreateWindow: (int, int, ptr<byte>, ptr<?>, ptr<?>) -> ptr<?>
+extern glfwWindowHint: (int, int) -> int
 extern glfwGetPrimaryMonitor: () -> ptr<?>
 extern glfwTerminate: () -> int
 extern glfwMakeContextCurrent: (ptr<?>) -> int
@@ -159,6 +161,8 @@ public val GUI-KEY-RIGHT-SUPER =  347
 public val GUI-KEY-MENU =  348
 public val GUI-KEY-LAST = GUI-KEY-MENU
 
+public val GUI-SAMPLES = hex-to-int("0x0002100D")
+
 public lostanza defn gui-init () -> ref<True> :
   val res = call-c glfwInit()
   return true
@@ -172,6 +176,10 @@ public lostanza defn gui-terminate () -> ref<False> :
 public lostanza defn gui-create-window (w:ref<Int>, h:ref<Int>, name:ref<String>) -> ref<Window> :
   val res = call-c glfwCreateWindow(w.value, h.value, addr!(name.chars), 0L as ptr<?>, 0L as ptr<?>)
   return new Window{res}
+
+public lostanza defn gui-window-hint (hint:ref<Int>, x:ref<Int>) -> ref<False> :
+  call-c glfwWindowHint(hint.value, x.value)
+  return false
 
 public lostanza defn gui-create-window (w:ref<Int>, h:ref<Int>, name:ref<String>, monitor:ref<Monitor>) -> ref<Window> :
   val res = call-c glfwCreateWindow(w.value, h.value, addr!(name.chars), monitor.value, 0L as ptr<?>)

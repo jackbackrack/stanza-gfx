@@ -3,6 +3,7 @@ defpackage gl :
   import collections
   import utils
 
+extern printf: (ptr<byte>, ? ...) -> int
 extern glViewport: (int, int, int, int) -> int
 extern glClear: (int) -> int
 extern glHint: (int, int) -> int
@@ -12,7 +13,7 @@ extern glPopMatrix: () -> int
 extern glPushAttrib: (int) -> int
 extern glPopAttrib: (int) -> int
 extern glLoadIdentity: () -> int
-extern glOrtho: (float, float, float, float, float, float) -> int
+extern glOrtho: (double, double, double, double, double, double) -> int
 extern glRotatef: (float, float, float, float) -> int
 extern glTranslatef: (float, float, float) -> int
 extern glScalef: (float, float, float) -> int
@@ -24,7 +25,7 @@ extern glVertex2f: (float, float) -> int
 extern glEnd: () -> int
 
 public lostanza defn gl-viewport (x:ref<Int>, y:ref<Int>, w:ref<Int>, h:ref<Int>) -> ref<False> :
-  val res = call-c glViewport(x.value, y.value, w.value, h.value)
+  call-c glViewport(x.value, y.value, w.value, h.value)
   return false
 
 public lostanza defn gl-hint (target:ref<Int>, mode:ref<Int>) -> ref<False> :
@@ -44,7 +45,7 @@ public lostanza defn gl-load-identity () -> ref<False> :
   return false
 
 public lostanza defn gl-ortho (a:ref<Float>, b:ref<Float>, c:ref<Float>, d:ref<Float>, e:ref<Float>, f:ref<Float>) -> ref<False> :
-  call-c glOrtho(a.value, b.value, c.value, d.value, e.value, f.value)
+  call-c glOrtho(a.value as double, b.value as double, c.value as double, d.value as double, e.value as double, f.value as double)
   return false
 
 public lostanza defn gl-rotatef (a:ref<Float>, x:ref<Float>, y:ref<Float>, z:ref<Float>) -> ref<False> :

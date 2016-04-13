@@ -55,12 +55,15 @@ public defn draw-circle (r:Float) :
   gl-end()
   gl-pop-matrix()
 
-defn stroke-char (glyph:Glyph) :
-  for stroke in strokes(polyline(glyph)) do :
+public defn stroke (pl:PolyLine) :
+  for line in strokes(pl) do :
     gl-begin(GL-LINE-STRIP)
-    do(gl-vertex, stroke)
+    do(gl-vertex, line)
     gl-end()
 
+public defn stroke-char (glyph:Glyph) :
+  stroke(polyline(glyph))
+  
 defn stroke-text (s:Seqable<Glyph>) :
   for g in s do :
     val w = width(g)

@@ -17,12 +17,12 @@ public defn Glyph (width:Float, height:Float, polyline:PolyLine) :
 
 public defn Glyph (width:Float, height:Float, istrokes:Tuple<Tuple<Float>>) :
   var n = 0
-  val polyline = PolyLine(to-array<Array<V3f>>( generate< Array<V3f> > :
+  val polyline = PolyLine $ to-tuple $ generate< Tuple<V3f> > :
     for stroke in istrokes do :
-      yield(to-array<V3f>( generate< V3f > :
+      yield $ to-tuple $ generate< V3f > :
         for i in 0 to length(stroke) / 2 do :
           n = n + 1
-          yield(V3f(stroke[i * 2], stroke[i * 2 + 1]) )))))
+          yield $ V3f(stroke[i * 2], stroke[i * 2 + 1])
   Glyph(width, height, polyline)
 
 public defn Glyphi (width:Float, height:Float, istrokes:Tuple<Tuple<Int>>) :

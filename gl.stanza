@@ -4,6 +4,15 @@ defpackage gl :
   import utils
 
 extern printf: (ptr<byte>, ? ...) -> int
+extern glBindTexture: (int) -> int
+extern glGenTextures: (int, ptr<int>) -> int
+extern glDeleteTextures: (int, ptr<int>) -> int
+extern glTexParameteri: (int, int, int) -> int
+extern glTexImage2D: (int, int, int, int, int, int, int, int, ptr<byte>) -> int
+extern glTexSubImage2D: (int, int, int, int, int, int, int, int, ptr<byte>) -> int
+extern glTexCoord2f: (float, float) -> int
+extern glEnable: (int) -> int
+extern glDisable: (int) -> int
 extern glViewport: (int, int, int, int) -> int
 extern glClear: (int) -> int
 extern glHint: (int, int) -> int
@@ -17,12 +26,65 @@ extern glOrtho: (double, double, double, double, double, double) -> int
 extern glRotatef: (float, float, float, float) -> int
 extern glTranslatef: (float, float, float) -> int
 extern glScalef: (float, float, float) -> int
-extern glBegin: (int) -> int
 extern glColor3f: (float, float, float) -> int
 extern glColor4f: (float, float, float, float) -> int
 extern glVertex3f: (float, float, float) -> int
 extern glVertex2f: (float, float) -> int
+extern glBegin: (int) -> int
 extern glEnd: () -> int
+
+public lostanza deftype ImageDat :
+  value: ptr<byte>
+
+public lostanza defn null-image-dat () -> ref<ImageDat> :
+  return new ImageDat{0L as ptr<byte>}
+
+public lostanza deftype Texture :
+  value: int
+
+public lostanza defn gl-bind-texture (kind:ref<Int>, t:ref<Texture>) -> ref<False> :
+  call-c glBindTexture(t.value)
+  return false
+
+public lostanza defn gl-null-texture () -> ref<Texture> :
+  val res = new Texture{-1}
+  return res
+
+public lostanza defn null? (t:ref<Texture>) -> ref<True|False> :
+  if t.value == -1 : return true else : return false
+
+public lostanza defn gl-gen-texture () -> ref<Texture> :
+  val res = new Texture{0}
+  call-c glGenTextures(1, addr!(res.value))
+  return res
+
+public lostanza defn gl-delete-texture (t:ref<Texture>) -> ref<False> :
+  call-c glDeleteTextures(1, addr!(t.value))
+  return false
+
+public lostanza defn gl-tex-parameteri (a:ref<Int>, b:ref<Int>, c:ref<Int>) -> ref<False> :
+  call-c glTexParameteri(a.value, b.value, c.value)
+  return false
+
+public lostanza defn gl-tex-image-2d (target:ref<Int>, level:ref<Int>, internal-format:ref<Int>, width:ref<Int>, height:ref<Int>, border:ref<Int>, format:ref<Int>, type:ref<Int>, data:ref<ImageDat>) -> ref<False> :
+  call-c glTexImage2D(target.value, level.value, internal-format.value, width.value, height.value, border.value, format.value, type.value, data.value)
+  return false
+
+public lostanza defn gl-tex-sub-image-2d (target:ref<Int>, level:ref<Int>, xoffset:ref<Int>, yoffset:ref<Int>, width:ref<Int>, height:ref<Int>, format:ref<Int>, type:ref<Int>, data:ref<ImageDat>) -> ref<False> :
+  call-c glTexSubImage2D(target.value, level.value, xoffset.value, yoffset.value, width.value, height.value, format.value, type.value, data.value)
+  return false
+
+public lostanza defn gl-tex-coord2f (x:ref<Float>, y:ref<Float>) -> ref<False> :
+  call-c glTexCoord2f(x.value, y.value)
+  return false
+
+public lostanza defn gl-enable (features:ref<Int>) -> ref<False> :
+  call-c glEnable(features.value)
+  return false
+
+public lostanza defn gl-disable (features:ref<Int>) -> ref<False> :
+  call-c glDisable(features.value)
+  return false
 
 public lostanza defn gl-viewport (x:ref<Int>, y:ref<Int>, w:ref<Int>, h:ref<Int>) -> ref<False> :
   call-c glViewport(x.value, y.value, w.value, h.value)
@@ -100,10 +162,30 @@ public lostanza defn gl-end () -> ref<False> :
   call-c glEnd()
   return false
 
+public val GL-BGR-EXT =                        hex-to-int("0x80E0")
+public val GL-BGRA-EXT =                       hex-to-int("0x80E1")
+
+public val GL-CURRENT-BIT =                    hex-to-int("0x00000001")
+public val GL-POINT-BIT =                      hex-to-int("0x00000002")
+public val GL-LINE-BIT =                       hex-to-int("0x00000004")
+public val GL-POLYGON-BIT =                    hex-to-int("0x00000008")
+public val GL-POLYGON-STIPPLE-BIT =            hex-to-int("0x00000010")
+public val GL-PIXEL-MODE-BIT =                 hex-to-int("0x00000020")
+public val GL-LIGHTING-BIT =                   hex-to-int("0x00000040")
+public val GL-FOG-BIT =                        hex-to-int("0x00000080")
 public val GL-DEPTH-BUFFER-BIT =               hex-to-int("0x00000100")
+public val GL-ACCUM-BUFFER-BIT =               hex-to-int("0x00000200")
 public val GL-STENCIL-BUFFER-BIT =             hex-to-int("0x00000400")
+public val GL-VIEWPORT-BIT =                   hex-to-int("0x00000800")
+public val GL-TRANSFORM-BIT =                  hex-to-int("0x00001000")
+public val GL-ENABLE-BIT =                     hex-to-int("0x00002000")
 public val GL-COLOR-BUFFER-BIT =               hex-to-int("0x00004000")
-public val GL-CURRENT-BIT =                    1
+public val GL-HINT-BIT =                       hex-to-int("0x00008000")
+public val GL-EVAL-BIT =                       hex-to-int("0x00010000")
+public val GL-LIST-BIT =                       hex-to-int("0x00020000")
+public val GL-TEXTURE-BIT =                    hex-to-int("0x00040000")
+public val GL-SCISSOR-BIT =                    hex-to-int("0x00080000")
+public val GL-ALL-ATTRIB-BITS =                hex-to-int("0xFFFFFFFF")
 
 public val GL-FALSE =                          0
 public val GL-TRUE =                           1

@@ -462,3 +462,9 @@ public var *font* = mono-roman-font
 ;; public var *font* = roman-font
 ;; public var *font* = font-3x3
 ;; public var *font* = hershey-font
+
+public defn get-glyph (font:Font, char:Char) -> Glyph :
+  if key?(glyphs(font), char) :
+    glyphs(font)[char]
+  else :
+    fatal("Can't find %_" % [char])

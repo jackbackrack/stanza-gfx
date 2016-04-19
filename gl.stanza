@@ -1,3 +1,5 @@
+;; See license.txt for details about licensing.
+
 defpackage gl :
   import core
   import collections
@@ -36,11 +38,23 @@ extern glEnd: () -> int
 public lostanza deftype ImageDat :
   value: ptr<byte>
 
+public lostanza defn image-dat-value (dat:ref<ImageDat>) -> ref<Long> :
+  return new Long{dat.value as long}
+
+defmethod print (s:OutputStream, o:ImageDat) :
+  print-all(["ImageDat(" image-dat-value(o) ")"])
+
 public lostanza defn null-image-dat () -> ref<ImageDat> :
   return new ImageDat{0L as ptr<byte>}
 
 public lostanza deftype Texture :
   value: int
+
+public lostanza defn texture-value (tex:ref<Texture>) -> ref<Int> :
+  return new Int{tex.value}
+
+defmethod print (s:OutputStream, o:Texture) :
+  print-all(["Texture(" texture-value(o) ")"])
 
 public lostanza defn gl-bind-texture (kind:ref<Int>, t:ref<Texture>) -> ref<False> :
   call-c glBindTexture(t.value)

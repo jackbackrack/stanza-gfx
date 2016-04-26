@@ -6,7 +6,7 @@ defpackage gl :
   import utils
 
 extern printf: (ptr<byte>, ? ...) -> int
-extern glBindTexture: (int) -> int
+extern glBindTexture: (int, int) -> int
 extern glGenTextures: (int, ptr<int>) -> int
 extern glDeleteTextures: (int, ptr<int>) -> int
 extern glTexParameteri: (int, int, int) -> int
@@ -57,7 +57,8 @@ defmethod print (s:OutputStream, o:Texture) :
   print-all(["Texture(" texture-value(o) ")"])
 
 public lostanza defn gl-bind-texture (kind:ref<Int>, t:ref<Texture>) -> ref<False> :
-  call-c glBindTexture(t.value)
+  ;; call-c printf("BIND-TEXTURE %d %d\n", kind.value, t.value)
+  call-c glBindTexture(kind.value, t.value)
   return false
 
 public lostanza defn gl-null-texture () -> ref<Texture> :

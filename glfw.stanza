@@ -24,12 +24,46 @@ extern glfwGetTime: () -> double
 extern glfwSwapBuffers: (ptr<?>) -> int
 extern glfwPollEvents: () -> int
 extern glfwDestroyWindow: (ptr<?>) -> int
+extern glfwGetVideoMode: (ptr<?>) -> ptr<VidModeData>
 
 public lostanza deftype Window :
   value: ptr<?>
 
 public lostanza deftype Monitor :
   value: ptr<?>
+
+public lostanza deftype VidModeData :
+  width: int
+  height: int
+  redBits: int
+  greenBits: int
+  blueBits: int
+  refreshRate: int
+
+public lostanza deftype VidMode :
+  value: ptr<VidModeData>
+
+public lostanza defn width (mode:ref<VidMode>) -> ref<Int> :
+  return new Int{mode.value.width}
+
+public lostanza defn height (mode:ref<VidMode>) -> ref<Int> :
+  return new Int{mode.value.height}
+
+public lostanza defn red-bits (mode:ref<VidMode>) -> ref<Int> :
+  return new Int{mode.value.redBits}
+
+public lostanza defn green-bits (mode:ref<VidMode>) -> ref<Int> :
+  return new Int{mode.value.greenBits}
+
+public lostanza defn blue-bits (mode:ref<VidMode>) -> ref<Int> :
+  return new Int{mode.value.blueBits}
+
+public lostanza defn refresh-rate (mode:ref<VidMode>) -> ref<Int> :
+  return new Int{mode.value.refreshRate}
+
+public lostanza defn gui-get-video-mode (mon:ref<Monitor>) -> ref<VidMode> :
+  val mode = call-c glfwGetVideoMode(mon.value)
+  return new VidMode{mode}
 
 public val GUI-RELEASE = 0
 public val GUI-PRESS = 1

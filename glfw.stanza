@@ -3,8 +3,8 @@
 defpackage glfw :
   import core
   import collections
-  import gl
   import utils
+  import gl
 
 extern glfwSetErrorCallback: (ptr<((int,ptr<byte>) -> int)>) -> int
 extern glfwInit: () -> int

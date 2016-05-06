@@ -8,6 +8,11 @@ defpackage gl :
 extern printf: (ptr<byte>, ? ...) -> int
 extern glBindTexture: (int, int) -> int
 extern glGenTextures: (int, ptr<int>) -> int
+extern glGenLists: (int) -> int
+extern glDeleteLists: (int, int) -> int
+extern glNewList: (int, int) -> int
+extern glCallList: (int) -> int
+extern glEndList: (int) -> int
 extern glDeleteTextures: (int, ptr<int>) -> int
 extern glTexParameteri: (int, int, int) -> int
 extern glTexImage2D: (int, int, int, int, int, int, int, int, ptr<byte>) -> int
@@ -91,6 +96,40 @@ public lostanza defn gl-tex-sub-image-2d (target:ref<Int>, level:ref<Int>, xoffs
 
 public lostanza defn gl-tex-coord2f (x:ref<Float>, y:ref<Float>) -> ref<False> :
   call-c glTexCoord2f(x.value, y.value)
+  return false
+
+public lostanza deftype DisplayList :
+  value: int
+
+lostanza defn display-list-value (dl:ref<DisplayList>) -> ref<Int> :
+  return new Int{dl.value}
+
+defmethod print (s:OutputStream, o:DisplayList) :
+  print-all(["DisplayList(" display-list-value(o) ")"])
+
+public lostanza defn gl-gen-list () -> ref<DisplayList> :
+  return new DisplayList{call-c glGenLists(1)}
+
+public lostanza defn gl-null-list () -> ref<DisplayList> :
+  return new DisplayList{-1}
+
+public lostanza defn null? (dl:ref<DisplayList>) -> ref<True|False> :
+  if dl.value == -1: return true else: return false
+
+public lostanza defn gl-del-list (dl:ref<DisplayList>) -> ref<False> :
+  call-c glDeleteLists(dl.value, 1)
+  return false
+
+public lostanza defn gl-new-list (dl:ref<DisplayList>, op:ref<Int>) -> ref<False> :
+  call-c glNewList(dl.value, op.value)
+  return false
+
+public lostanza defn gl-end-list (dl:ref<DisplayList>) -> ref<False> :
+  call-c glEndList(dl.value)
+  return false
+
+public lostanza defn gl-call-list (dl:ref<DisplayList>) -> ref<False> :
+  call-c glCallList(dl.value)
   return false
 
 public lostanza defn gl-enable (features:ref<Int>) -> ref<False> :

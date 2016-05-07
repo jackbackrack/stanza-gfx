@@ -46,7 +46,7 @@ val circle-vertices = Vector<V3f>()
 for i in 0 to N-CIRCLE-VERTICES do :
   val f = to-float(i) / to-float(N-CIRCLE-VERTICES - 1)
   val t = 2.0f * 3.1415f * (1.0f - f)
-  add(circle-vertices, V2f(sin(t), cos(t)))
+  add(circle-vertices, V3f(sin(t), cos(t), 0.0f))
 
 public defn draw-circle (r:Float) :
   gl-push-matrix()

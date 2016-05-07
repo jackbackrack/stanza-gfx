@@ -24,7 +24,7 @@ public defn Glyph (width:Float, height:Float, istrokes:Tuple<Tuple<Float>>) :
       yield $ to-tuple $ generate< V3f > :
         for i in 0 to length(stroke) / 2 do :
           n = n + 1
-          yield $ V3f(stroke[i * 2], stroke[i * 2 + 1], 0.0f)
+          yield $ V2f(stroke[i * 2], stroke[i * 2 + 1])
   Glyph(width, height, polyline)
 
 public defn Glyphi (width:Float, height:Float, istrokes:Tuple<Tuple<Int>>) :
@@ -123,14 +123,14 @@ public defn Font (h:Float, off:Float, glyphs : Tuple<KeyValue<Char, Glyph>>) -> 
   val polys = HashTable<Char, Glyph>(to-int)
   for lc in glyphs do :
     val g = value(lc)
-    val pl = offset(center-x(polyline(g)), V3f(0.0f, off, 0.0f))
+    val pl = offset(center-x(polyline(g)), V2f(0.0f, off))
     ;; val w = x(dims(bbox(pl))) + 0.1f * h
     val w = width(g)
     ;; println-all(["GLYPH " key(lc) " WIDTH " w " XDIM " x(dims(bbox(pl)))])
     val dms = dims(bbox(pl))
     val npl = 
       if key(lc) != '_' and x(dms) > (0.8f * w) : 
-        mag(pl, V3f(0.8f * w / x(dms), 1.0f, 0.0f)) 
+        mag(pl, V2f(0.8f * w / x(dms), 1.0f)) 
       else : 
         pl
     polys[key(lc)] = Glyph(w, height(g), npl)
@@ -470,3 +470,6 @@ public defn get-glyph (font:Font, char:Char) -> Glyph :
     glyphs(font)[char]
   else :
     fatal("Can't find %_" % [char])
+
+public defn get-glyph (char:Char) -> Glyph :
+  get-glyph(*font*, char)

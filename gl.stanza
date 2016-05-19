@@ -20,6 +20,7 @@ extern glTexSubImage2D: (int, int, int, int, int, int, int, int, ptr<byte>) -> i
 extern glTexCoord2f: (float, float) -> int
 extern glEnable: (int) -> int
 extern glDisable: (int) -> int
+extern glBlendFunc: (int, int) -> int
 extern glViewport: (int, int, int, int) -> int
 extern glClear: (int) -> int
 extern glHint: (int, int) -> int
@@ -138,6 +139,10 @@ public lostanza defn gl-enable (features:ref<Int>) -> ref<False> :
 
 public lostanza defn gl-disable (features:ref<Int>) -> ref<False> :
   call-c glDisable(features.value)
+  return false
+
+public lostanza defn gl-blend-func (sfactor:ref<Int>, dfactor:ref<Int>) -> ref<False> :
+  call-c glBlendFunc(sfactor.value, dfactor.value)
   return false
 
 public lostanza defn gl-viewport (x:ref<Int>, y:ref<Int>, w:ref<Int>, h:ref<Int>) -> ref<False> :

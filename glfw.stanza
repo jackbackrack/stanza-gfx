@@ -198,6 +198,8 @@ public val GUI-KEY-MENU =  348
 public val GUI-KEY-LAST = GUI-KEY-MENU
 
 public val GUI-SAMPLES = hex-to-int("0x0002100D")
+public val GUI-ALPHA-BITS = hex-to-int("0x00021004")
+public val GUI-DOUBLE-BUFFER = hex-to-int("0x00021010")
 
 public lostanza defn gui-init () -> ref<True> :
   val res = call-c glfwInit()

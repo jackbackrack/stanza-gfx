@@ -21,6 +21,8 @@ extern glTexCoord2f: (float, float) -> int
 extern glEnable: (int) -> int
 extern glDisable: (int) -> int
 extern glBlendFunc: (int, int) -> int
+extern glDepthFunc: (int) -> int
+extern glClearDepth: (float) -> int
 extern glViewport: (int, int, int, int) -> int
 extern glClear: (int) -> int
 extern glHint: (int, int) -> int
@@ -131,6 +133,14 @@ public lostanza defn gl-end-list (dl:ref<DisplayList>) -> ref<False> :
 
 public lostanza defn gl-call-list (dl:ref<DisplayList>) -> ref<False> :
   call-c glCallList(dl.value)
+  return false
+
+public lostanza defn gl-depth-func (kind:ref<Int>) -> ref<False> :
+  call-c glDepthFunc(kind.value)
+  return false
+
+public lostanza defn gl-clear-depth (x:ref<Float>) -> ref<False> :
+  call-c glClearDepth(x.value)
   return false
 
 public lostanza defn gl-enable (features:ref<Int>) -> ref<False> :

@@ -30,6 +30,7 @@ extern gluTessBeginContour: (ptr<?>) -> int
 extern gluTessEndContour: (ptr<?>) -> int
 extern gluTessVertex: (ptr<?>, ptr<double>, int) -> int
 extern gluTessCallback: (ptr<?>, int, ptr<((? ...) -> int)>) -> int
+extern gluPerspective: (double, double, double, double) -> int
 extern printf: (? ...) -> int
 extern malloc: (long) -> ptr<?>
 
@@ -125,3 +126,6 @@ public defn triangulate (poly:Polygon) -> Mesh :
     add(faces, V3i(indices(mesh)[i * 3], indices(mesh)[i * 3 + 2], indices(mesh)[i * 3 + 1]))
   Mesh(to-tuple(vertices(mesh)), to-tuple(faces))
 
+public lostanza defn glu-perspective (a:ref<Float>, b:ref<Float>, c:ref<Float>, d:ref<Float>) -> ref<False> :
+  call-c gluPerspective(a.value as double, b.value as double, c.value as double, d.value as double)
+  return false

@@ -18,7 +18,9 @@ extern glfwMakeContextCurrent: (ptr<?>) -> int
 extern glfwSwapInterval: (int) -> int
 extern glfwSetKeyCallback: (ptr<?>,ptr<((ptr<?>,int,int,int,int) -> int)>) -> int
 extern glfwSetMouseButtonCallback: (ptr<?>,ptr<((ptr<?>,int,int,int) -> int)>) -> int
+extern glfwGetMouseButton: (ptr<?>, int) -> int
 extern glfwSetCursorPosCallback: (ptr<?>,ptr<((ptr<?>,double,double) -> int)>) -> int
+extern glfwGetCursorPos: (ptr<?>,ptr<double>,ptr<double>) -> int
 extern glfwWindowShouldClose: (ptr<?>) -> int
 extern glfwSetWindowShouldClose: (ptr<?>, int) -> int
 extern glfwGetFramebufferSize: (ptr<?>, ptr<?>, ptr<?>) -> int
@@ -75,6 +77,19 @@ public val GUI-MOD-SHIFT = 1
 public val GUI-MOD-CONTROL = 2
 public val GUI-MOD-ALT = 4
 public val GUI-MOD-SUPER = 8
+
+public val GUI-MOUSE-BUTTON-1 = 0
+public val GUI-MOUSE-BUTTON-2 = 1
+public val GUI-MOUSE-BUTTON-3 = 2
+public val GUI-MOUSE-BUTTON-4 = 3
+public val GUI-MOUSE-BUTTON-5 = 4
+public val GUI-MOUSE-BUTTON-6 = 5
+public val GUI-MOUSE-BUTTON-7 = 6
+public val GUI-MOUSE-BUTTON-8 = 7
+public val GUI-MOUSE-BUTTON-LAST = GUI-MOUSE-BUTTON-8
+public val GUI-MOUSE-BUTTON-LEFT = GUI-MOUSE-BUTTON-1
+public val GUI-MOUSE-BUTTON-RIGHT = GUI-MOUSE-BUTTON-2
+public val GUI-MOUSE-BUTTON-MIDDLE = GUI-MOUSE-BUTTON-3
 
 public val GUI-KEY-UNKNOWN =  -1
 public val GUI-KEY-SPACE =  32
@@ -270,10 +285,21 @@ extern defn do_mouse_button_callback (w:ptr<?>, button:int, action:int, mods:int
   [*mouse-button-callback*](win, new Int{button}, new Int{action}, new Int{mods})
   return 0
 
-public lostanza defn gui-set-cursor-callback (w:ref<Window>,f:ref<((Window,Int,Int,Int) -> False)>) -> ref<False> :
+public lostanza defn gui-set-mouse-button-callback (w:ref<Window>,f:ref<((Window,Int,Int,Int) -> False)>) -> ref<False> :
   *mouse-button-callback* = f
-  call-c glfwSetCursorPosCallback(w.value, addr(do_cursor_pos_callback))
+  call-c glfwSetMouseButtonCallback(w.value, addr(do_mouse_button_callback))
   return false
+
+public lostanza defn gui-get-mouse-button (w:ref<Window>, b:ref<Int>) -> ref<Int> :
+  val res = call-c glfwGetMouseButton(w.value, b.value)
+  return new Int{res}
+
+lostanza var *cursor-x*:double = 0.0
+lostanza var *cursor-y*:double = 0.0
+
+public lostanza defn gui-get-cursor-pos (w:ref<Window>) -> ref<[Float, Float]> :
+  call-c glfwGetCursorPos(w.value, addr(*cursor-x*), addr(*cursor-y*))
+  return (new Tuple{2, new Float{*cursor-x* as float}, new Float{*cursor-y* as float}}) as ref<[Float, Float]>
 
 defn default-cursor-pos-callback (w:Window, x:Float, y:Float) -> False: false
 

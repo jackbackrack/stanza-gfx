@@ -6,6 +6,8 @@ defpackage gl :
   import utils
 
 extern printf: (ptr<byte>, ? ...) -> int
+extern glGetDoublev: (int, ptr<double>) -> int
+extern glGetIntegerv: (int, ptr<int>) -> int
 extern glBindTexture: (int, int) -> int
 extern glGenTextures: (int, ptr<int>) -> int
 extern glGenLists: (int) -> int
@@ -18,6 +20,7 @@ extern glTexParameteri: (int, int, int) -> int
 extern glTexImage2D: (int, int, int, int, int, int, int, int, ptr<byte>) -> int
 extern glTexSubImage2D: (int, int, int, int, int, int, int, int, ptr<byte>) -> int
 extern glTexCoord2f: (float, float) -> int
+extern glScissor: (int, int, int, int) -> int
 extern glEnable: (int) -> int
 extern glDisable: (int) -> int
 extern glBlendFunc: (int, int) -> int
@@ -99,6 +102,10 @@ public lostanza defn gl-tex-sub-image-2d (target:ref<Int>, level:ref<Int>, xoffs
 
 public lostanza defn gl-tex-coord2f (x:ref<Float>, y:ref<Float>) -> ref<False> :
   call-c glTexCoord2f(x.value, y.value)
+  return false
+
+public lostanza defn gl-scissor (x:ref<Int>, y:ref<Int>, width:ref<Int>, height:ref<Int>) -> ref<False> :
+  call-c glScissor(x.value, y.value, width.value, height.value)
   return false
 
 public lostanza deftype DisplayList :
@@ -528,22 +535,33 @@ public val GL-LIGHT5 =                         hex-to-int("0x4005")
 public val GL-LIGHT6 =                         hex-to-int("0x4006")
 public val GL-LIGHT7 =                         hex-to-int("0x4007")
 
-public val GLU-TESS-BEGIN =                    100100
-public val GLU-BEGIN =                         100100
-public val GLU-TESS-VERTEX =                   100101
-public val GLU-VERTEX =                        100101
-public val GLU-TESS-END =                      100102
-public val GLU-END =                           100102
-public val GLU-TESS-ERROR =                    100103
-public val GLU-TESS-EDGE-FLAG =                100104
-public val GLU-EDGE-FLAG =                     100104
-public val GLU-TESS-COMBINE =                  100105
-public val GLU-TESS-BEGIN-DATA =               100106
-public val GLU-TESS-VERTEX-DATA =              100107
-public val GLU-TESS-END-DATA =                 100108
-public val GLU-TESS-ERROR-DATA =               100109
-public val GLU-TESS-EDGE-FLAG-DATA =           100110
-public val GLU-TESS-COMBINE-DATA =             100111
+public val GL-ATTRIB-STACK-DEPTH =             hex-to-int("0x0BB0")
+public val GL-CLIENT-ATTRIB-STACK-DEPTH =      hex-to-int("0x0BB1")
+public val GL-COLOR-CLEAR-VALUE =              hex-to-int("0x0C22")
+public val GL-COLOR-WRITEMASK =                hex-to-int("0x0C23")
+public val GL-CURRENT-INDEX =                  hex-to-int("0x0B01")
+public val GL-CURRENT-COLOR =                  hex-to-int("0x0B00")
+public val GL-CURRENT-NORMAL =                 hex-to-int("0x0B02")
+public val GL-CURRENT-RASTER-COLOR =           hex-to-int("0x0B04")
+public val GL-CURRENT-RASTER-DISTANCE =        hex-to-int("0x0B09")
+public val GL-CURRENT-RASTER-INDEX =           hex-to-int("0x0B05")
+public val GL-CURRENT-RASTER-POSITION =        hex-to-int("0x0B07")
+public val GL-CURRENT-RASTER-TEXTURE-COORDS =  hex-to-int("0x0B06")
+public val GL-CURRENT-RASTER-POSITION-VALID =  hex-to-int("0x0B08")
+public val GL-CURRENT-TEXTURE-COORDS =         hex-to-int("0x0B03")
+public val GL-INDEX-CLEAR-VALUE =              hex-to-int("0x0C20")
+public val GL-INDEX-MODE =                     hex-to-int("0x0C30")
+public val GL-INDEX-WRITEMASK =                hex-to-int("0x0C21")
+public val GL-MODELVIEW-MATRIX =               hex-to-int("0x0BA6")
+public val GL-MODELVIEW-STACK-DEPTH =          hex-to-int("0x0BA3")
+public val GL-NAME-STACK-DEPTH =               hex-to-int("0x0D70")
+public val GL-PROJECTION-MATRIX =              hex-to-int("0x0BA7")
+public val GL-PROJECTION-STACK-DEPTH =         hex-to-int("0x0BA4")
+public val GL-RENDER-MODE =                    hex-to-int("0x0C40")
+public val GL-RGBA-MODE =                      hex-to-int("0x0C31")
+public val GL-TEXTURE-MATRIX =                 hex-to-int("0x0BA8")
+public val GL-TEXTURE-STACK-DEPTH =            hex-to-int("0x0BA5")
+public val GL-VIEWPORT =                       hex-to-int("0x0BA2")
 
 public defn with-matrix (f:() -> False) -> False :
   gl-push-matrix()

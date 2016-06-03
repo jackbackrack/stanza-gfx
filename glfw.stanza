@@ -23,7 +23,8 @@ extern glfwSetCursorPosCallback: (ptr<?>,ptr<((ptr<?>,double,double) -> int)>) -
 extern glfwGetCursorPos: (ptr<?>,ptr<double>,ptr<double>) -> int
 extern glfwWindowShouldClose: (ptr<?>) -> int
 extern glfwSetWindowShouldClose: (ptr<?>, int) -> int
-extern glfwGetFramebufferSize: (ptr<?>, ptr<?>, ptr<?>) -> int
+extern glfwGetFramebufferSize: (ptr<?>, ptr<int>, ptr<int>) -> int
+extern glfwGetWindowSize: (ptr<?>, ptr<int>, ptr<int>) -> int
 extern glfwGetTime: () -> double
 extern glfwSwapBuffers: (ptr<?>) -> int
 extern glfwPollEvents: () -> int
@@ -350,6 +351,15 @@ public lostanza defn gui-get-framebuffer-size (w:ref<Window>) -> ref<[Int,Int]> 
   val FRAMEBUFFER-WIDTH  = new Int{FRAMEBUFFER_WIDTH}
   val FRAMEBUFFER-HEIGHT = new Int{FRAMEBUFFER_HEIGHT}
   return (new Tuple{2, FRAMEBUFFER-WIDTH, FRAMEBUFFER-HEIGHT}) as ref<[Int, Int]>
+
+lostanza var WINDOW_WIDTH:int
+lostanza var WINDOW_HEIGHT:int
+
+public lostanza defn gui-get-window-size (w:ref<Window>) -> ref<[Int,Int]> :
+  call-c glfwGetWindowSize(w.value, addr(WINDOW_WIDTH), addr(WINDOW_HEIGHT))
+  val WINDOW-WIDTH  = new Int{WINDOW_WIDTH}
+  val WINDOW-HEIGHT = new Int{WINDOW_HEIGHT}
+  return (new Tuple{2, WINDOW-WIDTH, WINDOW-HEIGHT}) as ref<[Int, Int]>
 
 public lostanza defn gui-swap-interval (i:ref<Int>) -> ref<False> :
   call-c glfwSwapInterval(i.value)

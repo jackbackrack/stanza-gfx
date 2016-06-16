@@ -45,6 +45,8 @@ extern glVertex3f: (float, float, float) -> int
 extern glVertex2f: (float, float) -> int
 extern glBegin: (int) -> int
 extern glEnd: () -> int
+extern glLineWidth: (float) -> int
+extern glPointSize: (float) -> int
 
 public lostanza deftype ImageDat :
   value: ptr<byte>
@@ -196,6 +198,14 @@ public lostanza defn gl-translatef (x:ref<Float>, y:ref<Float>, z:ref<Float>) ->
 
 public lostanza defn gl-scalef (x:ref<Float>, y:ref<Float>, z:ref<Float>) -> ref<False> :
   call-c glScalef(x.value, y.value, z.value)
+  return false
+
+public lostanza defn gl-line-width (w:ref<Float>) -> ref<False> :
+  call-c glLineWidth(w.value)
+  return false
+
+public lostanza defn gl-point-size (w:ref<Float>) -> ref<False> :
+  call-c glPointSize(w.value)
   return false
 
 public lostanza defn gl-begin (m:ref<Int>) -> ref<False> :

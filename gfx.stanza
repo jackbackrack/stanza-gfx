@@ -27,6 +27,43 @@ public defn gl-scale (v:V3f) :
 public defn gl-rotate (a:Float, v:V3f) :
   gl-rotatef(a, x(v), y(v), z(v))
 
+defn do-draw-rect3 (w:Float, h:Float, d:Float, k:Int) :
+  gl-push-matrix()
+  gl-scalef(w * 0.5f, h * 0.5f, d * 0.5f)
+  gl-begin(k)
+  gl-vertex3f(-1.0f, -1.0f, -1.0f)
+  gl-vertex3f(-1.0f,  1.0f, -1.0f)
+  gl-vertex3f( 1.0f,  1.0f, -1.0f)
+  gl-vertex3f( 1.0f, -1.0f, -1.0f)
+  gl-vertex3f(-1.0f, -1.0f,  1.0f)
+  gl-vertex3f(-1.0f,  1.0f,  1.0f)
+  gl-vertex3f( 1.0f,  1.0f,  1.0f)
+  gl-vertex3f( 1.0f, -1.0f,  1.0f)
+
+  gl-vertex3f(-1.0f, -1.0f, -1.0f)
+  gl-vertex3f(-1.0f, -1.0f,  1.0f)
+  gl-vertex3f(-1.0f,  1.0f,  1.0f)
+  gl-vertex3f(-1.0f,  1.0f, -1.0f)
+  gl-vertex3f( 1.0f, -1.0f, -1.0f)
+  gl-vertex3f( 1.0f, -1.0f,  1.0f)
+  gl-vertex3f( 1.0f,  1.0f,  1.0f)
+  gl-vertex3f( 1.0f,  1.0f, -1.0f)
+
+  gl-vertex3f(-1.0f, -1.0f, -1.0f)
+  gl-vertex3f(-1.0f, -1.0f,  1.0f)
+  gl-vertex3f( 1.0f, -1.0f,  1.0f)
+  gl-vertex3f( 1.0f, -1.0f, -1.0f)
+  gl-vertex3f(-1.0f   1.0f, -1.0f)
+  gl-vertex3f(-1.0f   1.0f,  1.0f)
+  gl-vertex3f( 1.0f   1.0f,  1.0f)
+  gl-vertex3f( 1.0f   1.0f, -1.0f)
+
+  gl-end()
+  gl-pop-matrix()
+
+public defn draw-rect3 (w:Float, h:Float, d:Float) : do-draw-rect3(w, h, d, GL-LINE-LOOP)
+public defn draw-quad3 (w:Float, h:Float, d:Float) : do-draw-rect3(w, h, d, GL-QUADS)
+
 defn do-draw-rect (w:Float, h:Float, k:Int) :
   gl-push-matrix()
   gl-scalef(w * 0.5f, h * 0.5f, 1.0f)

@@ -94,6 +94,29 @@ public defn draw-circle (r:Float) :
   gl-end()
   gl-pop-matrix()
 
+public defn draw-segment (src:V3f, dst:V3f, rad:Float) :
+  val v = normalize(dst - src)
+  val u = rad * V2f(   y(v), (- x(v)))
+  val d = rad * V2f((- y(v)),   x(v))
+  gl-begin(GL-QUADS)
+  gl-vertex(src + u)
+  gl-vertex(src + d)
+  gl-vertex(dst + d)
+  gl-vertex(dst + u)
+  gl-end()
+
+public defn draw-disk (r:Float) :
+  gl-push-matrix()
+  gl-scalef(r, r, r)
+  gl-begin(GL-TRIANGLES)
+  for i in 0 to N-CIRCLE-VERTICES do :
+    val j = (i + 1) % N-CIRCLE-VERTICES
+    gl-vertex(circle-vertices[i])
+    gl-vertex(circle-vertices[j])
+    gl-vertex3f(0.0f, 0.0f, 0.0f)
+  gl-end()
+  gl-pop-matrix()
+
 public defn stroke (pl:PolyLine) :
   for line in strokes(pl) do :
     gl-begin(GL-LINE-STRIP)

@@ -107,13 +107,40 @@ public defn draw-segment (src:V3f, dst:V3f, rad:Float) :
 
 public defn draw-disk (r:Float) :
   gl-push-matrix()
-  gl-scalef(r, r, r)
+  gl-scalef(r, r, 1.0f)
   gl-begin(GL-TRIANGLES)
   for i in 0 to N-CIRCLE-VERTICES do :
     val j = (i + 1) % N-CIRCLE-VERTICES
     gl-vertex(circle-vertices[i])
     gl-vertex(circle-vertices[j])
     gl-vertex3f(0.0f, 0.0f, 0.0f)
+  gl-end()
+  gl-pop-matrix()
+
+public defn draw-cylinder (h:Float, r:Float) :
+  val ph = 0.5f * h
+  val nh = (- ph)
+  gl-push-matrix()
+  gl-translatef(0.0f, 0.0f, nh)
+  draw-disk(r)
+  gl-pop-matrix()
+  gl-push-matrix()
+  gl-translatef(0.0f, 0.0f, ph)
+  draw-disk(r)
+  gl-pop-matrix()
+  gl-push-matrix()
+  gl-scalef(r, r, 1.0f)
+  gl-begin(GL-TRIANGLES)
+  for i in 0 to N-CIRCLE-VERTICES do :
+    val j = (i + 1) % N-CIRCLE-VERTICES
+    val vi = circle-vertices[i]
+    val vj = circle-vertices[j]
+    gl-vertex3f(x(vi), y(vi), nh)
+    gl-vertex3f(x(vj), y(vj), nh)
+    gl-vertex3f(x(vj), y(vj), ph)
+    gl-vertex3f(x(vj), y(vj), ph)
+    gl-vertex3f(x(vi), y(vi), ph)
+    gl-vertex3f(x(vi), y(vi), nh)
   gl-end()
   gl-pop-matrix()
 

@@ -81,8 +81,8 @@ public defn draw-quad (w:Float, h:Float) : do-draw-rect(w, h, GL-QUADS)
 val N-CIRCLE-VERTICES = 16
 val circle-vertices = Vector<V3f>()
 for i in 0 to N-CIRCLE-VERTICES do :
-  val f = to-float(i) / to-float(N-CIRCLE-VERTICES - 1)
-  val t = 2.0f * 3.1415f * (1.0f - f)
+  val f = to-float(i) / to-float(N-CIRCLE-VERTICES)
+  val t = 2.0f * PI-F * (1.0f - f)
   add(circle-vertices, V3f(sin(t), cos(t), 0.0f))
 
 public defn draw-circle (r:Float) :

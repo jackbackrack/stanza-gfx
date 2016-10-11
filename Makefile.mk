@@ -7,6 +7,10 @@ else
   endif
 endif
 
+stanza_gfx_all: ${GEN}/gl.pkg ${GEN}/glu.pkg ${GEN}/glfw.pkg ${GEN}/font.pkg ${GEN}/gfx.pkg 
+
+ALL_PKG_DEPS += stanza_gfx_all
+
 ${GEN}/gl.pkg: stanza-gfx/gl.stanza ${GEN}/utils.pkg 
 	stanza $< $(STZ_FLAGS) -pkg ${GEN}
 

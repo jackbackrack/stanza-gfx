@@ -120,7 +120,7 @@ public defstruct Font :
   glyphs: HashTable<Char, Glyph>
 
 public defn Font (h:Float, off:Float, glyphs : Tuple<KeyValue<Char, Glyph>>) -> Font :
-  val polys = HashTable<Char, Glyph>(to-int)
+  val polys = HashTable<Char, Glyph>()
   for lc in glyphs do :
     val g = value(lc)
     val pl = offset(center-x(polyline(g)), V2f(0.0f, off))

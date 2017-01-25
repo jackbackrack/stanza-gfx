@@ -469,7 +469,8 @@ public defn get-glyph (font:Font, char:Char) -> Glyph :
   if key?(glyphs(font), char) :
     glyphs(font)[char]
   else :
-    fatal("Can't find %_" % [char])
+    glyphs(font)[' ']
+    ;; fatal("Can't find %_" % [char])
 
 public defn get-glyph (char:Char) -> Glyph :
   get-glyph(*font*, char)

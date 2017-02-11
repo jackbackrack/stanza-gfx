@@ -5,17 +5,23 @@ defpackage font:
   import collections
   import geom
   import utils
+  import gl
 
 public deftype Glyph
 public defmulti width (g:Glyph) -> Float
 public defmulti height (g:Glyph) -> Float
 public defmulti polyline (g:Glyph) -> PolyLine
+public defmulti display-list (g:Glyph) -> DisplayList
+public defmulti set-display-list (g:Glyph, d:DisplayList) -> False
 
 public defn Glyph (width:Float, height:Float, polyline:PolyLine) :
+  var display-list = gl-null-list()
   new Glyph :
     defmethod width (this) : width
     defmethod height (this) : height
     defmethod polyline (this) : polyline
+    defmethod display-list (this) : display-list
+    defmethod set-display-list (this, dl:DisplayList) : display-list = dl
 
 public defn Glyph (width:Float, height:Float, istrokes:Tuple<Tuple<Float>>) :
   var n = 0

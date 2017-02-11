@@ -150,8 +150,20 @@ public defn stroke (pl:PolyLine) :
     do(gl-vertex, line)
     gl-end()
 
+;; TODO: NEED TO WAIT TO USE DISPLAY LISTS UNTIL AFTER INIT OR SOMETHING
+public var glyph-stroking?:True|False = false
+
 public defn stroke-char (glyph:Glyph) :
-  stroke(polyline(glyph))
+  if glyph-stroking? :
+     stroke(polyline(glyph))
+  else :
+    if null?(display-list(glyph)) :
+      val dl = gl-gen-list()
+      gl-new-list(dl, GL-COMPILE)
+      stroke(polyline(glyph))
+      gl-end-list(dl)
+      set-display-list(glyph, dl)
+    gl-call-list(display-list(glyph))
   
 defn stroke-text (s:Seqable<Glyph>) :
   for g in s do :

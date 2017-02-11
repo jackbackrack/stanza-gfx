@@ -35,10 +35,10 @@ ${GEN}/glfw.pkg: stanza-gfx/glfw.stanza ${GEN}/utils.pkg ${GEN}/gl.pkg
 ${GEN}/font.pkg: stanza-gfx/font.stanza ${GEN}/utils.pkg ${GEN}/geom.pkg 
 	stanza $< $(STZ_FLAGS)
 
-${GEN}/eval-font.stanza: ${GEN}/gen-repl ${GEN}/font.pkg
+${GEN}/eval-font.stanza: ${GEN}/gen-repl ${GEN}/font.pkg 
 	${GEN}/gen-repl font
 
-${GEN}/eval-font.pkg: ${GEN}/eval-font.stanza ${BASE_EVAL_PKGS} ${GEN}/eval-utils.pkg ${GEN}/eval-geom.pkg ${GEN}/font.pkg
+${GEN}/eval-font.pkg: ${GEN}/eval-font.stanza ${BASE_EVAL_PKGS} ${GEN}/eval-utils.pkg ${GEN}/eval-geom.pkg ${GEN}/eval-gl.pkg ${GEN}/font.pkg
 	stanza $< $(STZ_FLAGS)
 
 ${GEN}/gfx.pkg: stanza-gfx/gfx.stanza ${GEN}/gl.pkg ${GEN}/glfw.pkg ${GEN}/font.pkg 

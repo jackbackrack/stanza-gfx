@@ -180,13 +180,18 @@ defn draw-text-at (tx:Float, ty:Float, sx:Float, sy:Float, s:Seqable<Glyph>) :
   gl-pop-matrix()
 
 public defn glyphs-width (ts:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> Float :
-  val ttw = reduce(plus, 0.0f, seq({ width(get-glyph(font, _)) }, tstr))
+  ;; val ttw = reduce(plus, 0.0f, seq({ width(get-glyph(font, _)) }, tstr))
   val tw  = reduce(plus, 0.0f, seq({ width(get-glyph(font, _)) }, str))
   ts * tw
   
 public defn glyphs-width (ts:Float, font:Font, s:Collection<Char>) -> Float :
   glyphs-width(ts, font, s, s) ;; seq({ _ }, s))
 
+public defn glyphs-width-for-height (h:Float, font:Font, str:Seqable<Char>) -> Float :
+  val tw = reduce(plus, 0.0f, seq({ width(get-glyph(font, _)) }, str))
+  val th = height(font)
+  tw * (h / th)
+  
 public defn glyphs-mag (w:Float, h:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> Float :
   val ttw = reduce(plus, 0.0f, seq({ width(get-glyph(font, _)) }, tstr))
   val th = height(font)

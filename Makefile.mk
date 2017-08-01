@@ -14,13 +14,31 @@ ALL_PKG_DEPS += stanza_gfx_all
 ${GEN}/gl.pkg: stanza-gfx/gl.stanza ${GEN}/utils.pkg 
 	stanza $< $(STZ_FLAGS)
 
+${GEN}/eval-gl.stanza: ${GEN}/gen-repl ${GEN}/gl.pkg
+	${GEN}/gen-repl gl
+
+${GEN}/eval-gl.pkg: ${GEN}/eval-gl.stanza ${BASE_EVAL_PKGS} ${GEN}/eval-utils.pkg ${GEN}/gl.pkg
+	stanza $< $(STZ_FLAGS)
+
 ${GEN}/glu.pkg: stanza-gfx/glu.stanza ${GEN}/gl.pkg ${GEN}/geom.pkg 
+	stanza $< $(STZ_FLAGS)
+
+${GEN}/eval-glu.stanza: ${GEN}/gen-repl ${GEN}/glu.pkg
+	${GEN}/gen-repl glu
+
+${GEN}/eval-glu.pkg: ${GEN}/eval-glu.stanza ${BASE_EVAL_PKGS} ${GEN}/eval-geom.pkg ${GEN}/eval-gl.pkg ${GEN}/glu.pkg
 	stanza $< $(STZ_FLAGS)
 
 ${GEN}/glfw.pkg: stanza-gfx/glfw.stanza ${GEN}/utils.pkg ${GEN}/gl.pkg 
 	stanza $< $(STZ_FLAGS)
 
 ${GEN}/font.pkg: stanza-gfx/font.stanza ${GEN}/utils.pkg ${GEN}/geom.pkg 
+	stanza $< $(STZ_FLAGS)
+
+${GEN}/eval-font.stanza: ${GEN}/gen-repl ${GEN}/font.pkg 
+	${GEN}/gen-repl font
+
+${GEN}/eval-font.pkg: ${GEN}/eval-font.stanza ${BASE_EVAL_PKGS} ${GEN}/eval-utils.pkg ${GEN}/eval-geom.pkg ${GEN}/eval-gl.pkg ${GEN}/font.pkg
 	stanza $< $(STZ_FLAGS)
 
 ${GEN}/gfx.pkg: stanza-gfx/gfx.stanza ${GEN}/gl.pkg ${GEN}/glfw.pkg ${GEN}/font.pkg 

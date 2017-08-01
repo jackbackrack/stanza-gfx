@@ -117,6 +117,17 @@ public defn draw-disk (r:Float) :
   gl-end()
   gl-pop-matrix()
 
+public defn draw-fat-line (a:V3f, b:V3f, t:Float) :
+  gl-push-matrix()
+  gl-translate(a)
+  draw-disk(t)
+  gl-pop-matrix()
+  draw-segment(a, b, t)
+  gl-push-matrix()
+  gl-translate(b)
+  draw-disk(t)
+  gl-pop-matrix()
+
 public defn draw-cylinder (h:Float, r:Float) :
   val ph = 0.5f * h
   val nh = (- ph)

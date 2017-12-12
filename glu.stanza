@@ -122,7 +122,7 @@ public defn triangulate (poly:Polygon) -> Mesh :
     glu-tess-begin-contour(tess)
     for p in points(c) do :
       add(vertices(mesh), p)
-      glu-tess-vertex(tess, V3d(p), length(vertices(mesh)) - 1)
+      glu-tess-vertex(tess, to-v3d(p), length(vertices(mesh)) - 1)
     glu-tess-end-contour(tess)
   glu-tess-end-polygon(tess)
   glu-delete-tess(tess)
@@ -155,8 +155,8 @@ public lostanza defn glu-project (obj:ref<V3f>) -> ref<V3f> :
                     *model*, *proj*, *view*, *ptx*, *pty*, *ptz*)
   return new V3f{[*ptx*] as float, [*pty*] as float, [*ptz*] as float}
 
-public defn glu-project-dims (dims:V3f) -> Box :
-  Box(glu-project(-0.5f * dims), glu-project(0.5f * dims))
+public defn glu-project-dims (dims:V3f) -> Boxf :
+  Boxf(glu-project(-0.5f * dims), glu-project(0.5f * dims))
 
 public lostanza defn glu-unproject (win:ref<V3i>) -> ref<V3f> :
   load-project-data()

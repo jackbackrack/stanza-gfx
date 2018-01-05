@@ -10,11 +10,11 @@ defpackage font:
 public deftype Glyph
 public defmulti width (g:Glyph) -> Float
 public defmulti height (g:Glyph) -> Float
-public defmulti polyline (g:Glyph) -> PolyLine
+public defmulti polyline (g:Glyph) -> PolyLine2f
 public defmulti display-list (g:Glyph) -> DisplayList
 public defmulti set-display-list (g:Glyph, d:DisplayList) -> False
 
-public defn Glyph (width:Float, height:Float, polyline:PolyLine) :
+public defn Glyph (width:Float, height:Float, polyline:PolyLine2f) :
   var display-list = gl-null-list()
   new Glyph :
     defmethod width (this) : width
@@ -25,9 +25,9 @@ public defn Glyph (width:Float, height:Float, polyline:PolyLine) :
 
 public defn Glyph (width:Float, height:Float, istrokes:Tuple<Tuple<Float>>) :
   var n = 0
-  val polyline = PolyLine $ to-tuple $ generate< Tuple<V3f> > :
+  val polyline = PolyLine2f $ to-tuple $ generate< Tuple<V2f> > :
     for stroke in istrokes do :
-      yield $ to-tuple $ generate< V3f > :
+      yield $ to-tuple $ generate< V2f > :
         for i in 0 to length(stroke) / 2 do :
           n = n + 1
           yield $ V2f(stroke[i * 2], stroke[i * 2 + 1])

@@ -27,6 +27,15 @@ public defn gl-scale (v:V3f) :
 public defn gl-rotate (a:Float, v:V3f) :
   gl-rotatef(a, x(v), y(v), z(v))
 
+public defn gl-vertex (v:V2f) :
+  gl-vertex2f(x(v), y(v))
+
+public defn gl-translate (v:V2f) :
+  gl-translatef(x(v), y(v), 0.0f)
+
+public defn gl-scale (v:V2f) :
+  gl-scalef(x(v), y(v), 1.0f)
+
 defn do-draw-rect3 (w:Float, h:Float, d:Float, k:Int) :
   gl-push-matrix()
   gl-scalef(w * 0.5f, h * 0.5f, d * 0.5f)
@@ -94,7 +103,7 @@ public defn draw-circle (r:Float) :
   gl-end()
   gl-pop-matrix()
 
-public defn draw-segment (src:V3f, dst:V3f, rad:Float) :
+public defn draw-segment (src:V2f, dst:V2f, rad:Float) :
   val v = normalize(dst - src)
   val u = rad * V2f(   y(v), (- x(v)))
   val d = rad * V2f((- y(v)),   x(v))
@@ -113,11 +122,11 @@ public defn draw-disk (r:Float) :
     val j = (i + 1) % N-CIRCLE-VERTICES
     gl-vertex(circle-vertices[i])
     gl-vertex(circle-vertices[j])
-    gl-vertex3f(0.0f, 0.0f, 0.0f)
+    gl-vertex2f(0.0f, 0.0f)
   gl-end()
   gl-pop-matrix()
 
-public defn draw-fat-line (a:V3f, b:V3f, t:Float) :
+public defn draw-fat-line (a:V2f, b:V2f, t:Float) :
   gl-push-matrix()
   gl-translate(a)
   draw-disk(t)
@@ -155,7 +164,7 @@ public defn draw-cylinder (h:Float, r:Float) :
   gl-end()
   gl-pop-matrix()
 
-public defn stroke (pl:PolyLine) :
+public defn stroke (pl:PolyLine2f) :
   for line in strokes(pl) do :
     gl-begin(GL-LINE-STRIP)
     do(gl-vertex, line)

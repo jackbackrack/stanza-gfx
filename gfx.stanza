@@ -4,6 +4,7 @@ defpackage gfx:
   import core
   import math
   import collections
+  import utils
   import geom
   import gl
   import glfw
@@ -198,39 +199,6 @@ defn draw-text-at (tx:Float, ty:Float, sx:Float, sy:Float, s:Seqable<Glyph>) :
   gl-scalef(sx, sy, 1.0f)
   stroke-text(s)
   gl-pop-matrix()
-
-public defn glyphs-width (ts:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> Float :
-  ;; val ttw = reduce(plus, 0.0f, seq({ width(get-glyph(font, _)) }, tstr))
-  val tw  = reduce(plus, 0.0f, seq({ width(get-glyph(font, _)) }, str))
-  ts * tw
-  
-public defn glyphs-width (ts:Float, font:Font, s:Collection<Char>) -> Float :
-  glyphs-width(ts, font, s, s) ;; seq({ _ }, s))
-
-public defn glyphs-width-for-height (h:Float, font:Font, str:Seqable<Char>) -> Float :
-  val tw = reduce(plus, 0.0f, seq({ width(get-glyph(font, _)) }, str))
-  val th = height(font)
-  tw * (h / th)
-  
-public defn glyphs-mag (w:Float, h:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> Float :
-  val ttw = reduce(plus, 0.0f, seq({ width(get-glyph(font, _)) }, tstr))
-  val th = height(font)
-  min(w / ttw, h / th)
-
-public defn glyphs-mag (w:Float, h:Float, font:Font, s:Collection<Char>) -> Float :
-  glyphs-mag(w, h, font, s, s) ;; seq({ _ }, s)
-
-public defn font-size (w:Float, h:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> [Float, Float, Float] :
-  val ttw = reduce(plus, 0.0f, seq({ width(get-glyph(font, _)) }, tstr))
-  val th = height(font)
-  val ts = min(w / ttw, h / th)
-  val tw = reduce(plus, 0.0f, seq({ width(get-glyph(font, _)) }, str))
-  val aw = ts * tw
-  val ah = ts * th
-  [aw, ah, ts]
-
-public defn font-size (w:Float, h:Float, font:Font, s:Collection<Char>) -> [Float, Float, Float] :
-  font-size(w, h, font, s, seq({ _ }, s))
 
 public defn draw-text-mag (w:Float, ts:Float, font:Font, s:Collection<Char>&Lengthable) :
   val aw = glyphs-width(ts, font, s)

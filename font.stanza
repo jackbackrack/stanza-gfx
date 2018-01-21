@@ -24,7 +24,7 @@ public defn Glyph (width:Float, height:Float, polyline:PolyLine2f) :
     defmethod set-display-list (this, dl:DisplayList) : display-list = dl
 
 public defn Glyph (width:Float, height:Float, istrokes:Tuple<Tuple<Float>>) :
-  var n = 0
+  var n:Int = 0
   val polyline = PolyLine2f $ to-tuple $ generate< Tuple<V2f> > :
     for stroke in istrokes do :
       yield $ to-tuple $ generate< V2f > :
@@ -129,14 +129,14 @@ public defn Font (h:Float, off:Float, glyphs : Tuple<KeyValue<Char, Glyph>>) -> 
   val polys = HashTable<Char, Glyph>()
   for lc in glyphs do :
     val g = value(lc)
-    val pl = offset(center-x(polyline(g)), V2f(0.0f, off))
+    val pl = mov-y(off, center-x(polyline(g)))
     ;; val w = x(dims(bbox(pl))) + 0.1f * h
     val w = width(g)
     ;; println-all(["GLYPH " key(lc) " WIDTH " w " XDIM " x(dims(bbox(pl)))])
-    val dms = dims(bbox(pl))
+    val dms = dims(bounds(pl))
     val npl = 
       if key(lc) != '_' and x(dms) > (0.8f * w) : 
-        mag(pl, V2f(0.8f * w / x(dms), 1.0f)) 
+        mag(xyz(V2f(0.8f * w / x(dms), 1.0f)), pl) 
       else : 
         pl
     polys[key(lc)] = Glyph(w, height(g), npl)
@@ -480,3 +480,37 @@ public defn get-glyph (font:Font, char:Char) -> Glyph :
 
 public defn get-glyph (char:Char) -> Glyph :
   get-glyph(*font*, char)
+
+public defn glyphs-width (ts:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> Float :
+  ;; val ttw = reduce(f+, 0.0f, seq({ width(get-glyph(font, _)) }, tstr))
+  val tw  = reduce(f+, 0.0f, seq({ width(get-glyph(font, _)) }, str))
+  ts * tw
+  
+public defn glyphs-width (ts:Float, font:Font, s:Collection<Char>) -> Float :
+  glyphs-width(ts, font, s, s) ;; seq({ _ }, s))
+
+public defn glyphs-width-for-height (h:Float, font:Font, str:Seqable<Char>) -> Float :
+  val tw = reduce(f+, 0.0f, seq({ width(get-glyph(font, _)) }, str))
+  val th = height(font)
+  tw * (h / th)
+  
+public defn glyphs-mag (w:Float, h:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> Float :
+  val ttw = reduce(f+, 0.0f, seq({ width(get-glyph(font, _)) }, tstr))
+  val th = height(font)
+  min(w / ttw, h / th)
+
+public defn glyphs-mag (w:Float, h:Float, font:Font, s:Collection<Char>) -> Float :
+  glyphs-mag(w, h, font, s, s) ;; seq({ _ }, s)
+
+public defn font-size (w:Float, h:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> [Float, Float, Float] :
+  val ttw = reduce(f+, 0.0f, seq({ width(get-glyph(font, _)) }, tstr))
+  val th = height(font)
+  val ts = min(w / ttw, h / th)
+  val tw = reduce(f+, 0.0f, seq({ width(get-glyph(font, _)) }, str))
+  val aw = ts * tw
+  val ah = ts * th
+  [aw, ah, ts]
+
+public defn font-size (w:Float, h:Float, font:Font, s:Collection<Char>) -> [Float, Float, Float] :
+  font-size(w, h, font, s, seq({ _ }, s))
+

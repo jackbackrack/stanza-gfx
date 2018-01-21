@@ -120,7 +120,7 @@ public defn triangulate (poly:Polygon) -> Mesh :
   glu-tess-begin-polygon(tess, index)
   for c in contours(poly) do :
     glu-tess-begin-contour(tess)
-    for p in points(c) do :
+    for p in vertices(c) do :
       add(vertices(mesh), xyz(p))
       glu-tess-vertex(tess, to-v3d(xyz(p)), length(vertices(mesh)) - 1)
     glu-tess-end-contour(tess)

@@ -514,3 +514,11 @@ public defn font-size (w:Float, h:Float, font:Font, tstr:Collection<Char>, str:S
 public defn font-size (w:Float, h:Float, font:Font, s:Collection<Char>) -> [Float, Float, Float] :
   font-size(w, h, font, s, seq({ _ }, s))
 
+public defn stroke (x:Char, font:Font) : polyline(get-glyph(font, x))
+
+public defn stroke (x:Char) : stroke(x, *font*)
+
+public defn stroke (x:String, font:Font) : reduce(bit-or, space-x(width(get-glyph(font, 'M')), seq(stroke{_, font}, x)))
+
+public defn stroke (x:String) : stroke(x, *font*)
+

@@ -9,7 +9,7 @@ defregistry stanza-gfx :
       link GNU/Linux ["-lGLU"]
   file "glfw.stanza" :
     package glfw :
-      link Darwin    ["-lglfw3" "-framework" "Carbon" "-framework" "Cocoa" "-framework" "OpenGL" "-framework" "IOKit" "-framework" "CoreVideo"]
+      link Darwin    ["-lglfw3" "-framework Carbon" "-framework Cocoa" "-framework OpenGL" "-framework IOKit" "-framework CoreVideo"]
       link GNU/Linux ["-lglfw3" "-lrt" "-lm" "-lXrandr" "-lXinerama" "-lXi" "-lXcursor" "-lXrender" "-lGL" "-lGLU" "-lpthread" "-ldl" "-ldrm" "-lXdamage" "-lXfixes" "-lX11-xcb" "-lxcb-glx" "-lxcb-dri2" "-lxcb-dri3" "-lxcb-present" "-lxcb-randr" "-lxcb-xfixes" "-lxcb-render" "-lxcb-shape" "-lxcb-sync" "-lxshmfence" "-lXxf86vm" "-lXext" "-lX11" "-lxcb" "-lXau" "-lXdmcp"]
   file "font.stanza"
   file "gfx.stanza"

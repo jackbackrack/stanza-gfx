@@ -7,7 +7,6 @@ defpackage gfx:
   import utils
   import geom
   import gl
-  import glfw
   import font
 
 public defn gl-color (v:V3f) :

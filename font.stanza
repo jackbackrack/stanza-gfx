@@ -7,6 +7,9 @@ defpackage font:
   import utils
   import gl
 
+val @doc-pkg-font = "## FONT -- vector font"
+
+val @doc-glyph = "GLYPH -- polyline description of character"
 public deftype Glyph
 public defmulti width (g:Glyph) -> Float
 public defmulti height (g:Glyph) -> Float
@@ -121,6 +124,7 @@ val glyphs-3x3 = [
   'Z' => Glyph(2.4f, 2.4f, [[L T R T R C L C L B R B] [C T C B]])
   ]
 
+val @doc-font = "FONT -- a collection of vector glyphs"
 public defstruct Font :
   height: Float
   glyphs: HashTable<Char, Glyph>

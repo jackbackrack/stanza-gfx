@@ -36,6 +36,7 @@ extern glPushAttrib: (int) -> int
 extern glPopAttrib: () -> int
 extern glLoadIdentity: () -> int
 extern glOrtho: (double, double, double, double, double, double) -> int
+extern glFrustum: (double, double, double, double, double, double) -> int
 extern glRotatef: (float, float, float, float) -> int
 extern glTranslatef: (float, float, float) -> int
 extern glScalef: (float, float, float) -> int
@@ -186,6 +187,10 @@ public lostanza defn gl-load-identity () -> ref<False> :
 
 public lostanza defn gl-ortho (a:ref<Float>, b:ref<Float>, c:ref<Float>, d:ref<Float>, e:ref<Float>, f:ref<Float>) -> ref<False> :
   call-c glOrtho(a.value as double, b.value as double, c.value as double, d.value as double, e.value as double, f.value as double)
+  return false
+
+public lostanza defn gl-frustum (a:ref<Float>, b:ref<Float>, c:ref<Float>, d:ref<Float>, e:ref<Float>, f:ref<Float>) -> ref<False> :
+  call-c glFrustum(a.value as double, b.value as double, c.value as double, d.value as double, e.value as double, f.value as double)
   return false
 
 public lostanza defn gl-rotatef (a:ref<Float>, x:ref<Float>, y:ref<Float>, z:ref<Float>) -> ref<False> :

@@ -20,6 +20,7 @@ extern glfwSetKeyCallback: (ptr<?>,ptr<((ptr<?>,int,int,int,int) -> int)>) -> in
 extern glfwSetMouseButtonCallback: (ptr<?>,ptr<((ptr<?>,int,int,int) -> int)>) -> int
 extern glfwGetMouseButton: (ptr<?>, int) -> int
 extern glfwSetCursorPosCallback: (ptr<?>,ptr<((ptr<?>,double,double) -> int)>) -> int
+extern glfwSetFramebufferSizeCallback: (ptr<?>,ptr<((ptr<?>,int,int) -> int)>) -> int
 extern glfwGetCursorPos: (ptr<?>,ptr<double>,ptr<double>) -> int
 extern glfwWindowShouldClose: (ptr<?>) -> int
 extern glfwSetWindowShouldClose: (ptr<?>, int) -> int
@@ -314,6 +315,20 @@ extern defn do_cursor_pos_callback (w:ptr<?>, x:double, y:double) -> int :
 public lostanza defn gui-set-cursor-callback (w:ref<Window>,f:ref<((Window,Float,Float) -> False)>) -> ref<False> :
   *cursor-pos-callback* = f
   call-c glfwSetCursorPosCallback(w.value, addr(do_cursor_pos_callback))
+  return false
+
+defn default-framebuffer-size-callback (w:Window, x:Int, y:Int) -> False: false
+
+var *framebuffer-size-callback*:((Window,Int,Int) -> False) = default-framebuffer-size-callback
+
+extern defn do_framebuffer_size_callback (w:ptr<?>, x:int, y:int) -> int :
+  val win = new Window{w}
+  [*framebuffer-size-callback*](win, new Int{x as int}, new Int{y as int})
+  return 0
+
+public lostanza defn gui-set-framebuffer-size-callback (w:ref<Window>,f:ref<((Window,Int,Int) -> False)>) -> ref<False> :
+  *framebuffer-size-callback* = f
+  call-c glfwSetFramebufferSizeCallback(w.value, addr(do_framebuffer_size_callback))
   return false
 
 defn default-error-callback (error:Int, description:String) -> False : false

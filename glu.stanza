@@ -22,6 +22,7 @@ val GLU-TESS-END-DATA =                  100108
 val GLU-TESS-ERROR-DATA =                100109
 val GLU-TESS-EDGE-FLAG-DATA =            100110
 val GLU-TESS-COMBINE-DATA =              100111
+val GL-DEPTH-COMPONENT =                 6402 ;; 0x1902
 
 extern glGetDoublev: (int, ptr<double>) -> int
 extern glGetIntegerv: (int, ptr<int>) -> int
@@ -36,6 +37,7 @@ extern gluTessVertex: (ptr<?>, ptr<double>, int) -> int
 extern gluTessCallback: (ptr<?>, int, ptr<((? ...) -> int)>) -> int
 extern gluPerspective: (double, double, double, double) -> int
 extern gluProject: (double, double, double, ptr<double>, ptr<double>, ptr<int>, ptr<double>, ptr<double>, ptr<double>) -> int
+extern glReadPixels: (int, int, int, int, int, int, ptr<?>) -> int
 extern gluUnProject: (double, double, double, ptr<double>, ptr<double>, ptr<int>, ptr<double>, ptr<double>, ptr<double>) -> int
 extern printf: (? ...) -> int
 extern malloc: (long) -> ptr<?>
@@ -158,10 +160,20 @@ public lostanza defn glu-project (obj:ref<V3f>) -> ref<V3f> :
 public defn glu-project-dims (dims:V3f) -> Box3f :
   Box3f(glu-project(-0.5f * dims), glu-project(0.5f * dims))
 
+lostanza val *win-z* : ptr<float> = call-c malloc(1 * sizeof(float))
+
 public lostanza defn glu-unproject (win:ref<V3i>) -> ref<V3f> :
   load-project-data()
-  call-c gluUnProject(x(win).value as double, y(win).value as double, z(win).value as double,
+  val win-y = *view*[3] - y(win).value
+  call-c glReadPixels(x(win).value, win-y, 1, 1, GL-DEPTH-COMPONENT.value, GL-FLOAT.value, *win-z*)
+  call-c gluUnProject(x(win).value as double, win-y as double, [*win-z*] as double, ;; z(win).value as double,
                       *model*, *proj*, *view*, *ptx*, *pty*, *ptz*)
   return new V3f{[*ptx*] as float, [*pty*] as float, [*ptz*] as float}
 
+;; public lostanza defn glu-unproject (x:Int, y:Int) -> ref<V3f> :
+;;   load-project-data()
+;;   val win-x = x
+;;   call-c glReadPixels(x, win-y, 1, 1, GL-DEPTH-COMPONENT, GL-FLOAT, *win-z*)
+;;   call-c gluUnProject(to-float(x), to-float(win-y), [*win-z*], *model*, *proj*, *view*, *ptx*, *pty*, *ptz*)
+;;   return new V3f{[*ptx*] as float, [*pty*] as float, [*ptz*] as float}
 

@@ -20,6 +20,7 @@ extern glfwSetKeyCallback: (ptr<?>,ptr<((ptr<?>,int,int,int,int) -> int)>) -> in
 extern glfwSetMouseButtonCallback: (ptr<?>,ptr<((ptr<?>,int,int,int) -> int)>) -> int
 extern glfwGetMouseButton: (ptr<?>, int) -> int
 extern glfwSetCursorPosCallback: (ptr<?>,ptr<((ptr<?>,double,double) -> int)>) -> int
+extern glfwSetScrollCallback: (ptr<?>,ptr<((ptr<?>,double,double) -> int)>) -> int
 extern glfwSetFramebufferSizeCallback: (ptr<?>,ptr<((ptr<?>,int,int) -> int)>) -> int
 extern glfwGetCursorPos: (ptr<?>,ptr<double>,ptr<double>) -> int
 extern glfwWindowShouldClose: (ptr<?>) -> int
@@ -315,6 +316,20 @@ extern defn do_cursor_pos_callback (w:ptr<?>, x:double, y:double) -> int :
 public lostanza defn gui-set-cursor-callback (w:ref<Window>,f:ref<((Window,Float,Float) -> False)>) -> ref<False> :
   *cursor-pos-callback* = f
   call-c glfwSetCursorPosCallback(w.value, addr(do_cursor_pos_callback))
+  return false
+
+defn default-scroll-callback (w:Window, x:Float, y:Float) -> False: false
+
+var *scroll-callback*:((Window,Float,Float) -> False) = default-scroll-callback
+
+extern defn do_scroll_callback (w:ptr<?>, x:double, y:double) -> int :
+  val win = new Window{w}
+  [*scroll-callback*](win, new Float{x as float}, new Float{y as float})
+  return 0
+
+public lostanza defn gui-set-scroll-callback (w:ref<Window>,f:ref<((Window,Float,Float) -> False)>) -> ref<False> :
+  *scroll-callback* = f
+  call-c glfwSetScrollCallback(w.value, addr(do_scroll_callback))
   return false
 
 defn default-framebuffer-size-callback (w:Window, x:Int, y:Int) -> False: false

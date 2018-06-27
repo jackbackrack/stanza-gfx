@@ -211,6 +211,22 @@ public defn draw-text-right-mag (w:Float, ts:Float, font:Font, s:Collection<Char
   val aw = glyphs-width(ts, font, s)
   draw-text-at(0.5f * w - aw, 0.0f, ts, ts, seq({ get-glyph(font, _) }, s))
 
+public defn draw-text (w:Float, h:Float, font:Font, dir:Symbol, s:Collection<Char>&Lengthable) :
+  val ts = glyphs-mag(w, h, font, s)
+  val aw = glyphs-width(ts, font, s)
+  val ah = height(font) * ts
+  val p  = switch(dir) :
+    `C  : V2f(-0.5f * aw,      0.0f)
+    `W  : V2f(-0.5f * w,       0.0f)
+    `E  : V2f( 0.5f * w - aw,  0.0f)
+    `N  : V2f(-0.5f * aw,     -0.5f * (h - ah))
+    `S  : V2f(-0.5f * aw,      0.5f * (h - ah))
+    `NW : V2f(-0.5f * w,      -0.5f * (h - ah))
+    `NE : V2f( 0.5f * w - aw, -0.5f * (h - ah))
+    `SW : V2f(-0.5f * w,       0.5f * (h - ah))
+    `SE : V2f( 0.5f * w - aw,  0.5f * (h - ah))
+  draw-text-at(x(p), y(p), ts, ts, seq({ get-glyph(font, _) }, s))
+
 public defn draw-text (w:Float, h:Float, font:Font, s:Collection<Char>&Lengthable) :
   draw-text-mag(w, glyphs-mag(w, h, font, s), font, s)
 

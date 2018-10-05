@@ -27,6 +27,8 @@ extern glfwWindowShouldClose: (ptr<?>) -> int
 extern glfwSetWindowShouldClose: (ptr<?>, int) -> int
 extern glfwGetFramebufferSize: (ptr<?>, ptr<int>, ptr<int>) -> int
 extern glfwGetWindowSize: (ptr<?>, ptr<int>, ptr<int>) -> int
+extern glfwSetWindowPos: (ptr<?>, int, int) -> int
+extern glfwGetWindowPos: (ptr<?>, ptr<int>, ptr<int>) -> int
 extern glfwGetTime: () -> double
 extern glfwSwapBuffers: (ptr<?>) -> int
 extern glfwPollEvents: () -> int
@@ -407,3 +409,15 @@ public lostanza defn gui-destroy-window (w:ref<Window>) -> ref<False> :
   val res = call-c glfwDestroyWindow(w.value)
   return false
 
+public lostanza defn gui-set-window-pos (win:ref<Window>, x:ref<Int>, y:ref<Int>) -> ref<False> :
+  call-c glfwSetWindowPos(win.value, x.value, y.value)
+  return false
+
+lostanza var WINDOW_POS_X:int
+lostanza var WINDOW_POS_Y:int
+
+public lostanza defn gui-get-window-pos (w:ref<Window>) -> ref<[Int,Int]> :
+  call-c glfwGetWindowPos(w.value, addr(WINDOW_POS_X), addr(WINDOW_POS_Y))
+  val WINDOW-POS-X = new Int{WINDOW_POS_X}
+  val WINDOW-POS-Y = new Int{WINDOW_POS_Y}
+  return (new Tuple{2, WINDOW-POS-X, WINDOW-POS-Y}) as ref<[Int, Int]>

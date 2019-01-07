@@ -125,18 +125,18 @@ val glyphs-3x3 = [
   ]
 
 val glyphs-simplest-3x3 = [
-  'O' => Glyph(1.2f, 1.2f, [[L T L B R B R T C T]])
-  'H' => Glyph(1.2f, 1.2f, [[L B R B] [C B C T] [L T R T]])
-  'J' => Glyph(1.2f, 1.2f, [[L B R B R T]])
-  '+' => Glyph(1.2f, 1.2f, [[L C R C] [C B C T]])
-  'T' => Glyph(1.2f, 1.2f, [[L T R T] [C B C T]])
-  'C' => Glyph(1.2f, 1.2f, [[R B L B L T R T]])
-  ;; 'S' => Glyph(1.2f, 1.2f, [[L B R B R C L C L T R T]])
-  'Z' => Glyph(1.2f, 1.2f, [[R B L B L C R C R T L T]])
-  '3' => Glyph(1.2f, 1.2f, [[L B R B R T L T] [L C R C]])
-  'M' => Glyph(1.2f, 1.2f, [[L B L T R T R B] [C T C B]])
-  '.' => Glyph(1.2f, 1.2f, [[C C C C]])
-  '-' => Glyph(1.2f, 1.2f, [[L C R C]])
+  'O' => Glyph(2.4f, 2.4f, [[L T L B R B R T C T]])
+  'H' => Glyph(2.4f, 2.4f, [[L B R B] [C B C T] [L T R T]])
+  'J' => Glyph(2.4f, 2.4f, [[L B R B R T]])
+  '+' => Glyph(2.4f, 2.4f, [[L C R C] [C B C T]])
+  'T' => Glyph(2.4f, 2.4f, [[L T R T] [C B C T]])
+  'C' => Glyph(2.4f, 2.4f, [[R B L B L T R T]])
+  ;; 'S' => Glyph(2.4f, 2.4f, [[L B R B R C L C L T R T]])
+  'Z' => Glyph(2.4f, 2.4f, [[R B L B L C R C R T L T]])
+  '3' => Glyph(2.4f, 2.4f, [[L B R B R T L T] [L C R C]])
+  'M' => Glyph(2.4f, 2.4f, [[L B L T R T R B] [C T C B]])
+  '.' => Glyph(2.4f, 2.4f, [[C C C C]])
+  '-' => Glyph(2.4f, 2.4f, [[L C R C]])
   ]
 
 val @doc-font = "FONT -- a collection of vector glyphs"

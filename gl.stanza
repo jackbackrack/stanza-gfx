@@ -48,6 +48,13 @@ extern glBegin: (int) -> int
 extern glEnd: () -> int
 extern glLineWidth: (float) -> int
 extern glPointSize: (float) -> int
+extern malloc: (long) -> ptr<?>
+
+lostanza val *int-val* : ptr<int> = call-c malloc(1 * sizeof(int))
+
+public lostanza defn get-int (kind:ref<Int>) -> ref<Int> :
+  call-c glGetIntegerv( kind.value, *int-val* )
+  return new Int{ *int-val*[ 0 ] }
 
 public lostanza deftype ImageDat :
   value: ptr<byte>

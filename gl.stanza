@@ -52,7 +52,7 @@ extern malloc: (long) -> ptr<?>
 
 lostanza val *int-val* : ptr<int> = call-c malloc(1 * sizeof(int))
 
-public lostanza defn get-int (kind:ref<Int>) -> ref<Int> :
+public lostanza defn gl-get-int (kind:ref<Int>) -> ref<Int> :
   call-c glGetIntegerv( kind.value, *int-val* )
   return new Int{ *int-val*[ 0 ] }
 

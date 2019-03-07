@@ -83,25 +83,25 @@ lostanza defn glu-tess-callback (tess:ref<Tess>, kind:ref<Int>, fun:ptr<((? ...)
   call-c gluTessCallback(tess.value, kind.value, fun)
   return false
 
-extern defn begin_callback (type: int, mesh: ref<Int>) -> int :
+extern defn begin_callback (type: int, mesh: int) -> int :
   return 0
 
-extern defn edge_flag_callback (index: int, mesh: ref<Int>) -> int :
+extern defn edge_flag_callback (index: int, mesh: int) -> int :
   return 0
 
-extern defn vertex_callback (index: int, mesh-index: ref<Int>) -> int :
-  val mesh = get(meshes, mesh-index)
+extern defn vertex_callback (index: int, mesh-index: int) -> int :
+  val mesh = get(meshes, new Int{ mesh-index })
   add(indices(mesh), new Int{ index })
   return 0
 
-extern defn end_callback (mesh: ref<Int>) -> int :
+extern defn end_callback (mesh: int) -> int :
   return 0
 
-extern defn error_callback (errno: int, mesh: ref<Int>) -> int :
+extern defn error_callback (errno: int, mesh: int) -> int :
   return 0
 
-extern defn combine_callback (coords: ptr<double>, vertexData: ptr<int>, weight: ptr<float>, outData: ptr<int>, mesh-index: ref<Int>) -> int :
-  val mesh = get(meshes, mesh-index)
+extern defn combine_callback (coords: ptr<double>, vertexData: ptr<int>, weight: ptr<float>, outData: ptr<int>, mesh-index: int) -> int :
+  val mesh = get(meshes, new Int{ mesh-index })
   add(vertices(mesh), V3f(new Float{ coords[0] as float }, new Float{ coords[1] as float }, new Float{ coords[2] as float }))
   return length(vertices(mesh)).value - 1
 

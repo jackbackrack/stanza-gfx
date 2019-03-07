@@ -7,6 +7,10 @@ defpackage font:
   import utils
   import gl
 
+val timer = MillisecondTimer("font")
+start(timer)
+println("FONT START")
+
 val @doc-pkg-font = "## FONT -- vector font"
 
 val @doc-glyph = "GLYPH -- polyline description of character"
@@ -27,13 +31,10 @@ public defn Glyph (width:Float, height:Float, polyline:PolyLine2f) :
     defmethod set-display-list (this, dl:DisplayList) : display-list = dl
 
 public defn Glyph (width:Float, height:Float, istrokes:Tuple<Tuple<Float>>) :
-  var n:Int = 0
-  val polyline = PolyLine2f $ to-tuple $ generate< Tuple<V2f> > :
-    for stroke in istrokes do :
-      yield $ to-tuple $ generate< V2f > :
-        for i in 0 to length(stroke) / 2 do :
-          n = n + 1
-          yield $ V2f(stroke[i * 2], stroke[i * 2 + 1])
+  val polyline = 
+    PolyLine2f $ to-tuple $ for stroke in istrokes seq :
+      to-tuple $ for i in 0 to length(stroke) / 2 seq :
+        V2f(stroke[i * 2], stroke[i * 2 + 1])
   Glyph(width, height, polyline)
 
 public defn Glyphi (width:Float, height:Float, istrokes:Tuple<Tuple<Int>>) :
@@ -544,3 +545,5 @@ public defn stroke (x:String, font:Font) -> PolyLine2f :
 
 public defn stroke (x:String) -> PolyLine2f : stroke(x, *font*)
 
+stop(timer)
+println("FONT END %_" % [timer])

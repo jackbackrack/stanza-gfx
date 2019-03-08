@@ -7,9 +7,9 @@ defpackage font:
   import utils
   import gl
 
-val timer = MillisecondTimer("font")
-start(timer)
-println("FONT START")
+;; val timer = MillisecondTimer("font")
+;; start(timer)
+;; println("FONT START")
 
 val @doc-pkg-font = "## FONT -- vector font"
 
@@ -545,5 +545,5 @@ public defn stroke (x:String, font:Font) -> PolyLine2f :
 
 public defn stroke (x:String) -> PolyLine2f : stroke(x, *font*)
 
-stop(timer)
-println("FONT END %_" % [timer])
+;; stop(timer)
+;; println("FONT END %_" % [timer])

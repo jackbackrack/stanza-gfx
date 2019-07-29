@@ -115,6 +115,11 @@ lostanza defn FabTess () -> ref<Tess> :
   glu-tess-callback(t, GLU-TESS-ERROR-DATA, addr(error_callback))
   return t
 
+public defn triangles (poly:Polygon) -> Seqable<Triangle> :
+  val mesh = triangulate(poly)
+  for face in faces(mesh) seq :
+    Triangle([xy(vertices(mesh)[x(face)]), xy(vertices(mesh)[y(face)]), xy(vertices(mesh)[z(face)])])
+
 public defn triangulate (poly:Polygon) -> Mesh :
   val tess = FabTess()
   val mesh = TessMesh(Vector<Int>(), Vector<V3f>())

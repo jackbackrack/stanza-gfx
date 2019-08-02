@@ -29,6 +29,7 @@ extern glfwGetFramebufferSize: (ptr<?>, ptr<int>, ptr<int>) -> int
 extern glfwGetWindowSize: (ptr<?>, ptr<int>, ptr<int>) -> int
 extern glfwSetWindowPos: (ptr<?>, int, int) -> int
 extern glfwGetWindowPos: (ptr<?>, ptr<int>, ptr<int>) -> int
+extern glfwGetKey: (ptr<?>, int) -> int
 extern glfwGetTime: () -> double
 extern glfwSwapBuffers: (ptr<?>) -> int
 extern glfwPollEvents: () -> int
@@ -421,3 +422,7 @@ public lostanza defn gui-get-window-pos (w:ref<Window>) -> ref<[Int,Int]> :
   val WINDOW-POS-X = new Int{WINDOW_POS_X}
   val WINDOW-POS-Y = new Int{WINDOW_POS_Y}
   return (new Tuple{2, WINDOW-POS-X, WINDOW-POS-Y}) as ref<[Int, Int]>
+
+public lostanza defn gui-get-key (w:ref<Window>, k:ref<Int>) -> ref<Int> :
+  val res = call-c glfwGetKey(w.value, k.value)
+  return new Int{res}

@@ -83,6 +83,7 @@ public val GUI-MOD-SHIFT = 1
 public val GUI-MOD-CONTROL = 2
 public val GUI-MOD-ALT = 4
 public val GUI-MOD-SUPER = 8
+public val GUI-MOD-DOUBLE = 16
 
 public val GUI-MOUSE-BUTTON-1 = 0
 public val GUI-MOUSE-BUTTON-2 = 1

@@ -6,32 +6,13 @@
 #endif
 #include <vector>
 
-typedef struct tess_vec2      { float x, y; } tess_vec2;
-typedef struct tess_vec3      { float x, y, z; } tess_vec3;
-typedef struct tess_vec3d     { double x, y, z; } tess_vec3d;
-typedef struct tess_tri       { uint32_t a, b, c; } tess_tri;
+#include "tess.hpp"
 
-typedef struct tess_mesh {
-    tess_vec3* verts;
-    tess_tri* tris;
-    uint32_t tri_count;
-    uint32_t vert_count;
-} tess_mesh;
-
-typedef struct tess_contour {
-    tess_vec2* pts;
-    uint32_t count;
-} tess_contour;
-
-typedef struct tess_contours {
-    tess_contour* cs;
-    uint32_t count;
-} tess_contours;
-
-void tess_mesh_delete(tess_mesh* m) {
+int tess_mesh_delete(tess_mesh* m) {
   delete [] m->verts;
   delete [] m->tris;
   delete m;
+  return 0;
 }
 
 typedef struct tess_mesh_data {
@@ -68,7 +49,7 @@ static int combine_callback (double* coords, int* vertex_data, float* weight, in
   return mesh.vertices.size() - 1;
 }
 
-tess_mesh* glu_triangulate (float* poly) {
+tess_mesh* tess_triangulate (float* poly) {
   auto tess = gluNewTess();
   gluTessCallback(tess, GLU_TESS_BEGIN,   (void (*)())(&begin_callback));
   gluTessCallback(tess, GLU_TESS_END,     (void (*)())(&end_callback));
@@ -83,7 +64,7 @@ tess_mesh* glu_triangulate (float* poly) {
     int contour_count = (int)(*poly++);
     gluTessBeginContour(tess);
     for (int j = 0; j < contour_count; j++) {
-      tess_vec3 pt = { (*poly++), (*poly++), (*poly++) };
+      tess_vec3 pt = { (*poly++), (*poly++), 0.0 };
       mesh.vertices.push_back(pt);
       tess_vec3d pt3 = { (double)pt.x, (double)pt.y, (double)pt.z };
       gluTessVertex(tess, (double*)(&pt3.x), (void*)(mesh.vertices.size() - 1));

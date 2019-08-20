@@ -6,35 +6,13 @@ defpackage glu :
   import gl
   import geom
 
-val GLU-TESS-BEGIN =                     100100
-val GLU-BEGIN =                          100100
-val GLU-TESS-VERTEX =                    100101
-val GLU-VERTEX =                         100101
-val GLU-TESS-END =                       100102
-val GLU-END =                            100102
-val GLU-TESS-ERROR =                     100103
-val GLU-TESS-EDGE-FLAG =                 100104
-val GLU-EDGE-FLAG =                      100104
-val GLU-TESS-COMBINE =                   100105
-val GLU-TESS-BEGIN-DATA =                100106
-val GLU-TESS-VERTEX-DATA =               100107
-val GLU-TESS-END-DATA =                  100108
-val GLU-TESS-ERROR-DATA =                100109
-val GLU-TESS-EDGE-FLAG-DATA =            100110
-val GLU-TESS-COMBINE-DATA =              100111
 val GL-DEPTH-COMPONENT =                 6402 ;; 0x1902
 
 extern glGetDoublev: (int, ptr<double>) -> int
 extern glGetIntegerv: (int, ptr<int>) -> int
 
-extern gluNewTess: () -> ptr<?>
-extern gluDeleteTess: (ptr<?>) -> int
-extern gluTessBeginPolygon: (ptr<?>, int) -> int
-extern gluTessEndPolygon: (ptr<?>) -> int
-extern gluTessBeginContour: (ptr<?>) -> int
-extern gluTessEndContour: (ptr<?>) -> int
-extern gluTessVertex: (ptr<?>, ptr<double>, int) -> int
-extern gluTessCallback: (ptr<?>, int, ptr<((? ...) -> int)>) -> int
+extern tess_mesh_delete: (ptr<tess_mesh>) -> int
+extern tess_triangulate: (ptr<float>) -> ptr<tess_mesh>
 extern gluPerspective: (double, double, double, double) -> int
 extern gluProject: (double, double, double, ptr<double>, ptr<double>, ptr<int>, ptr<double>, ptr<double>, ptr<double>) -> int
 extern glReadPixels: (int, int, int, int, int, int, ptr<?>) -> int
@@ -42,103 +20,84 @@ extern gluUnProject: (double, double, double, ptr<double>, ptr<double>, ptr<int>
 extern gluOrtho2D: (double, double, double, double) -> int
 extern printf: (? ...) -> int
 extern malloc: (long) -> ptr<?>
-
-defstruct TessMesh :
-  indices: Vector<Int>
-  vertices: Vector<V3f>
-
-val meshes = Vector<TessMesh>()
-
-lostanza deftype Tess :
-  value: ptr<?>
-
-lostanza defn glu-new-tess () -> ref<Tess> :
-  return new Tess{ call-c gluNewTess() }
-  
-lostanza defn glu-delete-tess (tess:ref<Tess>) -> ref<False> :
-  call-c gluDeleteTess(tess.value)
-  return false
-
-lostanza defn glu-tess-begin-polygon (tess:ref<Tess>, mesh:ref<Int>) -> ref<False> :
-  call-c gluTessBeginPolygon(tess.value, mesh.value)
-  return false
-
-lostanza defn glu-tess-end-polygon (tess:ref<Tess>) -> ref<False> :
-  call-c gluTessEndPolygon(tess.value)
-  return false
-
-lostanza defn glu-tess-begin-contour (tess:ref<Tess>) -> ref<False> :
-  call-c gluTessBeginContour(tess.value)
-  return false
-
-lostanza defn glu-tess-end-contour (tess:ref<Tess>) -> ref<False> :
-  call-c gluTessEndContour(tess.value)
-  return false
-
-lostanza defn glu-tess-vertex (tess:ref<Tess>, vertex:ref<V3d>, size:ref<Int>) -> ref<False> :
-  call-c gluTessVertex(tess.value, addr!(vertex.x), size.value)
-  return false
-
-lostanza defn glu-tess-callback (tess:ref<Tess>, kind:ref<Int>, fun:ptr<((? ...) -> int)>) -> ref<False> :
-  call-c gluTessCallback(tess.value, kind.value, fun)
-  return false
-
-extern defn begin_callback (type: int, mesh: int) -> int :
-  return 0
-
-extern defn edge_flag_callback (index: int, mesh: int) -> int :
-  return 0
-
-extern defn vertex_callback (index: int, mesh-index: int) -> int :
-  val mesh = get(meshes, new Int{ mesh-index })
-  add(indices(mesh), new Int{ index })
-  return 0
-
-extern defn end_callback (mesh: int) -> int :
-  return 0
-
-extern defn error_callback (errno: int, mesh: int) -> int :
-  return 0
-
-extern defn combine_callback (coords: ptr<double>, vertexData: ptr<int>, weight: ptr<float>, outData: ptr<int>, mesh-index: int) -> int :
-  val mesh = get(meshes, new Int{ mesh-index })
-  add(vertices(mesh), V3f(new Float{ coords[0] as float }, new Float{ coords[1] as float }, new Float{ coords[2] as float }))
-  return length(vertices(mesh)).value - 1
-
-lostanza defn FabTess () -> ref<Tess> :
-  val t = new Tess{ call-c gluNewTess() }
-  glu-tess-callback(t, GLU-TESS-BEGIN-DATA, addr(begin_callback))
-  glu-tess-callback(t, GLU-TESS-EDGE-FLAG-DATA, addr(edge_flag_callback))
-  glu-tess-callback(t, GLU-TESS-VERTEX-DATA, addr(vertex_callback))
-  glu-tess-callback(t, GLU-TESS-END-DATA, addr(end_callback))
-  glu-tess-callback(t, GLU-TESS-COMBINE-DATA, addr(combine_callback))
-  glu-tess-callback(t, GLU-TESS-ERROR-DATA, addr(error_callback))
-  return t
+extern free: (ptr<?>) -> int
 
 public defn triangles (poly:Polygon) -> Seqable<Triangle> :
   val mesh = triangulate(poly)
   for face in faces(mesh) seq :
     Triangle([xy(vertices(mesh)[x(face)]), xy(vertices(mesh)[y(face)]), xy(vertices(mesh)[z(face)])])
 
-public defn triangulate (poly:Polygon) -> Mesh :
-  val tess = FabTess()
-  val mesh = TessMesh(Vector<Int>(), Vector<V3f>())
-  val index = length(meshes)
-  add(meshes, mesh)
-  glu-tess-begin-polygon(tess, index)
-  for c in contours(poly) do :
-    glu-tess-begin-contour(tess)
-    for p in vertices(c) do :
-      add(vertices(mesh), xyz(p))
-      glu-tess-vertex(tess, to-v3d(xyz(p)), length(vertices(mesh)) - 1)
-    glu-tess-end-contour(tess)
-  glu-tess-end-polygon(tess)
-  glu-delete-tess(tess)
-  pop(meshes)
-  val faces = Vector<V3i>()
-  for i in 0 to length(indices(mesh)) / 3 do :
-    add(faces, V3i(indices(mesh)[i * 3], indices(mesh)[i * 3 + 2], indices(mesh)[i * 3 + 1]))
-  Mesh(to-tuple(vertices(mesh)), to-tuple(faces))
+lostanza deftype tess_tri :
+  a : int
+  b : int
+  c : int
+
+lostanza deftype tess_vec3 :
+  x : float
+  y : float
+  z : float
+
+lostanza deftype tess_mesh :
+  verts : ptr<tess_vec3>
+  tris : ptr<tess_tri>
+  tri-count : int
+  vert-count : int
+
+lostanza deftype TessMesh :
+  value : ptr<tess_mesh>
+
+public lostanza defn get-vert-value (m:ref<TessMesh>, i:ref<Int>) -> ref<V3f> :
+  val vert = m.value.verts[i.value]
+  return V3f(new Float{vert.x}, new Float{vert.y}, new Float{vert.z})
+
+public lostanza defn get-vert-index (m:ref<TessMesh>, i:ref<Int>) -> ref<V3i> :
+  val tri = m.value.tris[i.value]
+  return V3i(new Int{tri.a}, new Int{tri.b}, new Int{tri.c})
+
+public lostanza defn tri-count (m:ref<TessMesh>) -> ref<Int> :
+  return new Int{m.value.tri-count}
+
+public lostanza defn vert-count (m:ref<TessMesh>) -> ref<Int> :
+  return new Int{m.value.vert-count}
+
+defn to-mesh (rm:TessMesh) -> Mesh :
+  ;; println-all(["STZ MESH COUNT " tri-count(rm)])
+  val tris = to-tuple $ for ti in 0 to tri-count(rm) seq : get-vert-index(rm, ti)
+  ;; for (tri in tris, i in 0 to 4) do :
+  ;;   println-all(["STZ TRI " tri])
+  val verts = to-tuple $ for vi in 0 to vert-count(rm) seq : get-vert-value(rm, vi)
+  ;; for (vert in verts, i in 0 to 4) do :
+  ;;   println-all(["STZ VERT " i " " vert])
+  gc(Mesh(verts, tris))
+
+defn contours-size (poly:Polygon) -> Int :
+  1 + sum $ for contour in contours(poly) seq : 1 + 2 * length(vertices(contour))
+
+public lostanza defn triangulate (poly:ref<Polygon>) -> ref<Mesh> :
+  val c-poly-size = contours-size(poly)
+  call-c printf("TRIANGULATE LENGTH %d\n", c-poly-size.value)
+  val c-poly : ptr<float> = call-c malloc(c-poly-size.value * sizeof(float))
+  var idx:int = 0
+  c-poly[idx] = to-float(length(contours(poly))).value
+  idx = idx + 1
+  for (var i:int = 0, i < length(contours(poly)).value, i = i + 1) :
+    val contour = get(contours(poly), new Int{i})
+    c-poly[idx] = to-float(length(vertices(contour))).value
+    call-c printf("  CONTOUR SIZE %f\n", c-poly[idx])
+    idx = idx + 1
+    for (var j:int = 0, j < length(vertices(contour)).value, j = j + 1) :
+      val pt = get(vertices(contour), new Int{j})
+      c-poly[idx + 0] = x(pt).value
+      c-poly[idx + 1] = y(pt).value
+      idx = idx + 2
+  call-c printf("IDX %d\n", idx)
+  val out = call-c tess_triangulate(c-poly)
+  call-c free(c-poly as ptr<?>)
+  val c-mesh = new TessMesh{out}
+  val mesh = to-mesh(c-mesh)
+  call-c tess_mesh_delete(out)
+  c-mesh.value = 0L as ptr<tess_mesh>
+  return mesh
 
 public lostanza defn glu-perspective (a:ref<Float>, b:ref<Float>, c:ref<Float>, d:ref<Float>) -> ref<False> :
   call-c gluPerspective(a.value as double, b.value as double, c.value as double, d.value as double)

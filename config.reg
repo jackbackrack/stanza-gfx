@@ -5,8 +5,11 @@ defregistry stanza-gfx :
       link GNU/Linux ["-lGL"]
   file "glu.stanza" :
     package glu :
-      link Darwin    ["-framework OpenGL"]
-      link GNU/Linux ["-lGLU"]
+      dependency "${GEN}/tess.o"
+      link Darwin    ["${GEN}/tess.o -framework OpenGL"]
+      link GNU/Linux ["${GEN}/tess.o -lGLU"]
+  file "tess.cpp" :
+    flags "-std=c++11"
   ;; file "glfw.cpp" :
   ;;   flags "-std=c++11"
   file "glfw.stanza" :

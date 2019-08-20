@@ -40,6 +40,7 @@ extern gluProject: (double, double, double, ptr<double>, ptr<double>, ptr<int>, 
 extern glReadPixels: (int, int, int, int, int, int, ptr<?>) -> int
 extern gluUnProject: (double, double, double, ptr<double>, ptr<double>, ptr<int>, ptr<double>, ptr<double>, ptr<double>) -> int
 extern gluOrtho2D: (double, double, double, double) -> int
+extern gluLookAt: (double, double, double, double, double, double, double, double, double) -> int
 extern printf: (? ...) -> int
 extern malloc: (long) -> ptr<?>
 
@@ -191,4 +192,13 @@ public lostanza defn glu-ortho2d (l:ref<Float>, r:ref<Float>, b:ref<Float>, t:re
   call-c gluOrtho2D(l.value as double, r.value as double, b.value as double, t.value as double)
   return false
 
+public lostanza defn glu-look-at (ex:ref<Float>, ey:ref<Float>, ez:ref<Float>,
+                                  cx:ref<Float>, cy:ref<Float>, cz:ref<Float>,
+                                  ux:ref<Float>, uy:ref<Float>, uz:ref<Float>) -> ref<False> :
+  call-c gluLookAt(ex.value as double, ey.value as double, ez.value as double,
+                   cx.value as double, cy.value as double, cz.value as double,
+                   ux.value as double, uy.value as double, uz.value as double)
+  return false
 
+public defn glu-look-at (eye:V3f, center:V3f, up:V3f) :
+  glu-look-at(x(eye), y(eye), z(eye), x(center), y(center), z(center), x(up), y(up), z(up))

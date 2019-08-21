@@ -7,6 +7,10 @@ defpackage font:
   import utils
   import gl
 
+;; val timer = MillisecondTimer("font")
+;; start(timer)
+;; println("FONT START")
+
 val @doc-pkg-font = "## FONT -- vector font"
 
 val @doc-glyph = "GLYPH -- polyline description of character"
@@ -27,13 +31,10 @@ public defn Glyph (width:Float, height:Float, polyline:PolyLine2f) :
     defmethod set-display-list (this, dl:DisplayList) : display-list = dl
 
 public defn Glyph (width:Float, height:Float, istrokes:Tuple<Tuple<Float>>) :
-  var n:Int = 0
-  val polyline = PolyLine2f $ to-tuple $ generate< Tuple<V2f> > :
-    for stroke in istrokes do :
-      yield $ to-tuple $ generate< V2f > :
-        for i in 0 to length(stroke) / 2 do :
-          n = n + 1
-          yield $ V2f(stroke[i * 2], stroke[i * 2 + 1])
+  val polyline = 
+    PolyLine2f $ to-tuple $ for stroke in istrokes seq :
+      to-tuple $ for i in 0 to length(stroke) / 2 seq :
+        V2f(stroke[i * 2], stroke[i * 2 + 1])
   Glyph(width, height, polyline)
 
 public defn Glyphi (width:Float, height:Float, istrokes:Tuple<Tuple<Int>>) :
@@ -124,6 +125,21 @@ val glyphs-3x3 = [
   'Z' => Glyph(2.4f, 2.4f, [[L T R T R C L C L B R B] [C T C B]])
   ]
 
+val glyphs-simplest-3x3 = [
+  'O' => Glyph(2.4f, 2.4f, [[L T L B R B R T C T]])
+  'H' => Glyph(2.4f, 2.4f, [[L B R B] [C B C T] [L T R T]])
+  'J' => Glyph(2.4f, 2.4f, [[L B R B R T]])
+  '+' => Glyph(2.4f, 2.4f, [[L C R C] [C B C T]])
+  'T' => Glyph(2.4f, 2.4f, [[L T R T] [C B C T]])
+  'C' => Glyph(2.4f, 2.4f, [[R B L B L T R T]])
+  ;; 'S' => Glyph(2.4f, 2.4f, [[L B R B R C L C L T R T]])
+  'Z' => Glyph(2.4f, 2.4f, [[R B L B L C R C R T L T]])
+  '3' => Glyph(2.4f, 2.4f, [[L B R B R T L T] [L C R C]])
+  'M' => Glyph(2.4f, 2.4f, [[L B L T R T R B] [C T C B]])
+  '.' => Glyph(2.4f, 2.4f, [[C C C C]])
+  '-' => Glyph(2.4f, 2.4f, [[L C R C]])
+  ]
+
 val @doc-font = "FONT -- a collection of vector glyphs"
 public defstruct Font :
   height: Float
@@ -155,6 +171,8 @@ for i in to-int('A') through to-int('Z') do :
 for i in to-int(' ') through to-int('~') do :
   if not key?(glyphs(font-3x3), to-char(i)) :
     glyphs(font-3x3)[to-char(i)] = glyphs(font-3x3)['*']
+
+public val font-simplest-3x3 = Font(2.4f, 0.0f, glyphs-simplest-3x3)
 
 val hershey-glyphs = [
   ' ' => Glyphi(8.0f,32.0f, []),
@@ -527,3 +545,5 @@ public defn stroke (x:String, font:Font) -> PolyLine2f :
 
 public defn stroke (x:String) -> PolyLine2f : stroke(x, *font*)
 
+;; stop(timer)
+;; println("FONT END %_" % [timer])

@@ -5,10 +5,16 @@ defregistry stanza-gfx :
       link GNU/Linux ["-lGL"]
   file "glu.stanza" :
     package glu :
-      link Darwin    ["-framework OpenGL"]
-      link GNU/Linux ["-lGLU"]
+      dependency "${GEN}/tess.o"
+      link Darwin    ["${GEN}/tess.o -framework OpenGL"]
+      link GNU/Linux ["${GEN}/tess.o -lGLU"]
+  file "tess.cpp" :
+    flags "-std=c++11"
+  ;; file "glfw.cpp" :
+  ;;   flags "-std=c++11"
   file "glfw.stanza" :
     package glfw :
+      ;; dependency "${GEN}/glfw.o"
       link Darwin    ["-lglfw3" "-framework Carbon" "-framework Cocoa" "-framework OpenGL" "-framework IOKit" "-framework CoreVideo"]
       link GNU/Linux ["-lglfw3" "-lrt" "-lm" "-lXrandr" "-lXinerama" "-lXi" "-lXcursor" "-lXrender" "-lGL" "-lGLU" "-lpthread" "-ldl" "-ldrm" "-lXdamage" "-lXfixes" "-lX11-xcb" "-lxcb-glx" "-lxcb-dri2" "-lxcb-dri3" "-lxcb-present" "-lxcb-randr" "-lxcb-xfixes" "-lxcb-render" "-lxcb-shape" "-lxcb-sync" "-lxshmfence" "-lXxf86vm" "-lXext" "-lX11" "-lxcb" "-lXau" "-lXdmcp"]
   file "font.stanza"

@@ -5,6 +5,8 @@ defpackage glfw :
   import collections
   import utils
   import gl
+  import glu
+  import geom
 
 extern glfwSetErrorCallback: (ptr<((int,ptr<byte>) -> int)>) -> int
 extern glfwInit: () -> int
@@ -428,3 +430,24 @@ public lostanza defn gui-get-window-pos (w:ref<Window>) -> ref<[Int,Int]> :
 public lostanza defn gui-get-key (w:ref<Window>, k:ref<Int>) -> ref<Int> :
   val res = call-c glfwGetKey(w.value, k.value)
   return new Int{res}
+
+public defn unproject (win:Window, ix:Float, iy:Float) -> [V2f, V2f] :
+  val uxy = glu-unproject(V3i(to-int(ix), to-int(iy), 0), 0.0f)
+  ;; println("POS [%_ %_] %_ MAG %_ MOV %_" % [ix iy uxy mag(xform) mov(xform)])
+  val [fw, fh] = gui-get-framebuffer-size(win)
+  val [ww, wh] = gui-get-window-size(win)
+  val ratio  = to-float(ww) / to-float(wh)
+  val dh = 2.0f
+  val dw = dh * ratio
+  ;; TODO: HACK -- WHAT IS GOING ON HERE? -- perhaps 
+  ;; val mag = 2.0f
+  val mag = to-float(fw / ww)
+  val pos =
+    if mag == 1.0f :
+      xy(uxy)
+    else :
+      val raw = mag * xy(uxy)
+      val off-mag = 1.0f - 1.0f / mag
+      V2f(x(raw) + dw * off-mag, y(raw) - dh * off-mag)
+  ;; println("FW %_ FH %_ WW %_ WH %_ DW %_ DH %_ RAW %_" % [fw, fh, ww, wh, dw, dh, pos])
+  [pos, V2f(dw, dh)]

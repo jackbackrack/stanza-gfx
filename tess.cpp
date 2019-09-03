@@ -52,23 +52,24 @@ static int combine_callback (double* coords, int* vertex_data, float* weight, in
 
 tess_mesh* tess_triangulate (float* poly) {
   auto tess = gluNewTess();
-  gluTessCallback(tess, GLU_TESS_BEGIN,   (void (*)())(&begin_callback));
-  gluTessCallback(tess, GLU_TESS_END,     (void (*)())(&end_callback));
-  gluTessCallback(tess, GLU_TESS_VERTEX,  (void (*)())(&vertex_callback));
-  gluTessCallback(tess, GLU_TESS_COMBINE, (void (*)())(&combine_callback));
-  gluTessCallback(tess, GLU_TESS_ERROR,   (void (*)())(&error_callback));
+  gluTessCallback(tess, GLU_TESS_BEGIN,          (void (*)())(&begin_callback));
+  gluTessCallback(tess, GLU_TESS_EDGE_FLAG_DATA, (void (*)())(&edge_flag_callback));
+  gluTessCallback(tess, GLU_TESS_VERTEX,         (void (*)())(&vertex_callback));
+  gluTessCallback(tess, GLU_TESS_END,            (void (*)())(&end_callback));
+  gluTessCallback(tess, GLU_TESS_COMBINE,        (void (*)())(&combine_callback));
+  gluTessCallback(tess, GLU_TESS_ERROR,          (void (*)())(&error_callback));
   mesh.vertices.clear();
   mesh.indices.clear();
   gluTessBeginPolygon(tess, 0);
-  int poly_count = (int)(*poly++);
-  for (int i = 0; i < poly_count; i++) {
-    int contour_count = (int)(*poly++);
+  int contour_count = (int)(*poly++);
+  for (int i = 0; i < contour_count; i++) {
+    int point_count = (int)(*poly++);
     gluTessBeginContour(tess);
-    for (int j = 0; j < contour_count; j++) {
+    for (int j = 0; j < point_count; j++) {
       tess_vec3 pt = { (*poly++), (*poly++), 0.0 };
       mesh.vertices.push_back(pt);
       tess_vec3d pt3 = { (double)pt.x, (double)pt.y, (double)pt.z };
-      gluTessVertex(tess, (double*)(&pt3.x), (void*)(mesh.vertices.size() - 1));
+      gluTessVertex(tess, (double*)(&pt3), (void*)(j));
     }
     gluTessEndContour(tess);
   }
@@ -86,7 +87,7 @@ tess_mesh* tess_triangulate (float* poly) {
   }
   i=0;
   for (int j = 0; j < mesh.indices.size(); j = j + 3) {
-    out->tris[i++] = {(uint32_t)mesh.indices[j + 0], (uint32_t)mesh.indices[j + 1], (uint32_t)mesh.indices[j + 2]};
+    out->tris[i++] = {(uint32_t)mesh.indices[j + 0], (uint32_t)mesh.indices[j + 2], (uint32_t)mesh.indices[j + 1]};
   }
 
   return out;

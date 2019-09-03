@@ -23,6 +23,7 @@ extern printf: (? ...) -> int
 extern malloc: (long) -> ptr<?>
 extern free: (ptr<?>) -> int
 
+
 public defn triangles (poly:Polygon) -> Seqable<Triangle> :
   val mesh = triangulate(poly)
   for face in faces(mesh) seq :
@@ -76,7 +77,7 @@ defn contours-size (poly:Polygon) -> Int :
 
 public lostanza defn triangulate (poly:ref<Polygon>) -> ref<Mesh> :
   val c-poly-size = contours-size(poly)
-  call-c printf("TRIANGULATE LENGTH %d\n", c-poly-size.value)
+  ;; call-c printf("TRIANGULATE LENGTH %d\n", c-poly-size.value)
   val c-poly : ptr<float> = call-c malloc(c-poly-size.value * sizeof(float))
   var idx:int = 0
   c-poly[idx] = to-float(length(contours(poly))).value
@@ -84,14 +85,13 @@ public lostanza defn triangulate (poly:ref<Polygon>) -> ref<Mesh> :
   for (var i:int = 0, i < length(contours(poly)).value, i = i + 1) :
     val contour = get(contours(poly), new Int{i})
     c-poly[idx] = to-float(length(vertices(contour))).value
-    call-c printf("  CONTOUR SIZE %f\n", c-poly[idx])
+    ;; call-c printf("  CONTOUR SIZE %f\n", c-poly[idx])
     idx = idx + 1
     for (var j:int = 0, j < length(vertices(contour)).value, j = j + 1) :
       val pt = get(vertices(contour), new Int{j})
       c-poly[idx + 0] = x(pt).value
       c-poly[idx + 1] = y(pt).value
       idx = idx + 2
-  call-c printf("IDX %d\n", idx)
   val out = call-c tess_triangulate(c-poly)
   call-c free(c-poly as ptr<?>)
   val c-mesh = new TessMesh{out}

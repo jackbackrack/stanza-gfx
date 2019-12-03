@@ -65,7 +65,7 @@ tess_mesh* tess_triangulate (float* poly) {
   for (int i = 0; i < contour_count; i++) {
     int point_count = (int)(*poly++);
     gluTessBeginContour(tess);
-    for (int j = 0; j < point_count; j++) {
+    for (long j = 0; j < point_count; j++) {
       tess_vec3 pt = { (*poly++), (*poly++), 0.0 };
       mesh.vertices.push_back(pt);
       tess_vec3d pt3 = { (double)pt.x, (double)pt.y, (double)pt.z };

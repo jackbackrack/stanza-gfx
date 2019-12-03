@@ -7,13 +7,13 @@ package gl requires :
 package glu defined-in "glu.stanza"
 package glu requires :
   ccfiles :
-    "{GEN}/tess.o"
+    "{WORKDIR}/build/tess.o"
   ccflags :
     on-platform :
       os-x  : ("-framework OpenGL" "-lc++")
       linux : ("-lGL" "-lstdc++")
-compile file "{GEN}/tess.o" from "tess.cpp" :
-  "g++ -std=c++11 -D{PLATFORM} -DGL_SILENCE_DEPRECATION -c {.}/tess.cpp -o {GEN}/tess.o"
+compile file "{WORKDIR}/build/tess.o" from "tess.cpp" :
+  "g++ -std=c++11 -D{PLATFORM} -DGL_SILENCE_DEPRECATION -c {.}/tess.cpp -o {WORKDIR}/build/tess.o"
 package glfw defined-in "glfw.stanza"
 package glfw requires :
   ccflags :

@@ -1,3 +1,8 @@
+var PLATFORM =
+  on-platform :
+    linux : "LINUX"
+    os-x : "MACOSX"
+
 package gl defined-in "gl.stanza"
 package gl requires :
   ccflags :

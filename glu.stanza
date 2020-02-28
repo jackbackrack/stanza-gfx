@@ -46,7 +46,7 @@ lostanza deftype tess_mesh :
   vert-count : int
 
 lostanza deftype TessMesh :
-  value : ptr<tess_mesh>
+  var value : ptr<tess_mesh>
 
 public lostanza defn get-vert-value (m:ref<TessMesh>, i:ref<Int>) -> ref<V3f> :
   val vert = m.value.verts[i.value]

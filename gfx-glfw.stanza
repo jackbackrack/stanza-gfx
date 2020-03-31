@@ -3,7 +3,7 @@
 defpackage gfx/glfw :
   import core
   import collections
-  import utils
+  import utils/string
   import gfx/gl
   import gfx/glu
   import geom/vec

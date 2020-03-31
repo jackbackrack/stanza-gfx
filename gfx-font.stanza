@@ -1,11 +1,17 @@
 ;; See license.txt for details about licensing.
 
-defpackage font:
+defpackage gfx/font:
   import core
   import collections
-  import geom
-  import utils
-  import gl
+  import utils/math
+  import geom/vec
+  import geom/mat
+  import geom/box
+  import geom/bounded
+  import geom/poseable
+  import geom/space
+  import geom/polyline
+  import gfx/gl
 
 ;; val timer = MillisecondTimer("font")
 ;; start(timer)

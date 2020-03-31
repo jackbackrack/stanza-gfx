@@ -1,10 +1,14 @@
 ;; See license.txt for details about licensing.
 
-defpackage glu :
+defpackage gfx/glu :
   import core
   import collections
-  import gl
-  import geom
+  import gfx/gl
+  import geom/vec
+  import geom/box
+  import geom/polygon
+  import geom/triangle
+  import geom/mesh
 
 val GL-DEPTH-COMPONENT =                 6402 ;; 0x1902
 

@@ -3,14 +3,14 @@ var PLATFORM =
     linux : "LINUX"
     os-x : "MACOSX"
 
-package gl defined-in "gl.stanza"
-package gl requires :
+package gfx/gl defined-in "gfx-gl.stanza"
+package gfx/gl requires :
   ccflags :
     on-platform :
       os-x  : "-framework OpenGL"
       linux : "-lGL"
-package glu defined-in "glu.stanza"
-package glu requires :
+package gfx/glu defined-in "gfx-glu.stanza"
+package gfx/glu requires :
   ccfiles :
     "{WORKDIR}/build/tess.o"
   ccflags :
@@ -19,11 +19,11 @@ package glu requires :
       linux : ("-lGL" "-lstdc++")
 compile file "{WORKDIR}/build/tess.o" from "tess.cpp" :
   "g++ -std=c++11 -D{PLATFORM} -DGL_SILENCE_DEPRECATION -c {.}/tess.cpp -o {WORKDIR}/build/tess.o"
-package glfw defined-in "glfw.stanza"
-package glfw requires :
+package gfx/glfw defined-in "gfx-glfw.stanza"
+package gfx/glfw requires :
   ccflags :
     on-platform :
       os-x  : ("-lglfw3" "-framework Carbon" "-framework Cocoa" "-framework OpenGL" "-framework IOKit" "-framework CoreVideo")
       linux : ("-lglfw" "-lrt" "-lm" "-lXrandr" "-lXinerama" "-lXi" "-lXcursor" "-lXrender" "-lGL" "-lGLU" "-lpthread" "-ldl" "-ldrm" "-lXdamage" "-lXfixes" "-lX11-xcb" "-lxcb-glx" "-lxcb-dri2" "-lxcb-dri3" "-lxcb-present" "-lxcb-randr" "-lxcb-xfixes" "-lxcb-render" "-lxcb-shape" "-lxcb-sync" "-lxshmfence" "-lXxf86vm" "-lXext" "-lX11" "-lxcb" "-lXau" "-lXdmcp")
-package font defined-in "font.stanza"
-package gfx defined-in "gfx.stanza"
+package gfx/font defined-in "gfx-font.stanza"
+package gfx/drawing defined-in "gfx-drawing.stanza"

@@ -1,13 +1,15 @@
 ;; See license.txt for details about licensing.
 
-defpackage gfx:
+defpackage gfx/drawing :
   import core
   import math
   import collections
-  import utils
-  import geom
-  import gl
-  import font
+  ; import utils
+  import geom/vec
+  import geom/box
+  import geom/polyline
+  import gfx/gl
+  import gfx/font
 
 public defn gl-color (v:V3f) :
   gl-color3f(x(v), y(v), z(v))

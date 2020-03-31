@@ -1,12 +1,12 @@
 ;; See license.txt for details about licensing.
 
-defpackage glfw :
+defpackage gfx/glfw :
   import core
   import collections
   import utils
-  import gl
-  import glu
-  import geom
+  import gfx/gl
+  import gfx/glu
+  import geom/vec
 
 extern glfwSetErrorCallback: (ptr<((int,ptr<byte>) -> int)>) -> int
 extern glfwInit: () -> int

@@ -261,6 +261,10 @@ public defn hsv-to-rgb (h:Float, sa:Float, v:Float) -> [Float, Float, Float] :
       else  : [v, p, q] ;; if i == 5
   [clip(rt, 0.0f, 255.0f), clip(gt, 0.0f, 255.0f), clip(bt, 0.0f, 255.0f)]
 
+public defn hsv-to-rgb (hsv:V3f) -> V3f :
+  val [r, g, b] = hsv-to-rgb(x(hsv), y(hsv), z(hsv))
+  V3f(r, g, b)
+
 ;; Convert hue/saturation/value to red/green/blue.  Output returned in args.
 public defn rgb-to-hsv (r:Float, g:Float, b:Float) -> [Float, Float, Float] :
   val mn    = min(r, min(g, b));
@@ -281,3 +285,8 @@ public defn rgb-to-hsv (r:Float, g:Float, b:Float) -> [Float, Float, Float] :
     val h1 = h0 * 60.0f
     val h = if h1 < 0.0f : h1 + 360.f else : h1
     [h, s, v]
+
+public defn rgb-to-hsv (rgb:V3f) -> V3f :
+  val [h, s, v] = rgb-to-hsv(x(rgb), y(rgb), z(rgb))
+  V3f(h, s, v)
+

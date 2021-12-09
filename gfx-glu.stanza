@@ -23,6 +23,7 @@ extern glReadPixels: (int, int, int, int, int, int, ptr<?>) -> int
 extern gluUnProject: (double, double, double, ptr<double>, ptr<double>, ptr<int>, ptr<double>, ptr<double>, ptr<double>) -> int
 extern gluOrtho2D: (double, double, double, double) -> int
 extern gluLookAt: (double, double, double, double, double, double, double, double, double) -> int
+extern gluPickMatrix: (double, double, double, double, ptr<int>) -> int
 extern printf: (? ...) -> int
 extern malloc: (long) -> ptr<?>
 extern free: (ptr<?>) -> int
@@ -165,3 +166,8 @@ public lostanza defn glu-look-at (ex:ref<Float>, ey:ref<Float>, ez:ref<Float>,
 
 public defn glu-look-at (eye:V3f, center:V3f, up:V3f) :
   glu-look-at(x(eye), y(eye), z(eye), x(center), y(center), z(center), x(up), y(up), z(up))
+
+public lostanza defn glu-pick-matrix (ex:ref<Float>, ey:ref<Float>, ew:ref<Float>, eh:ref<Float>, viewport:ref<IntArray>) -> ref<False> :
+  call-c gluPickMatrix(ex.value as double, ey.value as double, ew.value as double, eh.value as double,
+                       addr!(viewport.data))
+  return false

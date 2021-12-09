@@ -105,6 +105,16 @@ public defn draw-circle (r:Float) :
   gl-end()
   gl-pop-matrix()
 
+public defn draw-circle (r:Float, n:Int) :
+  gl-push-matrix()
+  gl-scalef(r, r, r)
+  gl-begin(GL-LINE-LOOP)
+  for i in 0 to n do :
+    val a = to-float(i) * 2.0f * PI-F / to-float(n)
+    gl-vertex2f(cos(a), sin(a))
+  gl-end()
+  gl-pop-matrix()
+
 public defn draw-segment (src:V2f, dst:V2f, rad:Float) :
   val v = normalize(dst - src)
   val u = rad * V2f(   y(v), (- x(v)))

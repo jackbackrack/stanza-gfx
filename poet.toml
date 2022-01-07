@@ -1,0 +1,4 @@
+name = "stanza-gfx"
+version = "0.1.0"
+[dependencies]
+stanza-geom = "jackbackrack/stanza-geom|0.1.1"

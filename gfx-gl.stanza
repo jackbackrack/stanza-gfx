@@ -27,6 +27,7 @@ extern glTexParameteri: (int, int, int) -> int
 extern glTexImage2D: (int, int, int, int, int, int, int, int, ptr<byte>) -> int
 extern glTexSubImage2D: (int, int, int, int, int, int, int, int, ptr<byte>) -> int
 extern glTexCoord2f: (float, float) -> int
+extern glReadPixels: (int, int, int, int, int, int, ptr<byte>) -> int
 extern glScissor: (int, int, int, int) -> int
 extern glEnable: (int) -> int
 extern glDisable: (int) -> int
@@ -56,6 +57,7 @@ extern glEnd: () -> int
 extern glLineWidth: (float) -> int
 extern glPointSize: (float) -> int
 extern malloc: (long) -> ptr<?>
+extern free: (ptr<?>) -> int
 
 public lostanza defn gl-init-names () -> ref<Int> :
   call-c glInitNames()
@@ -152,6 +154,13 @@ public lostanza defn gl-tex-sub-image-2d (target:ref<Int>, level:ref<Int>, xoffs
 public lostanza defn gl-tex-coord2f (x:ref<Float>, y:ref<Float>) -> ref<False> :
   call-c glTexCoord2f(x.value, y.value)
   return false
+
+public lostanza defn gl-read-pixel (x:ref<Int>, y:ref<Int>) -> ref<Int> :
+  val data = call-c malloc(4) as ptr<int>
+  call-c glReadPixels(x.value, y.value, 1, 1, GL-RGBA.value, GL-UNSIGNED-BYTE.value, data as ptr<byte>)
+  val res = new Int{[data]}
+  call-c free(data)
+  return res
 
 public lostanza defn gl-scissor (x:ref<Int>, y:ref<Int>, width:ref<Int>, height:ref<Int>) -> ref<False> :
   call-c glScissor(x.value, y.value, width.value, height.value)

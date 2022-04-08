@@ -6,6 +6,7 @@ defpackage gfx/drawing :
   import collections
   ; import utils
   import geom/vec
+  import geom/mat
   import geom/box
   import geom/polyline
   import gfx/gl
@@ -46,29 +47,36 @@ defn do-draw-rect3 (w:Float, h:Float, d:Float, k:Int) :
   gl-vertex3f(-1.0f,  1.0f, -1.0f)
   gl-vertex3f( 1.0f,  1.0f, -1.0f)
   gl-vertex3f( 1.0f, -1.0f, -1.0f)
+  gl-end()
+  gl-begin(k)
   gl-vertex3f(-1.0f, -1.0f,  1.0f)
   gl-vertex3f(-1.0f,  1.0f,  1.0f)
   gl-vertex3f( 1.0f,  1.0f,  1.0f)
   gl-vertex3f( 1.0f, -1.0f,  1.0f)
-
+  gl-end()
+  gl-begin(k)
   gl-vertex3f(-1.0f, -1.0f, -1.0f)
   gl-vertex3f(-1.0f, -1.0f,  1.0f)
   gl-vertex3f(-1.0f,  1.0f,  1.0f)
   gl-vertex3f(-1.0f,  1.0f, -1.0f)
+  gl-end()
+  gl-begin(k)
   gl-vertex3f( 1.0f, -1.0f, -1.0f)
   gl-vertex3f( 1.0f, -1.0f,  1.0f)
   gl-vertex3f( 1.0f,  1.0f,  1.0f)
   gl-vertex3f( 1.0f,  1.0f, -1.0f)
-
+  gl-end()
+  gl-begin(k)
   gl-vertex3f(-1.0f, -1.0f, -1.0f)
   gl-vertex3f(-1.0f, -1.0f,  1.0f)
   gl-vertex3f( 1.0f, -1.0f,  1.0f)
   gl-vertex3f( 1.0f, -1.0f, -1.0f)
+  gl-end()
+  gl-begin(k)
   gl-vertex3f(-1.0f   1.0f, -1.0f)
   gl-vertex3f(-1.0f   1.0f,  1.0f)
   gl-vertex3f( 1.0f   1.0f,  1.0f)
   gl-vertex3f( 1.0f   1.0f, -1.0f)
-
   gl-end()
   gl-pop-matrix()
 

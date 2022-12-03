@@ -1,3 +1,7 @@
+foreign-package-params(conan) :
+  conan-build-dir: "{WORKDIR}/build"
+  conan-install-extra-args: ["--build" "missing"]
+
 var PLATFORM =
   on-platform :
     linux : "LINUX"
@@ -23,7 +27,18 @@ package gfx/glfw defined-in "gfx-glfw.stanza"
 package gfx/glfw requires :
   ccflags :
     on-platform :
-      os-x  : ("-lglfw3" ["-framework" "Carbon"] ["-framework" "Cocoa"] ["-framework" "OpenGL"] ["-framework" "IOKit"] ["-framework" "CoreVideo"])
-      linux : ("-lglfw" "-lrt" "-lm" "-lXrandr" "-lXinerama" "-lXi" "-lXcursor" "-lXrender" "-lGL" "-lGLU" "-lpthread" "-ldl" "-ldrm" "-lXdamage" "-lXfixes" "-lX11-xcb" "-lxcb-glx" "-lxcb-dri2" "-lxcb-dri3" "-lxcb-present" "-lxcb-randr" "-lxcb-xfixes" "-lxcb-render" "-lxcb-shape" "-lxcb-sync" "-lxshmfence" "-lXxf86vm" "-lXext" "-lX11" "-lxcb" "-lXau" "-lXdmcp")
+      os-x  : ("{CONAN-INCLUDES}" ["-framework" "Carbon"] ["-framework" "Cocoa"] ["-framework" "OpenGL"] ["-framework" "IOKit"] ["-framework" "CoreVideo"])
+      linux : ("{CONAN-INCLUDES}" "-lrt" "-lm" "-lXrandr" "-lXinerama" "-lXi" "-lXcursor" "-lXrender" "-lGL" "-lGLU" "-lpthread" "-ldl" "-ldrm" "-lXdamage" "-lXfixes" "-lX11-xcb" "-lxcb-glx" "-lxcb-dri2" "-lxcb-dri3" "-lxcb-present" "-lxcb-randr" "-lxcb-xfixes" "-lxcb-render" "-lxcb-shape" "-lxcb-sync" "-lxshmfence" "-lXxf86vm" "-lXext" "-lX11" "-lxcb" "-lXau" "-lXdmcp")
+  foreign-packages(conan) :
+    "glfw/3.3.8"
+      
+
+; package gfx/glfw defined-in "gfx-glfw.stanza"
+; package gfx/glfw requires :
+;   ccflags :
+;     on-platform :
+;       os-x  : ("-lglfw3" ["-framework" "Carbon"] ["-framework" "Cocoa"] ["-framework" "OpenGL"] ["-framework" "IOKit"] ["-framework" "CoreVideo"])
+;       linux : ("-lglfw" "-lrt" "-lm" "-lXrandr" "-lXinerama" "-lXi" "-lXcursor" "-lXrender" "-lGL" "-lGLU" "-lpthread" "-ldl" "-ldrm" "-lXdamage" "-lXfixes" "-lX11-xcb" "-lxcb-glx" "-lxcb-dri2" "-lxcb-dri3" "-lxcb-present" "-lxcb-randr" "-lxcb-xfixes" "-lxcb-render" "-lxcb-shape" "-lxcb-sync" "-lxshmfence" "-lXxf86vm" "-lXext" "-lX11" "-lxcb" "-lXau" "-lXdmcp")
+
 package gfx/font defined-in "gfx-font.stanza"
 package gfx/drawing defined-in "gfx-drawing.stanza"

@@ -1,5 +1,5 @@
 name = "stanza-gfx"
-version = "0.1.4"
+version = "0.1.5"
 [dependencies]
 stanza-utils = "jackbackrack/stanza-utils|0.1.1"
-stanza-geom = "jackbackrack/stanza-geom|0.1.4"
+stanza-geom = "jackbackrack/stanza-geom|0.1.5"

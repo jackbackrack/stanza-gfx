@@ -16,7 +16,7 @@ extern glGetDoublev: (int, ptr<double>) -> int
 extern glGetIntegerv: (int, ptr<int>) -> int
 
 extern tess_mesh_delete: (ptr<tess_mesh>) -> int
-extern tess_triangulate: (ptr<float>) -> ptr<tess_mesh>
+extern tess_triangulate: (ptr<double>) -> ptr<tess_mesh>
 extern gluPerspective: (double, double, double, double) -> int
 extern gluProject: (double, double, double, ptr<double>, ptr<double>, ptr<int>, ptr<double>, ptr<double>, ptr<double>) -> int
 extern glReadPixels: (int, int, int, int, int, int, ptr<?>) -> int
@@ -40,9 +40,9 @@ lostanza deftype tess_tri :
   c : int
 
 lostanza deftype tess_vec3 :
-  x : float
-  y : float
-  z : float
+  x : double
+  y : double
+  z : double
 
 lostanza deftype tess_mesh :
   verts : ptr<tess_vec3>
@@ -53,9 +53,9 @@ lostanza deftype tess_mesh :
 lostanza deftype TessMesh :
   var value : ptr<tess_mesh>
 
-public lostanza defn get-vert-value (m:ref<TessMesh>, i:ref<Int>) -> ref<V3f> :
+public lostanza defn get-vert-value (m:ref<TessMesh>, i:ref<Int>) -> ref<V3d> :
   val vert = m.value.verts[i.value]
-  return V3f(new Float{vert.x}, new Float{vert.y}, new Float{vert.z})
+  return V3d(new Double{vert.x}, new Double{vert.y}, new Double{vert.z})
 
 public lostanza defn get-vert-index (m:ref<TessMesh>, i:ref<Int>) -> ref<V3i> :
   val tri = m.value.tris[i.value]
@@ -83,13 +83,13 @@ defn contours-size (poly:Polygon) -> Int :
 public lostanza defn triangulate (poly:ref<Polygon>) -> ref<Mesh> :
   val c-poly-size = contours-size(poly)
   ;; call-c printf("TRIANGULATE LENGTH %d\n", c-poly-size.value)
-  val c-poly : ptr<float> = call-c malloc(c-poly-size.value * sizeof(float))
+  val c-poly : ptr<double> = call-c malloc(c-poly-size.value * sizeof(double))
   var idx:int = 0
-  c-poly[idx] = to-float(length(contours(poly))).value
+  c-poly[idx] = to-double(length(contours(poly))).value
   idx = idx + 1
   for (var i:int = 0, i < length(contours(poly)).value, i = i + 1) :
     val contour = get(contours(poly), new Int{i})
-    c-poly[idx] = to-float(length(vertices(contour))).value
+    c-poly[idx] = to-double(length(vertices(contour))).value
     ;; call-c printf("  CONTOUR SIZE %f\n", c-poly[idx])
     idx = idx + 1
     for (var j:int = 0, j < length(vertices(contour)).value, j = j + 1) :
@@ -105,7 +105,7 @@ public lostanza defn triangulate (poly:ref<Polygon>) -> ref<Mesh> :
   c-mesh.value = 0L as ptr<tess_mesh>
   return mesh
 
-public lostanza defn glu-perspective (a:ref<Float>, b:ref<Float>, c:ref<Float>, d:ref<Float>) -> ref<False> :
+public lostanza defn glu-perspective (a:ref<Double>, b:ref<Double>, c:ref<Double>, d:ref<Double>) -> ref<False> :
   call-c gluPerspective(a.value as double, b.value as double, c.value as double, d.value as double)
   return false
 
@@ -122,52 +122,52 @@ lostanza defn load-project-data () -> ref<False> :
   call-c glGetIntegerv( GL-VIEWPORT.value, *view* )
   return false
 
-public lostanza defn glu-project (obj:ref<V3f>) -> ref<V3f> :
+public lostanza defn glu-project (obj:ref<V3d>) -> ref<V3d> :
   load-project-data()
   call-c gluProject(x(obj).value as double, y(obj).value as double, z(obj).value as double,
                     *model*, *proj*, *view*, *ptx*, *pty*, *ptz*)
-  return new V3f{[*ptx*] as float, [*pty*] as float, [*ptz*] as float}
+  return new V3d{[*ptx*] as double, [*pty*] as double, [*ptz*] as double}
 
-public defn glu-project-dims (dims:V3f) -> Box3f :
-  Box3f(glu-project(-0.5f * dims), glu-project(0.5f * dims))
+public defn glu-project-dims (dims:V3d) -> Box3d :
+  Box3d(glu-project(-0.5 * dims), glu-project(0.5 * dims))
 
-lostanza val *win-z* : ptr<float> = call-c malloc(1 * sizeof(float))
+lostanza val *win-z* : ptr<double> = call-c malloc(1 * sizeof(double))
 
-public lostanza defn glu-unproject (win:ref<V3i>, win-z:ref<Float>) -> ref<V3f> :
+public lostanza defn glu-unproject (win:ref<V3i>, win-z:ref<Double>) -> ref<V3d> :
   load-project-data()
   val win-y = *view*[3] - y(win).value
   call-c gluUnProject(x(win).value as double, win-y as double, win-z.value as double,
                       *model*, *proj*, *view*, *ptx*, *pty*, *ptz*)
-  return new V3f{[*ptx*] as float, [*pty*] as float, [*ptz*] as float}
+  return new V3d{[*ptx*] as double, [*pty*] as double, [*ptz*] as double}
 
-public lostanza defn glu-unproject (win:ref<V3i>) -> ref<V3f> :
+public lostanza defn glu-unproject (win:ref<V3i>) -> ref<V3d> :
   val win-y = *view*[3] - y(win).value
   call-c glReadPixels(x(win).value, win-y, 1, 1, GL-DEPTH-COMPONENT.value, GL-FLOAT.value, *win-z*)
-  return glu-unproject(win, new Float{[*win-z*] as float})
+  return glu-unproject(win, new Double{[*win-z*] as double})
 
-;; public lostanza defn glu-unproject (x:Int, y:Int) -> ref<V3f> :
+;; public lostanza defn glu-unproject (x:Int, y:Int) -> ref<V3d> :
 ;;   load-project-data()
 ;;   val win-x = x
-;;   call-c glReadPixels(x, win-y, 1, 1, GL-DEPTH-COMPONENT, GL-FLOAT, *win-z*)
-;;   call-c gluUnProject(to-float(x), to-float(win-y), [*win-z*], *model*, *proj*, *view*, *ptx*, *pty*, *ptz*)
-;;   return new V3f{[*ptx*] as float, [*pty*] as float, [*ptz*] as float}
+;;   call-c glReadPixels(x, win-y, 1, 1, GL-DEPTH-COMPONENT, GL-DOUBLE, *win-z*)
+;;   call-c gluUnProject(to-double(x), to-double(win-y), [*win-z*], *model*, *proj*, *view*, *ptx*, *pty*, *ptz*)
+;;   return new V3d{[*ptx*] as double, [*pty*] as double, [*ptz*] as double}
 
-public lostanza defn glu-ortho2d (l:ref<Float>, r:ref<Float>, b:ref<Float>, t:ref<Float>) -> ref<False> :
+public lostanza defn glu-ortho2d (l:ref<Double>, r:ref<Double>, b:ref<Double>, t:ref<Double>) -> ref<False> :
   call-c gluOrtho2D(l.value as double, r.value as double, b.value as double, t.value as double)
   return false
 
-public lostanza defn glu-look-at (ex:ref<Float>, ey:ref<Float>, ez:ref<Float>,
-                                  cx:ref<Float>, cy:ref<Float>, cz:ref<Float>,
-                                  ux:ref<Float>, uy:ref<Float>, uz:ref<Float>) -> ref<False> :
+public lostanza defn glu-look-at (ex:ref<Double>, ey:ref<Double>, ez:ref<Double>,
+                                  cx:ref<Double>, cy:ref<Double>, cz:ref<Double>,
+                                  ux:ref<Double>, uy:ref<Double>, uz:ref<Double>) -> ref<False> :
   call-c gluLookAt(ex.value as double, ey.value as double, ez.value as double,
                    cx.value as double, cy.value as double, cz.value as double,
                    ux.value as double, uy.value as double, uz.value as double)
   return false
 
-public defn glu-look-at (eye:V3f, center:V3f, up:V3f) :
+public defn glu-look-at (eye:V3d, center:V3d, up:V3d) :
   glu-look-at(x(eye), y(eye), z(eye), x(center), y(center), z(center), x(up), y(up), z(up))
 
-public lostanza defn glu-pick-matrix (ex:ref<Float>, ey:ref<Float>, ew:ref<Float>, eh:ref<Float>, viewport:ref<IntArray>) -> ref<False> :
+public lostanza defn glu-pick-matrix (ex:ref<Double>, ey:ref<Double>, ew:ref<Double>, eh:ref<Double>, viewport:ref<IntArray>) -> ref<False> :
   call-c gluPickMatrix(ex.value as double, ey.value as double, ew.value as double, eh.value as double,
                        addr!(viewport.data))
   return false

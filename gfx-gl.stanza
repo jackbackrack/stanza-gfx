@@ -26,7 +26,7 @@ extern glDeleteTextures: (int, ptr<int>) -> int
 extern glTexParameteri: (int, int, int) -> int
 extern glTexImage2D: (int, int, int, int, int, int, int, int, ptr<byte>) -> int
 extern glTexSubImage2D: (int, int, int, int, int, int, int, int, ptr<byte>) -> int
-extern glTexCoord2f: (float, float) -> int
+extern glTexCoord2d: (double, double) -> int
 extern glReadPixels: (int, int, int, int, int, int, ptr<byte>) -> int
 extern glScissor: (int, int, int, int) -> int
 extern glEnable: (int) -> int
@@ -45,17 +45,17 @@ extern glPopAttrib: () -> int
 extern glLoadIdentity: () -> int
 extern glOrtho: (double, double, double, double, double, double) -> int
 extern glFrustum: (double, double, double, double, double, double) -> int
-extern glRotatef: (float, float, float, float) -> int
-extern glTranslatef: (float, float, float) -> int
-extern glScalef: (float, float, float) -> int
-extern glColor3f: (float, float, float) -> int
-extern glColor4f: (float, float, float, float) -> int
-extern glVertex3f: (float, float, float) -> int
-extern glVertex2f: (float, float) -> int
+extern glRotated: (double, double, double, double) -> int
+extern glTranslated: (double, double, double) -> int
+extern glScaled: (double, double, double) -> int
+extern glColor3d: (double, double, double) -> int
+extern glColor4d: (double, double, double, double) -> int
+extern glVertex3d: (double, double, double) -> int
+extern glVertex2d: (double, double) -> int
 extern glBegin: (int) -> int
 extern glEnd: () -> int
-extern glLineWidth: (float) -> int
-extern glPointSize: (float) -> int
+extern glLineWidth: (double) -> int
+extern glPointSize: (double) -> int
 extern malloc: (long) -> ptr<?>
 extern free: (ptr<?>) -> int
 
@@ -151,8 +151,8 @@ public lostanza defn gl-tex-sub-image-2d (target:ref<Int>, level:ref<Int>, xoffs
   call-c glTexSubImage2D(target.value, level.value, xoffset.value, yoffset.value, width.value, height.value, format.value, type.value, data.value)
   return false
 
-public lostanza defn gl-tex-coord2f (x:ref<Float>, y:ref<Float>) -> ref<False> :
-  call-c glTexCoord2f(x.value, y.value)
+public lostanza defn gl-tex-coord2d (x:ref<Double>, y:ref<Double>) -> ref<False> :
+  call-c glTexCoord2d(x.value, y.value)
   return false
 
 public lostanza defn gl-read-pixel (x:ref<Int>, y:ref<Int>) -> ref<Int> :
@@ -240,31 +240,31 @@ public lostanza defn gl-load-identity () -> ref<False> :
   call-c glLoadIdentity()
   return false
 
-public lostanza defn gl-ortho (a:ref<Float>, b:ref<Float>, c:ref<Float>, d:ref<Float>, e:ref<Float>, f:ref<Float>) -> ref<False> :
+public lostanza defn gl-ortho (a:ref<Double>, b:ref<Double>, c:ref<Double>, d:ref<Double>, e:ref<Double>, f:ref<Double>) -> ref<False> :
   call-c glOrtho(a.value as double, b.value as double, c.value as double, d.value as double, e.value as double, f.value as double)
   return false
 
-public lostanza defn gl-frustum (a:ref<Float>, b:ref<Float>, c:ref<Float>, d:ref<Float>, e:ref<Float>, f:ref<Float>) -> ref<False> :
+public lostanza defn gl-frustum (a:ref<Double>, b:ref<Double>, c:ref<Double>, d:ref<Double>, e:ref<Double>, f:ref<Double>) -> ref<False> :
   call-c glFrustum(a.value as double, b.value as double, c.value as double, d.value as double, e.value as double, f.value as double)
   return false
 
-public lostanza defn gl-rotatef (a:ref<Float>, x:ref<Float>, y:ref<Float>, z:ref<Float>) -> ref<False> :
-  call-c glRotatef(a.value, x.value, y.value, z.value)
+public lostanza defn gl-translate (x:ref<Double>, y:ref<Double>, z:ref<Double>) -> ref<False> :
+  call-c glTranslated(x.value, y.value, z.value)
   return false
 
-public lostanza defn gl-translatef (x:ref<Float>, y:ref<Float>, z:ref<Float>) -> ref<False> :
-  call-c glTranslatef(x.value, y.value, z.value)
+public lostanza defn gl-rotate (a:ref<Double>, x:ref<Double>, y:ref<Double>, z:ref<Double>) -> ref<False> :
+  call-c glRotated(a.value, x.value, y.value, z.value)
   return false
 
-public lostanza defn gl-scalef (x:ref<Float>, y:ref<Float>, z:ref<Float>) -> ref<False> :
-  call-c glScalef(x.value, y.value, z.value)
+public lostanza defn gl-scale (x:ref<Double>, y:ref<Double>, z:ref<Double>) -> ref<False> :
+  call-c glScaled(x.value, y.value, z.value)
   return false
 
-public lostanza defn gl-line-width (w:ref<Float>) -> ref<False> :
+public lostanza defn gl-line-width (w:ref<Double>) -> ref<False> :
   call-c glLineWidth(w.value)
   return false
 
-public lostanza defn gl-point-size (w:ref<Float>) -> ref<False> :
+public lostanza defn gl-point-size (w:ref<Double>) -> ref<False> :
   call-c glPointSize(w.value)
   return false
 
@@ -288,20 +288,20 @@ public lostanza defn gl-pop-attrib () -> ref<False> :
   call-c glPopAttrib()
   return false
 
-public lostanza defn gl-color3f (r:ref<Float>, g:ref<Float>, b:ref<Float>) -> ref<False> :
-  call-c glColor3f(r.value, g.value, b.value)
+public lostanza defn gl-vertex (x:ref<Double>, y:ref<Double>, z:ref<Double>) -> ref<False> :
+  call-c glVertex3d(x.value, y.value, z.value)
   return false
 
-public lostanza defn gl-color4f (r:ref<Float>, g:ref<Float>, b:ref<Float>, a:ref<Float>) -> ref<False> :
-  call-c glColor4f(r.value, g.value, b.value, a.value)
+public lostanza defn gl-vertex (x:ref<Double>, y:ref<Double>) -> ref<False> :
+  call-c glVertex2d(x.value, y.value)
   return false
 
-public lostanza defn gl-vertex3f (x:ref<Float>, y:ref<Float>, z:ref<Float>) -> ref<False> :
-  call-c glVertex3f(x.value, y.value, z.value)
+public lostanza defn gl-color (r:ref<Double>, g:ref<Double>, b:ref<Double>) -> ref<False> :
+  call-c glColor3d(r.value, g.value, b.value)
   return false
 
-public lostanza defn gl-vertex2f (x:ref<Float>, y:ref<Float>) -> ref<False> :
-  call-c glVertex2f(x.value, y.value)
+public lostanza defn gl-color (r:ref<Double>, g:ref<Double>, b:ref<Double>, a:ref<Double>) -> ref<False> :
+  call-c glColor4d(r.value, g.value, b.value, a.value)
   return false
 
 public lostanza defn gl-end () -> ref<False> :

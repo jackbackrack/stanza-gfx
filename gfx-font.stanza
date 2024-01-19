@@ -21,13 +21,13 @@ val @doc-pkg-font = "## FONT -- vector font"
 
 val @doc-glyph = "GLYPH -- polyline description of character"
 public deftype Glyph
-public defmulti width (g:Glyph) -> Float
-public defmulti height (g:Glyph) -> Float
-public defmulti polyline (g:Glyph) -> PolyLine2f
+public defmulti width (g:Glyph) -> Double
+public defmulti height (g:Glyph) -> Double
+public defmulti polyline (g:Glyph) -> PolyLine2
 public defmulti display-list (g:Glyph) -> DisplayList
 public defmulti set-display-list (g:Glyph, d:DisplayList) -> False
 
-public defn Glyph (width:Float, height:Float, polyline:PolyLine2f) :
+public defn Glyph (width:Double, height:Double, polyline:PolyLine2) :
   var display-list = gl-null-list()
   new Glyph :
     defmethod width (this) : width
@@ -36,203 +36,203 @@ public defn Glyph (width:Float, height:Float, polyline:PolyLine2f) :
     defmethod display-list (this) : display-list
     defmethod set-display-list (this, dl:DisplayList) : display-list = dl
 
-public defn Glyph (width:Float, height:Float, istrokes:Tuple<Tuple<Float>>) :
+public defn Glyph (width:Double, height:Double, istrokes:Tuple<Tuple<Double>>) :
   val polyline = 
-    PolyLine2f $ to-tuple $ for stroke in istrokes seq :
+    PolyLine2 $ to-tuple $ for stroke in istrokes seq :
       to-tuple $ for i in 0 to length(stroke) / 2 seq :
-        V2f(stroke[i * 2], stroke[i * 2 + 1])
+        V2d(stroke[i * 2], stroke[i * 2 + 1])
   Glyph(width, height, polyline)
 
-public defn Glyphi (width:Float, height:Float, istrokes:Tuple<Tuple<Int>>) :
-  Glyph(width, height, to-tuple(seq(to-tuple{seq(to-float, _)}, istrokes)))
+public defn Glyphi (width:Double, height:Double, istrokes:Tuple<Tuple<Int>>) :
+  Glyph(width, height, to-tuple(seq(to-tuple{seq(to-double, _)}, istrokes)))
 
-val C =  0.0f
-val L = -1.0f
-val R =  1.0f
-val B = -1.0f
-val T =  1.0f
+val C =  0.0
+val L = -1.0
+val R =  1.0
+val B = -1.0
+val T =  1.0
 
-defn get (entries:Tuple<KeyValue<Char, Float>>, c:Char) -> Float :
-  label<Float> break :
+defn get (entries:Tuple<KeyValue<Char, Double>>, c:Char) -> Double :
+  label<Double> break :
     for e in entries do :
       if key(e) == c :
         break(value(e))
-    0.0f ;; error("No Key Found")
+    0.0 ;; error("No Key Found")
 
 val glyphs-3x3 = [
-  '[' => Glyph(2.4f, 2.4f, [[C T L T L B C B]])
-  ']' => Glyph(2.4f, 2.4f, [[C T R T R B C B]])
-  '(' => Glyph(2.4f, 2.4f, [[R T C T C B R B] [L C L C]])
-  ')' => Glyph(2.4f, 2.4f, [[L T C T C B L B] [R C R C]])
-  '{' => Glyph(2.4f, 2.4f, [[R T C T C C L C C C C B R B]])
-  '}' => Glyph(2.4f, 2.4f, [[L T C T C C R C C C C B L B]])
-  '*' => Glyph(2.4f, 2.4f, [[C T C B] [L C R C] [L T L T] [R T R T] [L B L B] [R B R B]])
-  ' ' => Glyph(2.4f, 2.4f, [])
-  '"' => Glyph(2.4f, 2.4f, [[L T L C] [C T C C] [R T R C]]) ; "
-  '\'' => Glyph(2.4f, 2.4f, [[C T C C]])
-  '`' => Glyph(2.4f, 2.4f, [[C T C C R C]])
-  '|' => Glyph(2.4f, 2.4f, [[C T C B]])
-  '?' => Glyph(2.4f, 2.4f, [[L T R T R C C C] [C B C B]])
-  '/' => Glyph(2.4f, 2.4f, [[L B C B C T R T]])
-  '\\' => Glyph(2.4f, 2.4f, [[L T C T C B R B]])
-  ; ';' => Glyph(2.4f, 2.4f, [[L T R T] [C T C C] [L B C B]])
-  ; ':' => Glyph(2.4f, 2.4f, [[L T R T] [C T C C] [L B R B]])
-  ';' => Glyph(2.4f, 2.4f, [[C T C T] [C C C B L B]])
-  ':' => Glyph(2.4f, 2.4f, [[C T C T] [C B C B]])
-  '~' => Glyph(2.4f, 2.4f, [[L B L C C C C B R B R C]])
-  '@' => Glyph(2.4f, 2.4f, [[R B L B L T R T R C C C C T]])
-  '#' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B] [C T C B] [L C R C]])
-  '$' => Glyph(2.4f, 2.4f, [[L B R B R C L C L T R T] [C T C B]])
-  '%' => Glyph(2.4f, 2.4f, [[L T L T] [L B C B C T R T] [R B R B]])
-  '&' => Glyph(2.4f, 2.4f, [[R B L B L C R C R T C T C B]])
-  ',' => Glyph(2.4f, 2.4f, [[C C C B L B]])
-  '^' => Glyph(2.4f, 2.4f, [[L C R C] [C T C C]])
-  '!' => Glyph(2.4f, 2.4f, [[C T C C] [C B C B]])
-  '-' => Glyph(2.4f, 2.4f, [[L C R C]]),
-  '_' => Glyph(2.4f, 2.4f, [[L B R B]]),
-  '+' => Glyph(2.4f, 2.4f, [[L C R C] [C T C B]]),
-  '=' => Glyph(2.4f, 2.4f, [[L T R T] [L B R B]]),
-  '.' => Glyph(2.4f, 2.4f, [[C B C B]]),
-  '>' => Glyph(2.4f, 2.4f, [[L T L B] [L C R C]])
-  '<' => Glyph(2.4f, 2.4f, [[R T R B] [L C R C]])
-  '0' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B] [C C C C]]),
-  '1' => Glyph(2.4f, 2.4f, [[C T C B] [L T C T] [L B R B]]),
-  '2' => Glyph(2.4f, 2.4f, [[L T R T R C L C L B R B]]), ; straight up
-  '3' => Glyph(2.4f, 2.4f, [[L T R T R B L B] [L C R C]]),
-  '4' => Glyph(2.4f, 2.4f, [[L T L C R C] [R T R B]]),
-  '5' => Glyph(2.4f, 2.4f, [[L B R B R C L C L T R T]]),
-  '6' => Glyph(2.4f, 2.4f, [[L C R C R B L B L T R T]]),
-  '7' => Glyph(2.4f, 2.4f, [[L T R T R B]]),
-  '8' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B] [L C R C]]),
-  '9' => Glyph(2.4f, 2.4f, [[L B R B R T L T L C R C]]),
-  'A' => Glyph(2.4f, 2.4f, [[L B L T R T R B] [L C R C]]),
-  'B' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B] [L C R C] [C T C C]]),
-  'C' => Glyph(2.4f, 2.4f, [[R B L B L T R T]]),
-  'D' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B] [L C C C C T]]), ; extra square up top
-  'E' => Glyph(2.4f, 2.4f, [[R T L T L B R B] [L C R C]]),
-  'F' => Glyph(2.4f, 2.4f, [[L B L T R T] [L C R C]]),
-  'G' => Glyph(2.4f, 2.4f, [[R T L T L B R B R C C C]]),
-  'H' => Glyph(2.4f, 2.4f, [[L T L B] [L C R C] [R T R B]]),
-  'I' => Glyph(2.4f, 2.4f, [[L T R T] [C T C B] [L B R B]]),
-  'J' => Glyph(2.4f, 2.4f, [[C T R T R B L B]])
-  'K' => Glyph(2.4f, 2.4f, [[L T L B] [L C C C] [R B C B C T R T]])
-  'L' => Glyph(2.4f, 2.4f, [[L T L B R B]]),
-  'M' => Glyph(2.4f, 2.4f, [[L B L T R T R B] [C T C B]]),
-  'N' => Glyph(2.4f, 2.4f, [[L B L T C T C B R B R T]])
-  'O' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B]]),
-  'P' => Glyph(2.4f, 2.4f, [[L B L B L T R T R C L C]]),
-  'Q' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B] [C B C C]]),
-  'R' => Glyph(2.4f, 2.4f, [[L B L T C T C C] [L C R C R B]])
-  'S' => Glyph(2.4f, 2.4f, [[L B R B R C L C L T R T]]),
-  'T' => Glyph(2.4f, 2.4f, [[L T R T] [C T C B]]),
-  'U' => Glyph(2.4f, 2.4f, [[L T L B R B R T]]),
-  'V' => Glyph(2.4f, 2.4f, [[L T L B C B C C R C R T]])
-  'W' => Glyph(2.4f, 2.4f, [[L T L B R B R T] [C T C B]]),
-  'X' => Glyph(2.4f, 2.4f, [[L T R T] [L C R C] [L B R B] [C T C B]])
-  'Y' => Glyph(2.4f, 2.4f, [[L T L C R C R T] [C C C B]])
-  'Z' => Glyph(2.4f, 2.4f, [[L T R T R C L C L B R B] [C T C B]])
+  '[' => Glyph(2.4, 2.4, [[C T L T L B C B]])
+  ']' => Glyph(2.4, 2.4, [[C T R T R B C B]])
+  '(' => Glyph(2.4, 2.4, [[R T C T C B R B] [L C L C]])
+  ')' => Glyph(2.4, 2.4, [[L T C T C B L B] [R C R C]])
+  '{' => Glyph(2.4, 2.4, [[R T C T C C L C C C C B R B]])
+  '}' => Glyph(2.4, 2.4, [[L T C T C C R C C C C B L B]])
+  '*' => Glyph(2.4, 2.4, [[C T C B] [L C R C] [L T L T] [R T R T] [L B L B] [R B R B]])
+  ' ' => Glyph(2.4, 2.4, [])
+  '"' => Glyph(2.4, 2.4, [[L T L C] [C T C C] [R T R C]]) ; "
+  '\'' => Glyph(2.4, 2.4, [[C T C C]])
+  '`' => Glyph(2.4, 2.4, [[C T C C R C]])
+  '|' => Glyph(2.4, 2.4, [[C T C B]])
+  '?' => Glyph(2.4, 2.4, [[L T R T R C C C] [C B C B]])
+  '/' => Glyph(2.4, 2.4, [[L B C B C T R T]])
+  '\\' => Glyph(2.4, 2.4, [[L T C T C B R B]])
+  ; ';' => Glyph(2.4, 2.4, [[L T R T] [C T C C] [L B C B]])
+  ; ':' => Glyph(2.4, 2.4, [[L T R T] [C T C C] [L B R B]])
+  ';' => Glyph(2.4, 2.4, [[C T C T] [C C C B L B]])
+  ':' => Glyph(2.4, 2.4, [[C T C T] [C B C B]])
+  '~' => Glyph(2.4, 2.4, [[L B L C C C C B R B R C]])
+  '@' => Glyph(2.4, 2.4, [[R B L B L T R T R C C C C T]])
+  '#' => Glyph(2.4, 2.4, [[L B L T R T R B L B] [C T C B] [L C R C]])
+  '$' => Glyph(2.4, 2.4, [[L B R B R C L C L T R T] [C T C B]])
+  '%' => Glyph(2.4, 2.4, [[L T L T] [L B C B C T R T] [R B R B]])
+  '&' => Glyph(2.4, 2.4, [[R B L B L C R C R T C T C B]])
+  ',' => Glyph(2.4, 2.4, [[C C C B L B]])
+  '^' => Glyph(2.4, 2.4, [[L C R C] [C T C C]])
+  '!' => Glyph(2.4, 2.4, [[C T C C] [C B C B]])
+  '-' => Glyph(2.4, 2.4, [[L C R C]]),
+  '_' => Glyph(2.4, 2.4, [[L B R B]]),
+  '+' => Glyph(2.4, 2.4, [[L C R C] [C T C B]]),
+  '=' => Glyph(2.4, 2.4, [[L T R T] [L B R B]]),
+  '.' => Glyph(2.4, 2.4, [[C B C B]]),
+  '>' => Glyph(2.4, 2.4, [[L T L B] [L C R C]])
+  '<' => Glyph(2.4, 2.4, [[R T R B] [L C R C]])
+  '0' => Glyph(2.4, 2.4, [[L B L T R T R B L B] [C C C C]]),
+  '1' => Glyph(2.4, 2.4, [[C T C B] [L T C T] [L B R B]]),
+  '2' => Glyph(2.4, 2.4, [[L T R T R C L C L B R B]]), ; straight up
+  '3' => Glyph(2.4, 2.4, [[L T R T R B L B] [L C R C]]),
+  '4' => Glyph(2.4, 2.4, [[L T L C R C] [R T R B]]),
+  '5' => Glyph(2.4, 2.4, [[L B R B R C L C L T R T]]),
+  '6' => Glyph(2.4, 2.4, [[L C R C R B L B L T R T]]),
+  '7' => Glyph(2.4, 2.4, [[L T R T R B]]),
+  '8' => Glyph(2.4, 2.4, [[L B L T R T R B L B] [L C R C]]),
+  '9' => Glyph(2.4, 2.4, [[L B R B R T L T L C R C]]),
+  'A' => Glyph(2.4, 2.4, [[L B L T R T R B] [L C R C]]),
+  'B' => Glyph(2.4, 2.4, [[L B L T R T R B L B] [L C R C] [C T C C]]),
+  'C' => Glyph(2.4, 2.4, [[R B L B L T R T]]),
+  'D' => Glyph(2.4, 2.4, [[L B L T R T R B L B] [L C C C C T]]), ; extra square up top
+  'E' => Glyph(2.4, 2.4, [[R T L T L B R B] [L C R C]]),
+  'F' => Glyph(2.4, 2.4, [[L B L T R T] [L C R C]]),
+  'G' => Glyph(2.4, 2.4, [[R T L T L B R B R C C C]]),
+  'H' => Glyph(2.4, 2.4, [[L T L B] [L C R C] [R T R B]]),
+  'I' => Glyph(2.4, 2.4, [[L T R T] [C T C B] [L B R B]]),
+  'J' => Glyph(2.4, 2.4, [[C T R T R B L B]])
+  'K' => Glyph(2.4, 2.4, [[L T L B] [L C C C] [R B C B C T R T]])
+  'L' => Glyph(2.4, 2.4, [[L T L B R B]]),
+  'M' => Glyph(2.4, 2.4, [[L B L T R T R B] [C T C B]]),
+  'N' => Glyph(2.4, 2.4, [[L B L T C T C B R B R T]])
+  'O' => Glyph(2.4, 2.4, [[L B L T R T R B L B]]),
+  'P' => Glyph(2.4, 2.4, [[L B L B L T R T R C L C]]),
+  'Q' => Glyph(2.4, 2.4, [[L B L T R T R B L B] [C B C C]]),
+  'R' => Glyph(2.4, 2.4, [[L B L T C T C C] [L C R C R B]])
+  'S' => Glyph(2.4, 2.4, [[L B R B R C L C L T R T]]),
+  'T' => Glyph(2.4, 2.4, [[L T R T] [C T C B]]),
+  'U' => Glyph(2.4, 2.4, [[L T L B R B R T]]),
+  'V' => Glyph(2.4, 2.4, [[L T L B C B C C R C R T]])
+  'W' => Glyph(2.4, 2.4, [[L T L B R B R T] [C T C B]]),
+  'X' => Glyph(2.4, 2.4, [[L T R T] [L C R C] [L B R B] [C T C B]])
+  'Y' => Glyph(2.4, 2.4, [[L T L C R C R T] [C C C B]])
+  'Z' => Glyph(2.4, 2.4, [[L T R T R C L C L B R B] [C T C B]])
   ]
 
 ; val glyphs-3x3 = [
-;   '[' => Glyph(2.4f, 2.4f, [[C T L T L B C B]])
-;   ']' => Glyph(2.4f, 2.4f, [[C T R T R B C B]])
-;   '(' => Glyph(2.4f, 2.4f, [[C T L C C B]])
-;   ')' => Glyph(2.4f, 2.4f, [[C T R C C B]])
-;   '{' => Glyph(2.4f, 2.4f, [[R T C T C C L C C C C B R B]])
-;   '}' => Glyph(2.4f, 2.4f, [[L T C T C C R C C C C B L B]])
-;   '*' => Glyph(2.4f, 2.4f, [[L C R C] [L B R T] [L T R B] [C T C B]])
-;   ' ' => Glyph(2.4f, 2.4f, [])
-;   '"' => Glyph(2.4f, 2.4f, [[L T L C] [C T C C] [R T R C]]) ; "
-;   '\'' => Glyph(2.4f, 2.4f, [[C T C C]])
-;   ; '`' => Glyph(2.4f, 2.4f, [[R T R C C C]])
-;   '`' => Glyph(2.4f, 2.4f, [[C T C C R C]])
-;   '|' => Glyph(2.4f, 2.4f, [[C T C B]])
-;   ; '?' => Glyph(2.4f, 2.4f, [[L T R T R C C C C B]])
-;   '?' => Glyph(2.4f, 2.4f, [[L T R T R C C C] [C B C B]])
-;   '/' => Glyph(2.4f, 2.4f, [[L B R T]])
-;   '\\' => Glyph(2.4f, 2.4f, [[R B L T]])
-;   ; ';' => Glyph(2.4f, 2.4f, [[L T R T] [C T C C] [L B C B]])
-;   ; ':' => Glyph(2.4f, 2.4f, [[L T R T] [C T C C] [L B R B]])
-;   ';' => Glyph(2.4f, 2.4f, [[C T C T] [C C C B L B]])
-;   ':' => Glyph(2.4f, 2.4f, [[C T C T] [C B C B]])
-;   '~' => Glyph(2.4f, 2.4f, [[L T C T C B R B]])
-;   '@' => Glyph(2.4f, 2.4f, [[R B L B L T R T R C C C]])
-;   '#' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B] [C T C B] [L C R C]])
-;   '$' => Glyph(2.4f, 2.4f, [[L B R B R C L C L T R T] [C T C B]])
-;   ; '%' => Glyph(2.4f, 2.4f, [[R T L B] [L T L C] [R C R B]])
-;   '%' => Glyph(2.4f, 2.4f, [[L T L T] [L B C B C T R T] [R B R B]])
-;   '&' => Glyph(2.4f, 2.4f, [[L T L B C B C T L T] [L C C C] [C B R B R C]])
-;   ',' => Glyph(2.4f, 2.4f, [[C C C B L B]])
-;   '^' => Glyph(2.4f, 2.4f, [[L C C T R C]])
-;   ; '!' => Glyph(2.4f, 2.4f, [[C T C B] [L B R B]])
-;   '!' => Glyph(2.4f, 2.4f, [[C T C C] [C B C B]])
-;   '-' => Glyph(2.4f, 2.4f, [[L C R C]]),
-;   '_' => Glyph(2.4f, 2.4f, [[L B R B]]),
-;   '+' => Glyph(2.4f, 2.4f, [[L C R C] [C T C B]]),
-;   '=' => Glyph(2.4f, 2.4f, [[L T R T] [L B R B]]),
-;   ; '.' => Glyph(2.4f, 2.4f, [[L B R B] [C B C C]]),
-;   '.' => Glyph(2.4f, 2.4f, [[C B C B]]),
-;   '>' => Glyph(2.4f, 2.4f, [[L B R C L T]]),
-;   '<' => Glyph(2.4f, 2.4f, [[R T L C R B]]),
-;   '0' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B] [C T C B]]),
-;   '1' => Glyph(2.4f, 2.4f, [[C T C B]]),
-;   '2' => Glyph(2.4f, 2.4f, [[L T R T R C L C L B R B]]), ; straight up
-;   '3' => Glyph(2.4f, 2.4f, [[L T R T R B L B] [L C R C]]),
-;   '4' => Glyph(2.4f, 2.4f, [[L T L C R C] [R T R B]]),
-;   '5' => Glyph(2.4f, 2.4f, [[L B R B R C L C L T R T]]),
-;   '6' => Glyph(2.4f, 2.4f, [[L C R C R B L B L T R T]]),
-;   '7' => Glyph(2.4f, 2.4f, [[L T R T R B]]),
-;   '8' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B] [L C R C]]),
-;   '9' => Glyph(2.4f, 2.4f, [[L B R B R T L T L C R C]]),
-;   'A' => Glyph(2.4f, 2.4f, [[L B L T R T R B] [L C R C]]),
-;   'B' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B] [L C R C] [C T C C]]),
-;   'C' => Glyph(2.4f, 2.4f, [[R B L B L T R T]]),
-;   'D' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B] [L C C C C T]]), ; extra square up top
-;   'E' => Glyph(2.4f, 2.4f, [[R T L T L B R B] [L C R C]]),
-;   'F' => Glyph(2.4f, 2.4f, [[L B L T R T] [L C R C]]),
-;   'G' => Glyph(2.4f, 2.4f, [[R T L T L B R B R C C C]]),
-;   'H' => Glyph(2.4f, 2.4f, [[L T L B] [L C R C] [R T R B]]),
-;   'I' => Glyph(2.4f, 2.4f, [[L T R T] [C T C B] [L B R B]]),
-;   'J' => Glyph(2.4f, 2.4f, [[L C L B R B R T]]),
-;   'K' => Glyph(2.4f, 2.4f, [[L T L B] [L C R C] [R T R B] [C T C C]]), ; like H with extra top vert
-;   'L' => Glyph(2.4f, 2.4f, [[L T L B R B]]),
-;   'M' => Glyph(2.4f, 2.4f, [[L B L T R T R B] [C T C B]]),
-;   'N' => Glyph(2.4f, 2.4f, [[L B L T R T R B]]),
-;   'O' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B]]),
-;   'P' => Glyph(2.4f, 2.4f, [[L B L B L T R T R C L C]]),
-;   'Q' => Glyph(2.4f, 2.4f, [[L B L T R T R B L B] [C B C C]]),
-;   'R' => Glyph(2.4f, 2.4f, [[L B L T R T R B] [L C R C] [C T C C]]), ; like A with extra top vert
-;   'S' => Glyph(2.4f, 2.4f, [[L B R B R C L C L T R T]]),
-;   'T' => Glyph(2.4f, 2.4f, [[L T R T] [C T C B]]),
-;   'U' => Glyph(2.4f, 2.4f, [[L T L B R B R T]]),
-;   'V' => Glyph(2.4f, 2.4f, [[L T L B R B R T] [L C C C C B]]), 
-;   'W' => Glyph(2.4f, 2.4f, [[L T L B R B R T] [C T C B]]),
-;   'X' => Glyph(2.4f, 2.4f, [[L T L B] [L C R C] [R T R B] [C B C T]]), ; like H with extra vert
-;   'Y' => Glyph(2.4f, 2.4f, [[L T L C R C] [R T R B L B]]), ; y WITH TAIL
-;   'Z' => Glyph(2.4f, 2.4f, [[L T R T R C L C L B R B] [C T C B]])
+;   '[' => Glyph(2.4, 2.4, [[C T L T L B C B]])
+;   ']' => Glyph(2.4, 2.4, [[C T R T R B C B]])
+;   '(' => Glyph(2.4, 2.4, [[C T L C C B]])
+;   ')' => Glyph(2.4, 2.4, [[C T R C C B]])
+;   '{' => Glyph(2.4, 2.4, [[R T C T C C L C C C C B R B]])
+;   '}' => Glyph(2.4, 2.4, [[L T C T C C R C C C C B L B]])
+;   '*' => Glyph(2.4, 2.4, [[L C R C] [L B R T] [L T R B] [C T C B]])
+;   ' ' => Glyph(2.4, 2.4, [])
+;   '"' => Glyph(2.4, 2.4, [[L T L C] [C T C C] [R T R C]]) ; "
+;   '\'' => Glyph(2.4, 2.4, [[C T C C]])
+;   ; '`' => Glyph(2.4, 2.4, [[R T R C C C]])
+;   '`' => Glyph(2.4, 2.4, [[C T C C R C]])
+;   '|' => Glyph(2.4, 2.4, [[C T C B]])
+;   ; '?' => Glyph(2.4, 2.4, [[L T R T R C C C C B]])
+;   '?' => Glyph(2.4, 2.4, [[L T R T R C C C] [C B C B]])
+;   '/' => Glyph(2.4, 2.4, [[L B R T]])
+;   '\\' => Glyph(2.4, 2.4, [[R B L T]])
+;   ; ';' => Glyph(2.4, 2.4, [[L T R T] [C T C C] [L B C B]])
+;   ; ':' => Glyph(2.4, 2.4, [[L T R T] [C T C C] [L B R B]])
+;   ';' => Glyph(2.4, 2.4, [[C T C T] [C C C B L B]])
+;   ':' => Glyph(2.4, 2.4, [[C T C T] [C B C B]])
+;   '~' => Glyph(2.4, 2.4, [[L T C T C B R B]])
+;   '@' => Glyph(2.4, 2.4, [[R B L B L T R T R C C C]])
+;   '#' => Glyph(2.4, 2.4, [[L B L T R T R B L B] [C T C B] [L C R C]])
+;   '$' => Glyph(2.4, 2.4, [[L B R B R C L C L T R T] [C T C B]])
+;   ; '%' => Glyph(2.4, 2.4, [[R T L B] [L T L C] [R C R B]])
+;   '%' => Glyph(2.4, 2.4, [[L T L T] [L B C B C T R T] [R B R B]])
+;   '&' => Glyph(2.4, 2.4, [[L T L B C B C T L T] [L C C C] [C B R B R C]])
+;   ',' => Glyph(2.4, 2.4, [[C C C B L B]])
+;   '^' => Glyph(2.4, 2.4, [[L C C T R C]])
+;   ; '!' => Glyph(2.4, 2.4, [[C T C B] [L B R B]])
+;   '!' => Glyph(2.4, 2.4, [[C T C C] [C B C B]])
+;   '-' => Glyph(2.4, 2.4, [[L C R C]]),
+;   '_' => Glyph(2.4, 2.4, [[L B R B]]),
+;   '+' => Glyph(2.4, 2.4, [[L C R C] [C T C B]]),
+;   '=' => Glyph(2.4, 2.4, [[L T R T] [L B R B]]),
+;   ; '.' => Glyph(2.4, 2.4, [[L B R B] [C B C C]]),
+;   '.' => Glyph(2.4, 2.4, [[C B C B]]),
+;   '>' => Glyph(2.4, 2.4, [[L B R C L T]]),
+;   '<' => Glyph(2.4, 2.4, [[R T L C R B]]),
+;   '0' => Glyph(2.4, 2.4, [[L B L T R T R B L B] [C T C B]]),
+;   '1' => Glyph(2.4, 2.4, [[C T C B]]),
+;   '2' => Glyph(2.4, 2.4, [[L T R T R C L C L B R B]]), ; straight up
+;   '3' => Glyph(2.4, 2.4, [[L T R T R B L B] [L C R C]]),
+;   '4' => Glyph(2.4, 2.4, [[L T L C R C] [R T R B]]),
+;   '5' => Glyph(2.4, 2.4, [[L B R B R C L C L T R T]]),
+;   '6' => Glyph(2.4, 2.4, [[L C R C R B L B L T R T]]),
+;   '7' => Glyph(2.4, 2.4, [[L T R T R B]]),
+;   '8' => Glyph(2.4, 2.4, [[L B L T R T R B L B] [L C R C]]),
+;   '9' => Glyph(2.4, 2.4, [[L B R B R T L T L C R C]]),
+;   'A' => Glyph(2.4, 2.4, [[L B L T R T R B] [L C R C]]),
+;   'B' => Glyph(2.4, 2.4, [[L B L T R T R B L B] [L C R C] [C T C C]]),
+;   'C' => Glyph(2.4, 2.4, [[R B L B L T R T]]),
+;   'D' => Glyph(2.4, 2.4, [[L B L T R T R B L B] [L C C C C T]]), ; extra square up top
+;   'E' => Glyph(2.4, 2.4, [[R T L T L B R B] [L C R C]]),
+;   'F' => Glyph(2.4, 2.4, [[L B L T R T] [L C R C]]),
+;   'G' => Glyph(2.4, 2.4, [[R T L T L B R B R C C C]]),
+;   'H' => Glyph(2.4, 2.4, [[L T L B] [L C R C] [R T R B]]),
+;   'I' => Glyph(2.4, 2.4, [[L T R T] [C T C B] [L B R B]]),
+;   'J' => Glyph(2.4, 2.4, [[L C L B R B R T]]),
+;   'K' => Glyph(2.4, 2.4, [[L T L B] [L C R C] [R T R B] [C T C C]]), ; like H with extra top vert
+;   'L' => Glyph(2.4, 2.4, [[L T L B R B]]),
+;   'M' => Glyph(2.4, 2.4, [[L B L T R T R B] [C T C B]]),
+;   'N' => Glyph(2.4, 2.4, [[L B L T R T R B]]),
+;   'O' => Glyph(2.4, 2.4, [[L B L T R T R B L B]]),
+;   'P' => Glyph(2.4, 2.4, [[L B L B L T R T R C L C]]),
+;   'Q' => Glyph(2.4, 2.4, [[L B L T R T R B L B] [C B C C]]),
+;   'R' => Glyph(2.4, 2.4, [[L B L T R T R B] [L C R C] [C T C C]]), ; like A with extra top vert
+;   'S' => Glyph(2.4, 2.4, [[L B R B R C L C L T R T]]),
+;   'T' => Glyph(2.4, 2.4, [[L T R T] [C T C B]]),
+;   'U' => Glyph(2.4, 2.4, [[L T L B R B R T]]),
+;   'V' => Glyph(2.4, 2.4, [[L T L B R B R T] [L C C C C B]]), 
+;   'W' => Glyph(2.4, 2.4, [[L T L B R B R T] [C T C B]]),
+;   'X' => Glyph(2.4, 2.4, [[L T L B] [L C R C] [R T R B] [C B C T]]), ; like H with extra vert
+;   'Y' => Glyph(2.4, 2.4, [[L T L C R C] [R T R B L B]]), ; y WITH TAIL
+;   'Z' => Glyph(2.4, 2.4, [[L T R T R C L C L B R B] [C T C B]])
 ;   ]
 
 val glyphs-simplest-3x3 = [
-  'O' => Glyph(2.4f, 2.4f, [[L T L B R B R T C T]])
-  'H' => Glyph(2.4f, 2.4f, [[L B R B] [C B C T] [L T R T]])
-  'J' => Glyph(2.4f, 2.4f, [[L B R B R T]])
-  '+' => Glyph(2.4f, 2.4f, [[L C R C] [C B C T]])
-  'T' => Glyph(2.4f, 2.4f, [[L T R T] [C B C T]])
-  'C' => Glyph(2.4f, 2.4f, [[R B L B L T R T]])
-  ;; 'S' => Glyph(2.4f, 2.4f, [[L B R B R C L C L T R T]])
-  'Z' => Glyph(2.4f, 2.4f, [[R B L B L C R C R T L T]])
-  '3' => Glyph(2.4f, 2.4f, [[L B R B R T L T] [L C R C]])
-  'M' => Glyph(2.4f, 2.4f, [[L B L T R T R B] [C T C B]])
-  '.' => Glyph(2.4f, 2.4f, [[C C C C]])
-  '-' => Glyph(2.4f, 2.4f, [[L C R C]])
+  'O' => Glyph(2.4, 2.4, [[L T L B R B R T C T]])
+  'H' => Glyph(2.4, 2.4, [[L B R B] [C B C T] [L T R T]])
+  'J' => Glyph(2.4, 2.4, [[L B R B R T]])
+  '+' => Glyph(2.4, 2.4, [[L C R C] [C B C T]])
+  'T' => Glyph(2.4, 2.4, [[L T R T] [C B C T]])
+  'C' => Glyph(2.4, 2.4, [[R B L B L T R T]])
+  ;; 'S' => Glyph(2.4, 2.4, [[L B R B R C L C L T R T]])
+  'Z' => Glyph(2.4, 2.4, [[R B L B L C R C R T L T]])
+  '3' => Glyph(2.4, 2.4, [[L B R B R T L T] [L C R C]])
+  'M' => Glyph(2.4, 2.4, [[L B L T R T R B] [C T C B]])
+  '.' => Glyph(2.4, 2.4, [[C C C C]])
+  '-' => Glyph(2.4, 2.4, [[L C R C]])
   ]
 
 val @doc-font = "FONT -- a collection of vector glyphs"
 public defstruct Font :
-  height: Float
+  height: Double
   glyphs: HashTable<Char, Glyph>
 
-public defn Font (h:Float, off:Float, glyphs : Tuple<KeyValue<Char, Glyph>>) -> Font :
+public defn Font (h:Double, off:Double, glyphs : Tuple<KeyValue<Char, Glyph>>) -> Font :
   val polys = HashTable<Char, Glyph>()
   for lc in glyphs do :
     val g = value(lc)
@@ -242,15 +242,15 @@ public defn Font (h:Float, off:Float, glyphs : Tuple<KeyValue<Char, Glyph>>) -> 
     ;; println-all(["GLYPH " key(lc) " WIDTH " w " XDIM " x(dims(bbox(pl)))])
     val dms = dims(bounds(pl))
     val npl = 
-      if key(lc) != '_' and x(dms) > (0.8f * w) : 
-        mag(xyz(V2f(0.8f * w / x(dms), 1.0f)), pl) 
+      if key(lc) != '_' and x(dms) > (0.8 * w) : 
+        mag(xyz(V2d(0.8 * w / x(dms), 1.0)), pl) 
       else : 
         pl
     polys[key(lc)] = Glyph(w, height(g), npl)
     ;; polys[key(lc)] = g
   Font(h, polys)
 
-public val font-3x3 = Font(2.4f, 0.0f, glyphs-3x3)
+public val font-3x3 = Font(2.4, 0.0, glyphs-3x3)
 
 for i in to-int('A') through to-int('Z') do :
   glyphs(font-3x3)[lower-case(to-char(i))] = glyphs(font-3x3)[to-char(i)]
@@ -259,321 +259,321 @@ for i in to-int(' ') through to-int('~') do :
   if not key?(glyphs(font-3x3), to-char(i)) :
     glyphs(font-3x3)[to-char(i)] = glyphs(font-3x3)['*']
 
-public val font-simplest-3x3 = Font(2.4f, 0.0f, glyphs-simplest-3x3)
+public val font-simplest-3x3 = Font(2.4, 0.0, glyphs-simplest-3x3)
 
 val hershey-glyphs = [
-  ' ' => Glyphi(8.0f,32.0f, []),
-  '!' => Glyphi(5.2f,32.0f, [[5,21, 5, 7],[5, 2, 4, 1, 5, 0, 6, 1, 5, 2]]),
-  '\"' => Glyphi(11.2f,32.0f, [[4,21, 4,14],[12,21,12,14]]),
-  '#' => Glyphi(18.2f,32.0f, [[11,25, 4,-7],[17,25,10,-7],[4,12,18,12],[3, 6,17, 6]]),
-  '$' => Glyphi(17.2f,32.0f, [[8,25, 8,-4],[12,25,12,-4],
+  ' ' => Glyphi(8.0,32.0, []),
+  '!' => Glyphi(5.2,32.0, [[5,21, 5, 7],[5, 2, 4, 1, 5, 0, 6, 1, 5, 2]]),
+  '\"' => Glyphi(11.2,32.0, [[4,21, 4,14],[12,21,12,14]]),
+  '#' => Glyphi(18.2,32.0, [[11,25, 4,-7],[17,25,10,-7],[4,12,18,12],[3, 6,17, 6]]),
+  '$' => Glyphi(17.2,32.0, [[8,25, 8,-4],[12,25,12,-4],
                       [17,18,15,20,12,21, 8,21, 5,20, 3, 18, 3,16, 4,14, 5,13, 7,12,13,10,15, 9,16, 8,17, 6,17, 3,15, 1,12, 0, 8, 0, 5, 1, 3, 3]]),
-  '%' => Glyphi(21.2f,32.0f, [[21,21, 3, 0], [8,21,10,19,10,17, 9,15, 7,14, 5,14, 3,16, 3,18, 4, 20, 6,21, 8,21,10,20,13,19,16,19,19,20,21,21],
+  '%' => Glyphi(21.2,32.0, [[21,21, 3, 0], [8,21,10,19,10,17, 9,15, 7,14, 5,14, 3,16, 3,18, 4, 20, 6,21, 8,21,10,20,13,19,16,19,19,20,21,21],
                       [17, 7,15, 6,14, 4, 14, 2,16, 0,18, 0,20, 1,21, 3,21, 5,19, 7,17, 7]]),
-  '&' => Glyphi(23.2f,32.0f, [[23,12,23,13,22,14,21,14,20,13,19,11,17, 6,15, 3,13, 1,11, 0, 7, 0, 5,
+  '&' => Glyphi(23.2,32.0, [[23,12,23,13,22,14,21,14,20,13,19,11,17, 6,15, 3,13, 1,11, 0, 7, 0, 5,
                        1, 4, 2, 3, 4, 3, 6, 4, 8, 5, 9,12,13,13,14,14,16,14,18,13,20,11,21,
                        9,20, 8,18, 8,16, 9,13,11,10,16, 3,18, 1,20, 0,22, 0,23, 1,23, 2]]),
-  '\'' => Glyphi(5.2f,32.0f, [[5,19, 4,20, 5,21, 6,20, 6,18, 5,16, 4,15]]),
-  '(' => Glyphi(10.2f,32.0f, [[11,25, 9,23, 7,20, 5,16, 4,11, 4, 7, 5, 2, 7,-2, 9,-5,11,-7]]),
-  ')' => Glyphi(10.2f,32.0f, [[3,25, 5,23, 7,20, 9,16,10,11,10, 7, 9, 2, 7,-2, 5,-5, 3,-7]]),
-  '*' => Glyphi(13.2f,32.0f, [[8,21, 8, 9],[3,18,13,12],[13,18, 3,12]]),
-  '+' => Glyphi(21.2f,32.0f, [[13,18,13, 0],[ 4, 9,22, 9]]),
-  ',' => Glyphi(5.2f,32.0f, [[6, 1, 5, 0, 4, 1, 5, 2, 6, 1, 6,-1, 5,-3, 4,-4]]),
-  '-' => Glyphi(21.2f,32.0f, [[4, 9,22, 9]]),
-  '.' => Glyphi(5.2f,32.0f, [[5, 2, 4, 1, 5, 0, 6, 1, 5, 2]]),
-  '/' => Glyphi(21.2f,32.0f, [[20,25, 2,-7]]),
-  '0' => Glyphi(17.2f,32.0f, [[9,21, 6,20, 4,17, 3,12, 3, 9, 4, 4, 6, 1, 9, 0,11, 0,14, 1,16, 4,17, 9,17,12,16,17,14,20,11,21, 9,21]]),
-  '1' => Glyphi(8.2f,32.0f, [[6,17, 8,18,11,21,11, 0]]),
-  '2' => Glyphi(17.2f,32.0f, [[4,16, 4,17, 5,19, 6,20, 8,21,12,21,14,20,15,19,16,17,16,15,15,13,13,10, 3, 0,17, 0]]),
-  '3' => Glyphi(17.2f,32.0f, [[5,21,16,21,10,13,13,13,15,12,16,11,17, 8,17, 6,16, 3,14, 1,11, 0, 8, 0, 5, 1, 4, 2, 3, 4]]),
-  '4' => Glyphi(18.2f,32.0f, [[13,21, 3, 7,18, 7],[13,21,13, 0]]),
-  '5' => Glyphi(17.2f,32.0f, [[15,21, 5,21, 4,12, 5,13, 8,14,11,14,14,13,16,11,17, 8,17, 6,16, 3,14, 1,11, 0, 8, 0, 5, 1, 4, 2, 3, 4]]),
-  '6' => Glyphi(16.2f,32.0f, [[16,18,15,20,12,21,10,21, 7,20, 5,17, 4,12, 4, 7, 5, 3, 7, 1,10, 0,11, 0,14, 1,16, 3,17, 6,17, 7,16,10,14,12,11,13,10,13, 7,12, 5,10, 4, 7]]),
-  '7' => Glyphi(17.2f,32.0f, [[17,21, 7, 0],[ 3,21,17,21]]),
-  '8' => Glyphi(17.2f,32.0f, [[8,21, 5,20, 4,18, 4,16, 5,14, 7,13,11,12,14,11,16, 9,17, 7,17, 4,16, 2,15, 1,12, 0, 8, 0, 5, 1, 4, 2, 3, 4, 3, 7, 4, 9, 6,11, 9,12,13,13,
+  '\'' => Glyphi(5.2,32.0, [[5,19, 4,20, 5,21, 6,20, 6,18, 5,16, 4,15]]),
+  '(' => Glyphi(10.2,32.0, [[11,25, 9,23, 7,20, 5,16, 4,11, 4, 7, 5, 2, 7,-2, 9,-5,11,-7]]),
+  ')' => Glyphi(10.2,32.0, [[3,25, 5,23, 7,20, 9,16,10,11,10, 7, 9, 2, 7,-2, 5,-5, 3,-7]]),
+  '*' => Glyphi(13.2,32.0, [[8,21, 8, 9],[3,18,13,12],[13,18, 3,12]]),
+  '+' => Glyphi(21.2,32.0, [[13,18,13, 0],[ 4, 9,22, 9]]),
+  ',' => Glyphi(5.2,32.0, [[6, 1, 5, 0, 4, 1, 5, 2, 6, 1, 6,-1, 5,-3, 4,-4]]),
+  '-' => Glyphi(21.2,32.0, [[4, 9,22, 9]]),
+  '.' => Glyphi(5.2,32.0, [[5, 2, 4, 1, 5, 0, 6, 1, 5, 2]]),
+  '/' => Glyphi(21.2,32.0, [[20,25, 2,-7]]),
+  '0' => Glyphi(17.2,32.0, [[9,21, 6,20, 4,17, 3,12, 3, 9, 4, 4, 6, 1, 9, 0,11, 0,14, 1,16, 4,17, 9,17,12,16,17,14,20,11,21, 9,21]]),
+  '1' => Glyphi(8.2,32.0, [[6,17, 8,18,11,21,11, 0]]),
+  '2' => Glyphi(17.2,32.0, [[4,16, 4,17, 5,19, 6,20, 8,21,12,21,14,20,15,19,16,17,16,15,15,13,13,10, 3, 0,17, 0]]),
+  '3' => Glyphi(17.2,32.0, [[5,21,16,21,10,13,13,13,15,12,16,11,17, 8,17, 6,16, 3,14, 1,11, 0, 8, 0, 5, 1, 4, 2, 3, 4]]),
+  '4' => Glyphi(18.2,32.0, [[13,21, 3, 7,18, 7],[13,21,13, 0]]),
+  '5' => Glyphi(17.2,32.0, [[15,21, 5,21, 4,12, 5,13, 8,14,11,14,14,13,16,11,17, 8,17, 6,16, 3,14, 1,11, 0, 8, 0, 5, 1, 4, 2, 3, 4]]),
+  '6' => Glyphi(16.2,32.0, [[16,18,15,20,12,21,10,21, 7,20, 5,17, 4,12, 4, 7, 5, 3, 7, 1,10, 0,11, 0,14, 1,16, 3,17, 6,17, 7,16,10,14,12,11,13,10,13, 7,12, 5,10, 4, 7]]),
+  '7' => Glyphi(17.2,32.0, [[17,21, 7, 0],[ 3,21,17,21]]),
+  '8' => Glyphi(17.2,32.0, [[8,21, 5,20, 4,18, 4,16, 5,14, 7,13,11,12,14,11,16, 9,17, 7,17, 4,16, 2,15, 1,12, 0, 8, 0, 5, 1, 4, 2, 3, 4, 3, 7, 4, 9, 6,11, 9,12,13,13,
                        15,14,16,16,16,18,15,20,12,21, 8,21]]),
-  '9' => Glyphi(16.2f,32.0f, [[16,14,15,11,13, 9,10, 8, 9, 8, 6, 9, 4,11, 3,14, 3,15, 4,18, 6,20, 9, 21,10,21,13,20,15,18,16,14,16, 9,15, 4,13, 1,10, 0, 8, 0, 5, 1, 4, 3]]),
-  ':' => Glyphi(5.2f,32.0f, [[5,14, 4,13, 5,12, 6,13, 5,14],[ 5, 2, 4, 1, 5, 0, 6, 1, 5, 2]]),
-  ';' => Glyphi(5.2f,32.0f, [[5,14, 4,13, 5,12, 6,13, 5,14],[ 6, 1, 5, 0, 4, 1, 5, 2, 6, 1, 6, -1, 5,-3, 4,-4]]),
-  '<' => Glyphi(19.2f,32.0f, [[20,18, 4, 9,20, 0]]),
-  '=' => Glyphi(21.2f,32.0f, [[4,12,22,12],[ 4, 6,22, 6]]),
-  '>' => Glyphi(19.2f,32.0f, [[4,18,20, 9, 4, 0]]),
-  '?' => Glyphi(15.2f,32.0f, [[3,16, 3,17, 4,19, 5,20, 7,21,11,21,13,20,14,19,15,17,15,15,14,13,13, 12, 9,10, 9, 7],[ 9, 2, 8, 1, 9, 0,10, 1, 9, 2]]),
-  '@' => Glyphi(24.2f,32.0f, [[18,13,17,15,15,16,12,16,10,15, 9,14, 8,11, 8, 8, 9, 6,11, 5,14, 5,16, 6,17, 8],
+  '9' => Glyphi(16.2,32.0, [[16,14,15,11,13, 9,10, 8, 9, 8, 6, 9, 4,11, 3,14, 3,15, 4,18, 6,20, 9, 21,10,21,13,20,15,18,16,14,16, 9,15, 4,13, 1,10, 0, 8, 0, 5, 1, 4, 3]]),
+  ':' => Glyphi(5.2,32.0, [[5,14, 4,13, 5,12, 6,13, 5,14],[ 5, 2, 4, 1, 5, 0, 6, 1, 5, 2]]),
+  ';' => Glyphi(5.2,32.0, [[5,14, 4,13, 5,12, 6,13, 5,14],[ 6, 1, 5, 0, 4, 1, 5, 2, 6, 1, 6, -1, 5,-3, 4,-4]]),
+  '<' => Glyphi(19.2,32.0, [[20,18, 4, 9,20, 0]]),
+  '=' => Glyphi(21.2,32.0, [[4,12,22,12],[ 4, 6,22, 6]]),
+  '>' => Glyphi(19.2,32.0, [[4,18,20, 9, 4, 0]]),
+  '?' => Glyphi(15.2,32.0, [[3,16, 3,17, 4,19, 5,20, 7,21,11,21,13,20,14,19,15,17,15,15,14,13,13, 12, 9,10, 9, 7],[ 9, 2, 8, 1, 9, 0,10, 1, 9, 2]]),
+  '@' => Glyphi(24.2,32.0, [[18,13,17,15,15,16,12,16,10,15, 9,14, 8,11, 8, 8, 9, 6,11, 5,14, 5,16, 6,17, 8],
                        [12,16,10,14, 9,11, 9, 8,10, 6,11, 5],
                        [18,16,17, 8, 17, 6,19, 5,21, 5,23, 7,24,10,24,12,23,15,22,17,20,19,18,20,15,21,12, 21,
                         9,20, 7,19, 5,17, 4,15, 3,12, 3, 9, 4, 6, 5, 4, 7, 2, 9, 1,12, 0, 15, 0,18, 1,20, 2,21, 3],
                        [19,16,18, 8,18, 6,19, 5]]),
-  'A' => Glyphi(19.2f,32.0f, [[9,21, 1, 0],[ 9,21,17, 0],[ 4, 7,14, 7]]),
-  'B' => Glyphi(17.2f,32.0f, [[4,21, 4, 0],[ 4,21,13,21,16,20,17,19,18,17,18,15,17,13,16,12,13, 11],[ 4,11,13,11,16,10,17, 9,18, 7,18, 4,17, 2,16, 1,13, 0, 4, 0 ]]),
-  'C' => Glyphi(18.2f,32.0f, [[18,16,17,18,15,20,13,21, 9,21, 7,20, 5,18, 4,16, 3,13, 3, 8, 4, 5, 5, 3, 7, 1, 9, 0,13, 0,15, 1,17, 3,18, 5]]),
-  'D' => Glyphi(17.2f,32.0f, [[4,21, 4, 0],[ 4,21,11,21,14,20,16,18,17,16,18,13,18, 8,17, 5,16, 3,14, 1,11, 0, 4, 0]]),
-  'E' => Glyphi(16.2f,32.0f, [[4,21, 4, 0],[ 4,21,17,21],[ 4,11,12,11],[ 4, 0,17, 0]]),
-  'F' => Glyphi(16.2f,32.0f, [[4,21, 4, 0],[ 4,21,17,21],[ 4,11,12,11]]),
-  'G' => Glyphi(18.2f,32.0f, [[18,16,17,18,15,20,13,21, 9,21, 7,20, 5,18, 4,16, 3,13, 3, 8, 4, 5, 5, 3, 7, 1, 9, 0,13, 0,15, 1,17, 3,18, 5,18, 8],[13, 8,18, 8]]),
-  'H' => Glyphi(17.2f,32.0f, [[4,21, 4, 0],[18,21,18, 0],[ 4,11,18,11]]),
-  'I' => Glyphi(3.2f,32.0f, [[4,21, 4, 0]]),
-  'J' => Glyphi(13.2f,32.0f, [[12,21,12, 5,11, 2,10, 1, 8, 0, 6, 0, 4, 1, 3, 2, 2, 5, 2, 7]]),
-  'K' => Glyphi(17.2f,32.0f, [[4,21, 4, 0],[18,21, 4, 7],[ 9,12,18, 0]]),
-  'L' => Glyphi(15.2f,32.0f, [[4,21, 4, 0],[ 4, 0,16, 0]]),
-  'M' => Glyphi(19.2f,32.0f, [[4,21, 4, 0],[ 4,21,12, 0],[20,21,12, 0],[20,21,20, 0]]),
-  'N' => Glyphi(17.2f,32.0f, [[4,21, 4, 0],[ 4,21,18, 0],[18,21,18, 0]]),
-  'O' => Glyphi(19.2f,32.0f, [[9,21, 7,20, 5,18, 4,16, 3,13, 3, 8, 4, 5, 5, 3, 7, 1, 9, 0,13, 0,15, 1,17, 3,18, 5,19, 8,19,13,18,16,17,18,15,20,13,21, 9,21]]),
-  'P' => Glyphi(17.2f,32.0f, [[4,21, 4, 0],[ 4,21,13,21,16,20,17,19,18,17,18,14,17,12,16,11,13, 10, 4,10]]),
-  'Q' => Glyphi(19.2f,32.0f, [[9,21, 7,20, 5,18, 4,16, 3,13, 3, 8, 4, 5, 5, 3, 7, 1, 9, 0,13, 0,15, 1,17, 3,18, 5,19, 8,19,13,18,16,17,18,15,20,13,21, 9,21],[12, 4, 18,-2]])
-  'R' => Glyphi(17.2f,32.0f, [[4,21, 4, 0],[ 4,21,13,21,16,20,17,19,18,17,18,15,17,13,16,12,13, 11, 4,11],[11,11,18, 0]])
-  'S' => Glyphi(17.2f,32.0f, [[17,18,15,20,12,21, 8,21, 5,20, 3,18, 3,16, 4,14, 5,13, 7,12,13,10,15, 9,16, 8,17, 6,17, 3,15, 1,12, 0, 8, 0, 5, 1, 3, 3]]),
-  'T' => Glyphi(17.2f,32.0f, [[8,21, 8, 0],[ 1,21,15,21]]),
-  'U' => Glyphi(17.2f,32.0f, [[4,21, 4, 6, 5, 3, 7, 1,10, 0,12, 0,15, 1,17, 3,18, 6,18,21]]),
-  'V' => Glyphi(19.2f,32.0f, [[1,21, 9, 0],[17,21, 9, 0]]),
-  'W' => Glyphi(23.2f,32.0f, [[2,21, 7, 0],[12,21, 7, 0],[12,21,17, 0],[22,21,17, 0]]),
-  'X' => Glyphi(17.2f,32.0f, [[3,21,17, 0],[17,21, 3, 0]]),
-  'Y' => Glyphi(19.2f,32.0f, [[1,21, 9,11, 9, 0],[17,21, 9,11]]),
-  'Z' => Glyphi(17.2f,32.0f, [[17,21, 3, 0],[ 3,21,17,21],[ 3, 0,17, 0]]),
-  '[' => Glyphi(10.2f,32.0f, [[4,25, 4,-7],[ 5,25, 5,-7],[ 4,25,11,25],[ 4,-7,11,-7]]),
-  '\\' => Glyphi(17.2f,32.0f, [[0,21,14,-3]])
-  ']' => Glyphi(10.2f,32.0f, [[9,25, 9,-7],[10,25,10,-7],[ 3,25,10,25],[ 3,-7,10,-7]]),
-  '^' => Glyphi(13.2f,32.0f, [[6,15, 8,18,10,15],[ 3,12, 8,17,13,12],[ 8,17, 8, 0]]),
-  '_' => Glyphi(19.2f,32.0f, [[0,-2,16,-2]]),
-  '`' => Glyphi(5.2f,32.0f, [[6,21, 5,20, 4,18, 4,16, 5,15, 6,16, 5,17]]),
-  'a' => Glyphi(15.2f,32.0f, [[15,14,15, 0],[15,11,13,13,11,14, 8,14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3]]),
-  'b' => Glyphi(15.2f,32.0f, [[4,21, 4, 0],[ 4,11, 6,13, 8,14,11,14,13,13,15,11,16, 8,16, 6,15, 3,13, 1,11, 0, 8, 0, 6, 1, 4, 3]]),
-  'c' => Glyphi(15.2f,32.0f, [[15,11,13,13,11,14, 8,14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3]]),
-  'd' => Glyphi(15.2f,32.0f, [[15,21,15, 0],[15,11,13,13,11,14, 8,14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3]]),
-  'e' => Glyphi(15.2f,32.0f, [[3, 8,15, 8,15,10,14,12,13,13,11,14, 8,14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3]]),
-  'f' => Glyphi(11.2f,32.0f, [[10,21, 8,21, 6,20, 5,17, 5, 0],[ 2,14, 9,14]]),
-  'g' => Glyphi(15.2f,32.0f, [[15,14,15,-2,14,-5,13,-6,11,-7, 8,-7, 6,-6],[15,11,13,13,11,14, 8, 14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3]]),
-  'h' => Glyphi(14.2f,32.0f, [[4,21, 4, 0],[ 4,10, 7,13, 9,14,12,14,14,13,15,10,15, 0]]),
-  'i' => Glyphi(5.2f,32.0f, [[3,21, 4,20, 5,21, 4,22, 3,21],[ 4,14, 4, 0]])
-  'j' => Glyphi(9.2f,32.0f, [[5,21, 6,20, 7,21, 6,22, 5,21],[ 6,14, 6,-3, 5,-6, 3,-7, 1,-7]]),
-  'k' => Glyphi(14.2f,32.0f, [[4,21, 4, 0],[14,14, 4, 4],[ 8, 8,15, 0]])
-  'l' => Glyphi(3.2f,32.0f, [[4,21, 4, 0]])
-  'm' => Glyphi(25.2f,32.0f, [[4,14, 4, 0],[ 4,10, 7,13, 9,14,12,14,14,13,15,10,15, 0],[15, 10,18,13,20,14,23,14,25,13,26,10,26, 0]]),
-  'n' => Glyphi(14.2f,32.0f, [[4,14, 4, 0],[ 4,10, 7,13, 9,14,12,14,14,13,15,10,15, 0]]),
-  'o' => Glyphi(16.2f,32.0f, [[8,14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3,16, 6,16, 8,15,11,13,13,11,14, 8,14]]),
-  'p' => Glyphi(15.2f,32.0f, [[4,14, 4,-7],[ 4,11, 6,13, 8,14,11,14,13,13,15,11,16, 8,16, 6,15, 3,13, 1,11, 0, 8, 0, 6, 1, 4, 3]]),
-  'q' => Glyphi(15.2f,32.0f, [[15,14,15,-7],[15,11,13,13,11,14, 8,14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3]]),
-  'r' => Glyphi(11.2f,32.0f, [[4,14, 4, 0],[ 4, 8, 5,11, 7,13, 9,14,12,14]]),
-  's' => Glyphi(14.2f,32.0f, [[14,11,13,13,10,14, 7,14, 4,13, 3,11, 4, 9, 6, 8,11, 7,13, 6,14, 4,14, 3,13, 1,10, 0, 7, 0, 4, 1, 3, 3]]),
-  't' => Glyphi(11.2f,32.0f, [[5,21, 5, 4, 6, 1, 8, 0,10, 0],[ 2,14, 9,14]]),
-  'u' => Glyphi(14.2f,32.0f, [[4,14, 4, 4, 5, 1, 7, 0,10, 0,12, 1,15, 4],[15,14,15, 0]]),
-  'v' => Glyphi(15.2f,32.0f, [[2,14, 8, 0],[14,14, 8, 0]]),
-  'w' => Glyphi(19.2f,32.0f, [[3,14, 7, 0],[11,14, 7, 0],[11,14,15, 0],[19,14,15, 0]]),
-  'x' => Glyphi(14.2f,32.0f, [[3,14,14, 0],[14,14, 3, 0]]),
-  'y' => Glyphi(16.2f,32.0f, [[2,14, 8, 0],[14,14, 8, 0, 6,-4, 4,-6, 2,-7, 1,-7]]),
-  'z' => Glyphi(14.2f,32.0f, [[14,14, 3, 0],[ 3,14,14,14],[ 3, 0,14, 0]]),
-  '{' => Glyphi(8.2f,32.0f, [[9,25, 7,24, 6,23, 5,21, 5,19, 6,17, 7,16, 8,14, 8,12, 6,10],
+  'A' => Glyphi(19.2,32.0, [[9,21, 1, 0],[ 9,21,17, 0],[ 4, 7,14, 7]]),
+  'B' => Glyphi(17.2,32.0, [[4,21, 4, 0],[ 4,21,13,21,16,20,17,19,18,17,18,15,17,13,16,12,13, 11],[ 4,11,13,11,16,10,17, 9,18, 7,18, 4,17, 2,16, 1,13, 0, 4, 0 ]]),
+  'C' => Glyphi(18.2,32.0, [[18,16,17,18,15,20,13,21, 9,21, 7,20, 5,18, 4,16, 3,13, 3, 8, 4, 5, 5, 3, 7, 1, 9, 0,13, 0,15, 1,17, 3,18, 5]]),
+  'D' => Glyphi(17.2,32.0, [[4,21, 4, 0],[ 4,21,11,21,14,20,16,18,17,16,18,13,18, 8,17, 5,16, 3,14, 1,11, 0, 4, 0]]),
+  'E' => Glyphi(16.2,32.0, [[4,21, 4, 0],[ 4,21,17,21],[ 4,11,12,11],[ 4, 0,17, 0]]),
+  'F' => Glyphi(16.2,32.0, [[4,21, 4, 0],[ 4,21,17,21],[ 4,11,12,11]]),
+  'G' => Glyphi(18.2,32.0, [[18,16,17,18,15,20,13,21, 9,21, 7,20, 5,18, 4,16, 3,13, 3, 8, 4, 5, 5, 3, 7, 1, 9, 0,13, 0,15, 1,17, 3,18, 5,18, 8],[13, 8,18, 8]]),
+  'H' => Glyphi(17.2,32.0, [[4,21, 4, 0],[18,21,18, 0],[ 4,11,18,11]]),
+  'I' => Glyphi(3.2,32.0, [[4,21, 4, 0]]),
+  'J' => Glyphi(13.2,32.0, [[12,21,12, 5,11, 2,10, 1, 8, 0, 6, 0, 4, 1, 3, 2, 2, 5, 2, 7]]),
+  'K' => Glyphi(17.2,32.0, [[4,21, 4, 0],[18,21, 4, 7],[ 9,12,18, 0]]),
+  'L' => Glyphi(15.2,32.0, [[4,21, 4, 0],[ 4, 0,16, 0]]),
+  'M' => Glyphi(19.2,32.0, [[4,21, 4, 0],[ 4,21,12, 0],[20,21,12, 0],[20,21,20, 0]]),
+  'N' => Glyphi(17.2,32.0, [[4,21, 4, 0],[ 4,21,18, 0],[18,21,18, 0]]),
+  'O' => Glyphi(19.2,32.0, [[9,21, 7,20, 5,18, 4,16, 3,13, 3, 8, 4, 5, 5, 3, 7, 1, 9, 0,13, 0,15, 1,17, 3,18, 5,19, 8,19,13,18,16,17,18,15,20,13,21, 9,21]]),
+  'P' => Glyphi(17.2,32.0, [[4,21, 4, 0],[ 4,21,13,21,16,20,17,19,18,17,18,14,17,12,16,11,13, 10, 4,10]]),
+  'Q' => Glyphi(19.2,32.0, [[9,21, 7,20, 5,18, 4,16, 3,13, 3, 8, 4, 5, 5, 3, 7, 1, 9, 0,13, 0,15, 1,17, 3,18, 5,19, 8,19,13,18,16,17,18,15,20,13,21, 9,21],[12, 4, 18,-2]])
+  'R' => Glyphi(17.2,32.0, [[4,21, 4, 0],[ 4,21,13,21,16,20,17,19,18,17,18,15,17,13,16,12,13, 11, 4,11],[11,11,18, 0]])
+  'S' => Glyphi(17.2,32.0, [[17,18,15,20,12,21, 8,21, 5,20, 3,18, 3,16, 4,14, 5,13, 7,12,13,10,15, 9,16, 8,17, 6,17, 3,15, 1,12, 0, 8, 0, 5, 1, 3, 3]]),
+  'T' => Glyphi(17.2,32.0, [[8,21, 8, 0],[ 1,21,15,21]]),
+  'U' => Glyphi(17.2,32.0, [[4,21, 4, 6, 5, 3, 7, 1,10, 0,12, 0,15, 1,17, 3,18, 6,18,21]]),
+  'V' => Glyphi(19.2,32.0, [[1,21, 9, 0],[17,21, 9, 0]]),
+  'W' => Glyphi(23.2,32.0, [[2,21, 7, 0],[12,21, 7, 0],[12,21,17, 0],[22,21,17, 0]]),
+  'X' => Glyphi(17.2,32.0, [[3,21,17, 0],[17,21, 3, 0]]),
+  'Y' => Glyphi(19.2,32.0, [[1,21, 9,11, 9, 0],[17,21, 9,11]]),
+  'Z' => Glyphi(17.2,32.0, [[17,21, 3, 0],[ 3,21,17,21],[ 3, 0,17, 0]]),
+  '[' => Glyphi(10.2,32.0, [[4,25, 4,-7],[ 5,25, 5,-7],[ 4,25,11,25],[ 4,-7,11,-7]]),
+  '\\' => Glyphi(17.2,32.0, [[0,21,14,-3]])
+  ']' => Glyphi(10.2,32.0, [[9,25, 9,-7],[10,25,10,-7],[ 3,25,10,25],[ 3,-7,10,-7]]),
+  '^' => Glyphi(13.2,32.0, [[6,15, 8,18,10,15],[ 3,12, 8,17,13,12],[ 8,17, 8, 0]]),
+  '_' => Glyphi(19.2,32.0, [[0,-2,16,-2]]),
+  '`' => Glyphi(5.2,32.0, [[6,21, 5,20, 4,18, 4,16, 5,15, 6,16, 5,17]]),
+  'a' => Glyphi(15.2,32.0, [[15,14,15, 0],[15,11,13,13,11,14, 8,14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3]]),
+  'b' => Glyphi(15.2,32.0, [[4,21, 4, 0],[ 4,11, 6,13, 8,14,11,14,13,13,15,11,16, 8,16, 6,15, 3,13, 1,11, 0, 8, 0, 6, 1, 4, 3]]),
+  'c' => Glyphi(15.2,32.0, [[15,11,13,13,11,14, 8,14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3]]),
+  'd' => Glyphi(15.2,32.0, [[15,21,15, 0],[15,11,13,13,11,14, 8,14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3]]),
+  'e' => Glyphi(15.2,32.0, [[3, 8,15, 8,15,10,14,12,13,13,11,14, 8,14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3]]),
+  'f' => Glyphi(11.2,32.0, [[10,21, 8,21, 6,20, 5,17, 5, 0],[ 2,14, 9,14]]),
+  'g' => Glyphi(15.2,32.0, [[15,14,15,-2,14,-5,13,-6,11,-7, 8,-7, 6,-6],[15,11,13,13,11,14, 8, 14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3]]),
+  'h' => Glyphi(14.2,32.0, [[4,21, 4, 0],[ 4,10, 7,13, 9,14,12,14,14,13,15,10,15, 0]]),
+  'i' => Glyphi(5.2,32.0, [[3,21, 4,20, 5,21, 4,22, 3,21],[ 4,14, 4, 0]])
+  'j' => Glyphi(9.2,32.0, [[5,21, 6,20, 7,21, 6,22, 5,21],[ 6,14, 6,-3, 5,-6, 3,-7, 1,-7]]),
+  'k' => Glyphi(14.2,32.0, [[4,21, 4, 0],[14,14, 4, 4],[ 8, 8,15, 0]])
+  'l' => Glyphi(3.2,32.0, [[4,21, 4, 0]])
+  'm' => Glyphi(25.2,32.0, [[4,14, 4, 0],[ 4,10, 7,13, 9,14,12,14,14,13,15,10,15, 0],[15, 10,18,13,20,14,23,14,25,13,26,10,26, 0]]),
+  'n' => Glyphi(14.2,32.0, [[4,14, 4, 0],[ 4,10, 7,13, 9,14,12,14,14,13,15,10,15, 0]]),
+  'o' => Glyphi(16.2,32.0, [[8,14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3,16, 6,16, 8,15,11,13,13,11,14, 8,14]]),
+  'p' => Glyphi(15.2,32.0, [[4,14, 4,-7],[ 4,11, 6,13, 8,14,11,14,13,13,15,11,16, 8,16, 6,15, 3,13, 1,11, 0, 8, 0, 6, 1, 4, 3]]),
+  'q' => Glyphi(15.2,32.0, [[15,14,15,-7],[15,11,13,13,11,14, 8,14, 6,13, 4,11, 3, 8, 3, 6, 4, 3, 6, 1, 8, 0,11, 0,13, 1,15, 3]]),
+  'r' => Glyphi(11.2,32.0, [[4,14, 4, 0],[ 4, 8, 5,11, 7,13, 9,14,12,14]]),
+  's' => Glyphi(14.2,32.0, [[14,11,13,13,10,14, 7,14, 4,13, 3,11, 4, 9, 6, 8,11, 7,13, 6,14, 4,14, 3,13, 1,10, 0, 7, 0, 4, 1, 3, 3]]),
+  't' => Glyphi(11.2,32.0, [[5,21, 5, 4, 6, 1, 8, 0,10, 0],[ 2,14, 9,14]]),
+  'u' => Glyphi(14.2,32.0, [[4,14, 4, 4, 5, 1, 7, 0,10, 0,12, 1,15, 4],[15,14,15, 0]]),
+  'v' => Glyphi(15.2,32.0, [[2,14, 8, 0],[14,14, 8, 0]]),
+  'w' => Glyphi(19.2,32.0, [[3,14, 7, 0],[11,14, 7, 0],[11,14,15, 0],[19,14,15, 0]]),
+  'x' => Glyphi(14.2,32.0, [[3,14,14, 0],[14,14, 3, 0]]),
+  'y' => Glyphi(16.2,32.0, [[2,14, 8, 0],[14,14, 8, 0, 6,-4, 4,-6, 2,-7, 1,-7]]),
+  'z' => Glyphi(14.2,32.0, [[14,14, 3, 0],[ 3,14,14,14],[ 3, 0,14, 0]]),
+  '{' => Glyphi(8.2,32.0, [[9,25, 7,24, 6,23, 5,21, 5,19, 6,17, 7,16, 8,14, 8,12, 6,10],
                        [ 7, 24, 6,22, 6,20, 7,18, 8,17, 9,15, 9,13, 8,11, 4, 9, 8, 7, 9, 5, 9, 3, 8, 1, 7, 0, 6,-2, 6,-4, 7,-6],
                        [ 6, 8, 8, 6, 8, 4, 7, 2, 6, 1, 5, -1, 5,-3, 6,-5, 7,-6, 9,-7]]),
-  '|' => Glyphi(3.2f,32.0f, [[4,25, 4,-7]]),
-  '}' => Glyphi(8.2f,32.0f, [[5,25, 7,24, 8,23, 9,21, 9,19, 8,17, 7,16, 6,14, 6,12, 8,10],
+  '|' => Glyphi(3.2,32.0, [[4,25, 4,-7]]),
+  '}' => Glyphi(8.2,32.0, [[5,25, 7,24, 8,23, 9,21, 9,19, 8,17, 7,16, 6,14, 6,12, 8,10],
                        [ 7, 24, 8,22, 8,20, 7,18, 6,17, 5,15, 5,13, 6,11,10, 9, 6, 7, 5, 5, 5, 3, 6, 1, 7, 0, 8,-2, 8,-4, 7,-6],
                        [ 8, 8, 6, 6, 6, 4, 7, 2, 8, 1, 9, -1, 9,-3, 8,-5, 7,-6, 5,-7]]),
-  '~' => Glyphi(21.2f,32.0f, [[3, 6, 3, 8, 4,11, 6,12, 8,12,10,11,14, 8,16, 7,18, 7,20, 8,21,10],
+  '~' => Glyphi(21.2,32.0, [[3, 6, 3, 8, 4,11, 6,12, 8,12,10,11,14, 8,16, 7,18, 7,20, 8,21,10],
                        [3, 8, 4,10, 6,11, 8,11,10,10,14, 7,16, 6,18, 6,20, 7,21,10,21,12]]) 
 ]
 
-public val hershey-font = Font(32.0f, 7.0f - 32.0f / 2.0f, hershey-glyphs)
+public val hershey-font = Font(32.0, 7.0 - 32.0 / 2.0, hershey-glyphs)
 
 val roman-glyphs = [
-  ' ' => Glyph(104.762001f, 152.381302f,  [])
-  '!' => Glyph(26.483801f, 152.381302f,  [[13.381900f 100.000000f 13.381900f 33.333302f] [13.381900f 9.523800f 8.620000f 4.761900f 13.381900f 0.000000f 18.143801f 4.761900f 13.381900f 9.523800f]])
-  '\"' => Glyph(56.735199f, 152.381302f,  [[4.020000f 100.000000f 4.020000f 66.666702f] [42.115200f 100.000000f 42.115200f 66.666702f]])
-  '#' => Glyph(85.910606f, 152.381302f,  [[41.295200f 119.047997f 7.961900f -33.333302f] [69.866699f 119.047997f 36.533298f -33.333302f] [7.961900f 57.142899f 74.628601f 57.142899f] [3.200000f 28.571400f 69.866699f 28.571400f]])
-  '$' => Glyph(76.106804f, 152.381302f,  [[28.629499f 119.047997f 28.629499f -19.047600f] [47.677101f 119.047997f 47.677101f -19.047600f] [71.486702f 85.714302f 61.962898f 95.238098f 47.677101f 100.000000f 28.629499f 100.000000f 14.343800f 95.238098f 4.820000f 85.714302f 4.820000f 76.190498f 9.581900f 66.666702f 14.343800f 61.904800f 23.867599f 57.142899f 52.438999f 47.618999f 61.962898f 42.857101f 66.724800f 38.095200f 71.486702f 28.571400f 71.486702f 14.285700f 61.962898f 4.761900f 47.677101f 0.000000f 28.629499f 0.000000f 14.343800f 4.761900f 4.820000f 14.285700f]])
-  '%' => Glyph(94.714409f, 152.381302f,  [[92.074303f 100.000000f 6.360000f 0.000000f] [30.169500f 100.000000f 39.693298f 90.476196f 39.693298f 80.952400f 34.931400f 71.428596f 25.407600f 66.666702f 15.883800f 66.666702f 6.360000f 76.190498f 6.360000f 85.714302f 11.121900f 95.238098f 20.645700f 100.000000f 30.169500f 100.000000f 39.693298f 95.238098f 53.979000f 90.476196f 68.264801f 90.476196f 82.550499f 95.238098f 92.074303f 100.000000f] [73.026703f 33.333302f 63.502899f 28.571400f 58.741001f 19.047600f 58.741001f 9.523800f 68.264801f 0.000000f 77.788597f 0.000000f 87.312401f 4.761900f 92.074303f 14.285700f 92.074303f 23.809500f 82.550499f 33.333302f 73.026703f 33.333302f]])
-  '&' => Glyph(96.318008f, 152.381302f,  [[101.218002f 57.142899f 101.218002f 61.904800f 96.456200f 66.666702f 91.694298f 66.666702f 86.932404f 61.904800f 82.170502f 52.381001f 72.646698f 28.571400f 63.122898f 14.285700f 53.598999f 4.761900f 44.075199f 0.000000f 25.027599f 0.000000f 15.503800f 4.761900f 10.741900f 9.523800f 5.980000f 19.047600f 5.980000f 28.571400f 10.741900f 38.095200f 15.503800f 42.857101f 48.837101f 61.904800f 53.598999f 66.666702f 58.361000f 76.190498f 58.361000f 85.714302f 53.598999f 95.238098f 44.075199f 100.000000f 34.551399f 95.238098f 29.789499f 85.714302f 29.789499f 76.190498f 34.551399f 61.904800f 44.075199f 47.618999f 67.884804f 14.285700f 77.408600f 4.761900f 86.932404f 0.000000f 96.456200f 0.000000f 101.218002f 4.761900f 101.218002f 9.523800f]])
-  '\'' => Glyph(18.360001f, 152.381302f,  [[4.440000f 100.000000f 4.440000f 66.666702f]])
-  '(' => Glyph(50.615204f, 152.381302f,  [[40.913300f 119.047997f 31.389500f 109.524002f 21.865700f 95.238098f 12.341900f 76.190498f 7.580000f 52.381001f 7.580000f 33.333302f 12.341900f 9.523800f 21.865700f -9.523800f 31.389500f -23.809500f 40.913300f -33.333302f]])
-  ')' => Glyph(46.411396f, 152.381302f,  [[5.280000f 119.047997f 14.803800f 109.524002f 24.327600f 95.238098f 33.851398f 76.190498f 38.613300f 52.381001f 38.613300f 33.333302f 33.851398f 9.523800f 24.327600f -9.523800f 14.803800f -23.809500f 5.280000f -33.333302f]])
-  '*' => Glyph(57.338997f, 152.381302f,  [[30.769501f 71.428596f 30.769501f 14.285700f] [6.960000f 57.142899f 54.578999f 28.571400f] [54.578999f 57.142899f 6.960000f 28.571400f]])
-  '+' => Glyph(96.834404f, 152.381302f,  [[48.837101f 85.714302f 48.837101f 0.000000f] [5.980000f 42.857101f 91.694298f 42.857101f]])
-  ',' => Glyph(25.083801f, 152.381302f,  [[18.283800f 4.761900f 13.521900f 0.000000f 8.760000f 4.761900f 13.521900f 9.523800f 18.283800f 4.761900f 18.283800f -4.761900f 13.521900f -14.285700f 8.760000f -19.047600f]])
-  '-' => Glyph(101.033798f, 152.381302f,  [[7.380000f 42.857101f 93.094299f 42.857101f]])
-  '.' => Glyph(26.763802f, 152.381302f,  [[13.101900f 9.523800f 8.340000f 4.761900f 13.101900f 0.000000f 17.863800f 4.761900f 13.101900f 9.523800f]])
-  '/' => Glyph(83.066795f, 152.381302f,  [[7.240000f -14.285700f 73.906700f 100.000000f]])
-  '0' => Glyph(77.506805f, 152.381302f,  [[33.551399f 100.000000f 19.265699f 95.238098f 9.741900f 80.952400f 4.980000f 57.142899f 4.980000f 42.857101f 9.741900f 19.047600f 19.265699f 4.761900f 33.551399f 0.000000f 43.075199f 0.000000f 57.361000f 4.761900f 66.884804f 19.047600f 71.646698f 42.857101f 71.646698f 57.142899f 66.884804f 80.952400f 57.361000f 95.238098f 43.075199f 100.000000f 33.551399f 100.000000f]])
-  '1' => Glyph(71.323807f, 152.381302f,  [[11.820000f 80.952400f 21.343800f 85.714302f 35.629501f 100.000000f 35.629501f 0.000000f]])
-  '2' => Glyph(77.786797f, 152.381302f,  [[10.181900f 76.190498f 10.181900f 80.952400f 14.943800f 90.476196f 19.705700f 95.238098f 29.229500f 100.000000f 48.277100f 100.000000f 57.800999f 95.238098f 62.562901f 90.476196f 67.324799f 80.952400f 67.324799f 71.428596f 62.562901f 61.904800f 53.039001f 47.618999f 5.420000f 0.000000f 72.086700f 0.000000f]])
-  '3' => Glyph(77.426796f, 152.381302f,  [[14.523800f 100.000000f 66.904800f 100.000000f 38.333302f 61.904800f 52.618999f 61.904800f 62.142899f 57.142899f 66.904800f 52.381001f 71.666702f 38.095200f 71.666702f 28.571400f 66.904800f 14.285700f 57.381001f 4.761900f 43.095200f 0.000000f 28.809500f 0.000000f 14.523800f 4.761900f 9.761900f 9.523800f 5.000000f 19.047600f]])
-  '4' => Glyph(85.910606f, 152.381302f,  [[51.499001f 100.000000f 3.880000f 33.333302f 75.308601f 33.333302f] [51.499001f 100.000000f 51.499001f 0.000000f]])
-  '5' => Glyph(78.986801f, 152.381302f,  [[62.002899f 100.000000f 14.383800f 100.000000f 9.621900f 57.142899f 14.383800f 61.904800f 28.669500f 66.666702f 42.955200f 66.666702f 57.241001f 61.904800f 66.764801f 52.381001f 71.526703f 38.095200f 71.526703f 28.571400f 66.764801f 14.285700f 57.241001f 4.761900f 42.955200f 0.000000f 28.669500f 0.000000f 14.383800f 4.761900f 9.621900f 9.523800f 4.860000f 19.047600f]])
-  '6' => Glyph(79.306801f, 152.381302f,  [[62.722900f 85.714302f 57.960999f 95.238098f 43.675201f 100.000000f 34.151402f 100.000000f 19.865700f 95.238098f 10.341900f 80.952400f 5.580000f 57.142899f 5.580000f 33.333302f 10.341900f 14.285700f 19.865700f 4.761900f 34.151402f 0.000000f 38.913300f 0.000000f 53.199001f 4.761900f 62.722900f 14.285700f 67.484802f 28.571400f 67.484802f 33.333302f 62.722900f 47.618999f 53.199001f 57.142899f 38.913300f 61.904800f 34.151402f 61.904800f 19.865700f 57.142899f 10.341900f 47.618999f 5.580000f 33.333302f]])
-  '7' => Glyph(76.666801f, 152.381302f,  [[72.226700f 100.000000f 24.607599f 0.000000f] [5.560000f 100.000000f 72.226700f 100.000000f]])
-  '8' => Glyph(77.466805f, 152.381302f,  [[29.409500f 100.000000f 15.123800f 95.238098f 10.361900f 85.714302f 10.361900f 76.190498f 15.123800f 66.666702f 24.647600f 61.904800f 43.695202f 57.142899f 57.980999f 52.381001f 67.504799f 42.857101f 72.266701f 33.333302f 72.266701f 19.047600f 67.504799f 9.523800f 62.742901f 4.761900f 48.457100f 0.000000f 29.409500f 0.000000f 15.123800f 4.761900f 10.361900f 9.523800f 5.600000f 19.047600f 5.600000f 33.333302f 10.361900f 42.857101f 19.885700f 52.381001f 34.171398f 57.142899f 53.219002f 61.904800f 62.742901f 66.666702f 67.504799f 76.190498f 67.504799f 85.714302f 62.742901f 95.238098f 48.457100f 100.000000f 29.409500f 100.000000f]])
-  '9' => Glyph(68.262993f, 152.381302f,  [[68.504799f 66.666702f 63.742901f 52.381001f 54.219002f 42.857101f 39.933300f 38.095200f 35.171398f 38.095200f 20.885700f 42.857101f 11.361900f 52.381001f 6.600000f 66.666702f 6.600000f 71.428596f 11.361900f 85.714302f 20.885700f 95.238098f 35.171398f 100.000000f 39.933300f 100.000000f 54.219002f 95.238098f 63.742901f 85.714302f 68.504799f 66.666702f 68.504799f 42.857101f 63.742901f 19.047600f 54.219002f 4.761900f 39.933300f 0.000000f 30.409500f 0.000000f 16.123800f 4.761900f 11.361900f 14.285700f]])
-  ':' => Glyph(24.283802f, 152.381302f,  [[14.081900f 66.666702f 9.320000f 61.904800f 14.081900f 57.142899f 18.843800f 61.904800f 14.081900f 66.666702f] [14.081900f 9.523800f 9.320000f 4.761900f 14.081900f 0.000000f 18.843800f 4.761900f 14.081900f 9.523800f]])
-  ';' => Glyph(26.683802f, 152.381302f,  [[12.961900f 66.666702f 8.200000f 61.904800f 12.961900f 57.142899f 17.723801f 61.904800f 12.961900f 66.666702f] [17.723801f 4.761900f 12.961900f 0.000000f 8.200000f 4.761900f 12.961900f 9.523800f 17.723801f 4.761900f 17.723801f -4.761900f 12.961900f -14.285700f 8.200000f -19.047600f]])
-  '<' => Glyph(80.910591f, 152.381302f,  [[79.250504f 85.714302f 3.060000f 42.857101f 79.250504f 0.000000f]])
-  '=' => Glyph(97.394409f, 152.381302f,  [[5.700000f 57.142899f 91.414299f 57.142899f] [5.700000f 28.571400f 91.414299f 28.571400f]])
-  '>' => Glyph(81.470596f, 152.381302f,  [[2.780000f 85.714302f 78.970497f 42.857101f 2.780000f 0.000000f]])
-  '?' => Glyph(73.822998f, 152.381302f,  [[8.420000f 76.190498f 8.420000f 80.952400f 13.181900f 90.476196f 17.943800f 95.238098f 27.467600f 100.000000f 46.515202f 100.000000f 56.039001f 95.238098f 60.800999f 90.476196f 65.562897f 80.952400f 65.562897f 71.428596f 60.800999f 61.904800f 56.039001f 57.142899f 36.991402f 47.618999f 36.991402f 33.333302f] [36.991402f 9.523800f 32.229500f 4.761900f 36.991402f 0.000000f 41.753300f 4.761900f 36.991402f 9.523800f]])
-  '@' => Glyph(78.866798f, 152.381302f,  [[49.217098f 52.381001f 39.693298f 57.142899f 30.169500f 57.142899f 25.407600f 47.618999f 25.407600f 42.857101f 30.169500f 33.333302f 39.693298f 33.333302f 49.217098f 38.095200f] [49.217098f 57.142899f 49.217098f 38.095200f 53.979000f 33.333302f 63.502899f 33.333302f 68.264801f 42.857101f 68.264801f 47.618999f 63.502899f 61.904800f 53.979000f 71.428596f 39.693298f 76.190498f 34.931400f 76.190498f 20.645700f 71.428596f 11.121900f 61.904800f 6.360000f 47.618999f 6.360000f 42.857101f 11.121900f 28.571400f 20.645700f 19.047600f 34.931400f 14.285700f 39.693298f 14.285700f 53.979000f 19.047600f]])
-  'A' => Glyph(79.790604f, 152.381302f,  [[40.595200f 100.000000f 2.500000f 0.000000f] [40.595200f 100.000000f 78.690498f 0.000000f] [16.785700f 33.333302f 64.404800f 33.333302f]])
-  'B' => Glyph(77.746803f, 152.381302f,  [[11.420000f 100.000000f 11.420000f 0.000000f] [11.420000f 100.000000f 54.277100f 100.000000f 68.562897f 95.238098f 73.324799f 90.476196f 78.086700f 80.952400f 78.086700f 71.428596f 73.324799f 61.904800f 68.562897f 57.142899f 54.277100f 52.381001f] [11.420000f 52.381001f 54.277100f 52.381001f 68.562897f 47.618999f 73.324799f 42.857101f 78.086700f 33.333302f 78.086700f 19.047600f 73.324799f 9.523800f 68.562897f 4.761900f 54.277100f 0.000000f 11.420000f 0.000000f]])
-  'C' => Glyph(88.990601f, 152.381302f,  [[78.088600f 76.190498f 73.326698f 85.714302f 63.802898f 95.238098f 54.278999f 100.000000f 35.231400f 100.000000f 25.707600f 95.238098f 16.183800f 85.714302f 11.421900f 76.190498f 6.660000f 61.904800f 6.660000f 38.095200f 11.421900f 23.809500f 16.183800f 14.285700f 25.707600f 4.761900f 35.231400f 0.000000f 54.278999f 0.000000f 63.802898f 4.761900f 73.326698f 14.285700f 78.088600f 23.809500f]])
-  'D' => Glyph(79.986794f, 152.381302f,  [[11.960000f 100.000000f 11.960000f 0.000000f] [11.960000f 100.000000f 45.293301f 100.000000f 59.578999f 95.238098f 69.102898f 85.714302f 73.864799f 76.190498f 78.626701f 61.904800f 78.626701f 38.095200f 73.864799f 23.809500f 69.102898f 14.285700f 59.578999f 4.761900f 45.293301f 0.000000f 11.960000f 0.000000f]])
-  'E' => Glyph(76.386795f, 152.381302f,  [[11.420000f 100.000000f 11.420000f 0.000000f] [11.420000f 100.000000f 73.324799f 100.000000f] [11.420000f 52.381001f 49.515202f 52.381001f] [11.420000f 0.000000f 73.324799f 0.000000f]])
-  'F' => Glyph(77.506790f, 152.381302f,  [[11.420000f 100.000000f 11.420000f 0.000000f] [11.420000f 100.000000f 73.324799f 100.000000f] [11.420000f 52.381001f 49.515202f 52.381001f]])
-  'G' => Glyph(98.750603f, 152.381302f,  [[78.488602f 76.190498f 73.726700f 85.714302f 64.202904f 95.238098f 54.679001f 100.000000f 35.631401f 100.000000f 26.107599f 95.238098f 16.583799f 85.714302f 11.821900f 76.190498f 7.060000f 61.904800f 7.060000f 38.095200f 11.821900f 23.809500f 16.583799f 14.285700f 26.107599f 4.761900f 35.631401f 0.000000f 54.679001f 0.000000f 64.202904f 4.761900f 73.726700f 14.285700f 78.488602f 23.809500f 78.488602f 38.095200f] [54.679001f 38.095200f 78.488602f 38.095200f]])
-  'H' => Glyph(88.666801f, 152.381302f,  [[11.420000f 100.000000f 11.420000f 0.000000f] [78.086700f 100.000000f 78.086700f 0.000000f] [11.420000f 52.381001f 78.086700f 52.381001f]])
-  'I' => Glyph(20.879999f, 152.381302f,  [[10.860000f 100.000000f 10.860000f 0.000000f]])
-  'J' => Glyph(57.855202f, 152.381302f,  [[50.118999f 100.000000f 50.118999f 23.809500f 45.357101f 9.523800f 40.595200f 4.761900f 31.071400f 0.000000f 21.547600f 0.000000f 12.023800f 4.761900f 7.261900f 9.523800f 2.500000f 23.809500f 2.500000f 33.333302f]])
-  'K' => Glyph(69.426796f, 152.381302f,  [[11.280000f 100.000000f 11.280000f 0.000000f] [77.946701f 100.000000f 11.280000f 33.333302f] [35.089500f 57.142899f 77.946701f 0.000000f]])
-  'L' => Glyph(62.142998f, 152.381302f,  [[11.680000f 100.000000f 11.680000f 0.000000f] [11.680000f 0.000000f 68.822899f 0.000000f]])
-  'M' => Glyph(96.510605f, 152.381302f,  [[10.860000f 100.000000f 10.860000f 0.000000f] [10.860000f 100.000000f 48.955200f 0.000000f] [87.050499f 100.000000f 48.955200f 0.000000f] [87.050499f 100.000000f 87.050499f 0.000000f]])
-  'N' => Glyph(88.666801f, 152.381302f,  [[11.140000f 100.000000f 11.140000f 0.000000f] [11.140000f 100.000000f 77.806702f 0.000000f] [77.806702f 100.000000f 77.806702f 0.000000f]])
-  'O' => Glyph(88.990593f, 152.381302f,  [[34.811401f 100.000000f 25.287600f 95.238098f 15.763800f 85.714302f 11.001900f 76.190498f 6.240000f 61.904800f 6.240000f 38.095200f 11.001900f 23.809500f 15.763800f 14.285700f 25.287600f 4.761900f 34.811401f 0.000000f 53.859001f 0.000000f 63.382900f 4.761900f 72.906700f 14.285700f 77.668602f 23.809500f 82.430496f 38.095200f 82.430496f 61.904800f 77.668602f 76.190498f 72.906700f 85.714302f 63.382900f 95.238098f 53.859001f 100.000000f 34.811401f 100.000000f]])
-  'P' => Glyph(80.466805f, 152.381302f,  [[12.100000f 100.000000f 12.100000f 0.000000f] [12.100000f 100.000000f 54.957100f 100.000000f 69.242897f 95.238098f 74.004799f 90.476196f 78.766701f 80.952400f 78.766701f 66.666702f 74.004799f 57.142899f 69.242897f 52.381001f 54.957100f 47.618999f 12.100000f 47.618999f]])
-  'Q' => Glyph(89.390602f, 152.381302f,  [[33.871399f 100.000000f 24.347601f 95.238098f 14.823800f 85.714302f 10.061900f 76.190498f 5.300000f 61.904800f 5.300000f 38.095200f 10.061900f 23.809500f 14.823800f 14.285700f 24.347601f 4.761900f 33.871399f 0.000000f 52.918999f 0.000000f 62.442902f 4.761900f 71.966698f 14.285700f 76.728600f 23.809500f 81.490501f 38.095200f 81.490501f 61.904800f 76.728600f 76.190498f 71.966698f 85.714302f 62.442902f 95.238098f 52.918999f 100.000000f 33.871399f 100.000000f] [48.157101f 19.047600f 76.728600f -9.523800f]])
-  'R' => Glyph(74.706795f, 152.381302f,  [[11.680000f 100.000000f 11.680000f 0.000000f] [11.680000f 100.000000f 54.537102f 100.000000f 68.822899f 95.238098f 73.584801f 90.476196f 78.346703f 80.952400f 78.346703f 71.428596f 73.584801f 61.904800f 68.822899f 57.142899f 54.537102f 52.381001f 11.680000f 52.381001f] [45.013302f 52.381001f 78.346703f 0.000000f]])
-  'S' => Glyph(78.986794f, 152.381302f,  [[74.666702f 85.714302f 65.142899f 95.238098f 50.857101f 100.000000f 31.809500f 100.000000f 17.523800f 95.238098f 8.000000f 85.714302f 8.000000f 76.190498f 12.761900f 66.666702f 17.523800f 61.904800f 27.047600f 57.142899f 55.618999f 47.618999f 65.142899f 42.857101f 69.904800f 38.095200f 74.666702f 28.571400f 74.666702f 14.285700f 65.142899f 4.761900f 50.857101f 0.000000f 31.809500f 0.000000f 17.523800f 4.761900f 8.000000f 14.285700f]])
-  'T' => Glyph(72.506805f, 152.381302f,  [[35.693298f 100.000000f 35.693298f 0.000000f] [2.360000f 100.000000f 69.026703f 100.000000f]])
-  'U' => Glyph(89.226807f, 152.381302f,  [[11.540000f 100.000000f 11.540000f 28.571400f 16.301901f 14.285700f 25.825701f 4.761900f 40.111401f 0.000000f 49.635201f 0.000000f 63.921001f 4.761900f 73.444801f 14.285700f 78.206703f 28.571400f 78.206703f 100.000000f]])
-  'V' => Glyph(82.310593f, 152.381302f,  [[2.360000f 100.000000f 40.455200f 0.000000f] [78.550499f 100.000000f 40.455200f 0.000000f]])
-  'W' => Glyph(101.357994f, 152.381302f,  [[2.220000f 100.000000f 26.029499f 0.000000f] [49.839001f 100.000000f 26.029499f 0.000000f] [49.839001f 100.000000f 73.648598f 0.000000f] [97.458099f 100.000000f 73.648598f 0.000000f]])
-  'X' => Glyph(73.066795f, 152.381302f,  [[2.500000f 100.000000f 69.166702f 0.000000f] [69.166702f 100.000000f 2.500000f 0.000000f]])
-  'Y' => Glyph(80.070595f, 152.381302f,  [[1.520000f 100.000000f 39.615200f 52.381001f 39.615200f 0.000000f] [77.710503f 100.000000f 39.615200f 52.381001f]])
-  'Z' => Glyph(75.826790f, 152.381302f,  [[69.166702f 100.000000f 2.500000f 0.000000f] [2.500000f 100.000000f 69.166702f 100.000000f] [2.500000f 0.000000f 69.166702f 0.000000f]])
-  '[' => Glyph(48.095200f, 152.381302f,  [[7.780000f 119.047997f 7.780000f -33.333302f] [12.541900f 119.047997f 12.541900f -33.333302f] [7.780000f 119.047997f 41.113300f 119.047997f] [7.780000f -33.333302f 41.113300f -33.333302f]])
-  '\\' => Glyph(78.066803f, 152.381302f,  [[5.840000f 100.000000f 72.506699f -14.285700f]])
-  ']' => Glyph(45.811398f, 152.381302f,  [[33.011398f 119.047997f 33.011398f -33.333302f] [37.773300f 119.047997f 37.773300f -33.333302f] [4.440000f 119.047997f 37.773300f 119.047997f] [4.440000f -33.333302f 37.773300f -33.333302f]])
-  '^' => Glyph(92.310600f, 152.381302f,  [[44.075199f 109.524002f 5.980000f 42.857101f] [44.075199f 109.524002f 82.170502f 42.857101f]])
-  '_' => Glyph(105.561996f, 152.381302f,  [[-1.100000f -33.333302f 103.662003f -33.333302f 103.662003f -28.571400f -1.100000f -28.571400f -1.100000f -33.333302f]])
-  '`' => Glyph(82.051407f, 152.381302f,  [[33.021900f 100.000000f 56.831402f 71.428596f] [33.021900f 100.000000f 28.260000f 95.238098f 56.831402f 71.428596f]])
-  'a' => Glyph(62.702995f, 152.381302f,  [[63.822899f 66.666702f 63.822899f 0.000000f] [63.822899f 52.381001f 54.299000f 61.904800f 44.775200f 66.666702f 30.489500f 66.666702f 20.965700f 61.904800f 11.441900f 52.381001f 6.680000f 38.095200f 6.680000f 28.571400f 11.441900f 14.285700f 20.965700f 4.761900f 30.489500f 0.000000f 44.775200f 0.000000f 54.299000f 4.761900f 63.822899f 14.285700f]])
-  'b' => Glyph(66.262993f, 152.381302f,  [[8.760000f 100.000000f 8.760000f 0.000000f] [8.760000f 52.381001f 18.283800f 61.904800f 27.807600f 66.666702f 42.093300f 66.666702f 51.617100f 61.904800f 61.140999f 52.381001f 65.902901f 38.095200f 65.902901f 28.571400f 61.140999f 14.285700f 51.617100f 4.761900f 42.093300f 0.000000f 27.807600f 0.000000f 18.283800f 4.761900f 8.760000f 14.285700f]])
-  'c' => Glyph(69.662994f, 152.381302f,  [[62.662899f 52.381001f 53.139000f 61.904800f 43.615200f 66.666702f 29.329500f 66.666702f 19.805700f 61.904800f 10.281900f 52.381001f 5.520000f 38.095200f 5.520000f 28.571400f 10.281900f 14.285700f 19.805700f 4.761900f 29.329500f 0.000000f 43.615200f 0.000000f 53.139000f 4.761900f 62.662899f 14.285700f]])
-  'd' => Glyph(74.103004f, 152.381302f,  [[61.782902f 100.000000f 61.782902f 0.000000f] [61.782902f 52.381001f 52.258999f 61.904800f 42.735199f 66.666702f 28.449499f 66.666702f 18.925699f 61.904800f 9.401900f 52.381001f 4.640000f 38.095200f 4.640000f 28.571400f 9.401900f 14.285700f 18.925699f 4.761900f 28.449499f 0.000000f 42.735199f 0.000000f 52.258999f 4.761900f 61.782902f 14.285700f]])
-  'e' => Glyph(68.463005f, 152.381302f,  [[5.720000f 38.095200f 62.862900f 38.095200f 62.862900f 47.618999f 58.101002f 57.142899f 53.339001f 61.904800f 43.815201f 66.666702f 29.529499f 66.666702f 20.005699f 61.904800f 10.481900f 52.381001f 5.720000f 38.095200f 5.720000f 28.571400f 10.481900f 14.285700f 20.005699f 4.761900f 29.529499f 0.000000f 43.815201f 0.000000f 53.339001f 4.761900f 62.862900f 14.285700f]])
-  'f' => Glyph(47.379002f, 152.381302f,  [[38.775200f 100.000000f 29.251400f 100.000000f 19.727600f 95.238098f 14.965700f 80.952400f 14.965700f 0.000000f] [0.680000f 66.666702f 34.013302f 66.666702f]])
-  'g' => Glyph(74.103004f, 152.381302f,  [[62.502899f 66.666702f 62.502899f -9.523800f 57.741001f -23.809500f 52.979000f -28.571400f 43.455200f -33.333302f 29.169500f -33.333302f 19.645700f -28.571400f] [62.502899f 52.381001f 52.979000f 61.904800f 43.455200f 66.666702f 29.169500f 66.666702f 19.645700f 61.904800f 10.121900f 52.381001f 5.360000f 38.095200f 5.360000f 28.571400f 10.121900f 14.285700f 19.645700f 4.761900f 29.169500f 0.000000f 43.455200f 0.000000f 52.979000f 4.761900f 62.502899f 14.285700f]])
-  'h' => Glyph(75.223007f, 152.381302f,  [[9.600000f 100.000000f 9.600000f 0.000000f] [9.600000f 47.618999f 23.885700f 61.904800f 33.409500f 66.666702f 47.695202f 66.666702f 57.219002f 61.904800f 61.980999f 47.618999f 61.980999f 0.000000f]])
-  'i' => Glyph(28.163799f, 152.381302f,  [[10.020000f 100.000000f 14.781900f 95.238098f 19.543800f 100.000000f 14.781900f 104.762001f 10.020000f 100.000000f] [14.781900f 66.666702f 14.781900f 0.000000f]])
-  'j' => Glyph(37.687599f, 152.381302f,  [[17.387600f 100.000000f 22.149500f 95.238098f 26.911400f 100.000000f 22.149500f 104.762001f 17.387600f 100.000000f] [22.149500f 66.666702f 22.149500f -14.285700f 17.387600f -28.571400f 7.863800f -33.333302f -1.660000f -33.333302f]])
-  'k' => Glyph(58.223000f, 152.381302f,  [[9.600000f 100.000000f 9.600000f 0.000000f] [57.219002f 66.666702f 9.600000f 19.047600f] [28.647600f 38.095200f 61.980999f 0.000000f]])
-  'l' => Glyph(18.639999f, 152.381302f,  [[10.020000f 100.000000f 10.020000f 0.000000f]])
-  'm' => Glyph(123.961998f, 152.381302f,  [[9.600000f 66.666702f 9.600000f 0.000000f] [9.600000f 47.618999f 23.885700f 61.904800f 33.409500f 66.666702f 47.695202f 66.666702f 57.219002f 61.904800f 61.980999f 47.618999f 61.980999f 0.000000f] [61.980999f 47.618999f 76.266701f 61.904800f 85.790497f 66.666702f 100.075996f 66.666702f 109.599998f 61.904800f 114.362000f 47.618999f 114.362000f 0.000000f]])
-  'n' => Glyph(75.782997f, 152.381302f,  [[9.180000f 66.666702f 9.180000f 0.000000f] [9.180000f 47.618999f 23.465700f 61.904800f 32.989498f 66.666702f 47.275200f 66.666702f 56.799000f 61.904800f 61.561001f 47.618999f 61.561001f 0.000000f]])
-  'o' => Glyph(76.386795f, 152.381302f,  [[28.789499f 66.666702f 19.265699f 61.904800f 9.741900f 52.381001f 4.980000f 38.095200f 4.980000f 28.571400f 9.741900f 14.285700f 19.265699f 4.761900f 28.789499f 0.000000f 43.075199f 0.000000f 52.598999f 4.761900f 62.122898f 14.285700f 66.884804f 28.571400f 66.884804f 38.095200f 62.122898f 52.381001f 52.598999f 61.904800f 43.075199f 66.666702f 28.789499f 66.666702f]])
-  'p' => Glyph(65.543007f, 152.381302f,  [[9.460000f 66.666702f 9.460000f -33.333302f] [9.460000f 52.381001f 18.983801f 61.904800f 28.507601f 66.666702f 42.793301f 66.666702f 52.317101f 61.904800f 61.841000f 52.381001f 66.602898f 38.095200f 66.602898f 28.571400f 61.841000f 14.285700f 52.317101f 4.761900f 42.793301f 0.000000f 28.507601f 0.000000f 18.983801f 4.761900f 9.460000f 14.285700f]])
-  'q' => Glyph(74.662994f, 152.381302f,  [[61.982899f 66.666702f 61.982899f -33.333302f] [61.982899f 52.381001f 52.459000f 61.904800f 42.935200f 66.666702f 28.649500f 66.666702f 19.125700f 61.904800f 9.601900f 52.381001f 4.840000f 38.095200f 4.840000f 28.571400f 9.601900f 14.285700f 19.125700f 4.761900f 28.649500f 0.000000f 42.935200f 0.000000f 52.459000f 4.761900f 61.982899f 14.285700f]])
-  'r' => Glyph(51.499001f, 152.381302f,  [[9.460000f 66.666702f 9.460000f 0.000000f] [9.460000f 38.095200f 14.221900f 52.381001f 23.745701f 61.904800f 33.269501f 66.666702f 47.555199f 66.666702f]])
-  's' => Glyph(67.623001f, 152.381302f,  [[57.081001f 52.381001f 52.319000f 61.904800f 38.033298f 66.666702f 23.747601f 66.666702f 9.461900f 61.904800f 4.700000f 52.381001f 9.461900f 42.857101f 18.985701f 38.095200f 42.795200f 33.333302f 52.319000f 28.571400f 57.081001f 19.047600f 57.081001f 14.285700f 52.319000f 4.761900f 38.033298f 0.000000f 23.747601f 0.000000f 9.461900f 4.761900f 4.700000f 14.285700f]])
-  't' => Glyph(48.979004f, 152.381302f,  [[14.825700f 100.000000f 14.825700f 19.047600f 19.587601f 4.761900f 29.111401f 0.000000f 38.635201f 0.000000f] [0.540000f 66.666702f 33.873299f 66.666702f]])
-  'u' => Glyph(75.783005f, 152.381302f,  [[9.460000f 66.666702f 9.460000f 19.047600f 14.221900f 4.761900f 23.745701f 0.000000f 38.031399f 0.000000f 47.555199f 4.761900f 61.841000f 19.047600f] [61.841000f 66.666702f 61.841000f 0.000000f]])
-  'v' => Glyph(60.463001f, 152.381302f,  [[1.800000f 66.666702f 30.371401f 0.000000f] [58.942902f 66.666702f 30.371401f 0.000000f]])
-  'w' => Glyph(79.790604f, 152.381302f,  [[2.500000f 66.666702f 21.547600f 0.000000f] [40.595200f 66.666702f 21.547600f 0.000000f] [40.595200f 66.666702f 59.642899f 0.000000f] [78.690498f 66.666702f 59.642899f 0.000000f]])
-  'x' => Glyph(61.863003f, 152.381302f,  [[1.660000f 66.666702f 54.041000f 0.000000f] [54.041000f 66.666702f 1.660000f 0.000000f]])
-  'y' => Glyph(61.862991f, 152.381302f,  [[6.561900f 66.666702f 35.133301f 0.000000f] [63.704800f 66.666702f 35.133301f 0.000000f 25.609501f -19.047600f 16.085699f -28.571400f 6.561900f -33.333302f 1.800000f -33.333302f]])
-  'z' => Glyph(67.142998f, 152.381302f,  [[56.820999f 66.666702f 4.440000f 0.000000f] [4.440000f 66.666702f 56.820999f 66.666702f] [4.440000f 0.000000f 56.820999f 0.000000f]])
-  '{' => Glyph(39.927601f, 152.381302f,  [[31.189501f 119.047997f 21.665701f 114.286003f 16.903799f 109.524002f 12.141900f 100.000000f 12.141900f 90.476196f 16.903799f 80.952400f 21.665701f 76.190498f 26.427601f 66.666702f 26.427601f 57.142899f 16.903799f 47.618999f] [21.665701f 114.286003f 16.903799f 104.762001f 16.903799f 95.238098f 21.665701f 85.714302f 26.427601f 80.952400f 31.189501f 71.428596f 31.189501f 61.904800f 26.427601f 52.381001f 7.380000f 42.857101f 26.427601f 33.333302f 31.189501f 23.809500f 31.189501f 14.285700f 26.427601f 4.761900f 21.665701f 0.000000f 16.903799f -9.523800f 16.903799f -19.047600f 21.665701f -28.571400f] [16.903799f 38.095200f 26.427601f 28.571400f 26.427601f 19.047600f 21.665701f 9.523800f 16.903799f 4.761900f 12.141900f -4.761900f 12.141900f -14.285700f 16.903799f -23.809500f 21.665701f -28.571400f 31.189501f -33.333302f]])
-  '|' => Glyph(24.480001f, 152.381302f,  [[11.540000f 119.047997f 11.540000f -33.333302f]])
-  '}' => Glyph(45.531403f, 152.381302f,  [[9.180000f 119.047997f 18.703800f 114.286003f 23.465700f 109.524002f 28.227600f 100.000000f 28.227600f 90.476196f 23.465700f 80.952400f 18.703800f 76.190498f 13.941900f 66.666702f 13.941900f 57.142899f 23.465700f 47.618999f] [18.703800f 114.286003f 23.465700f 104.762001f 23.465700f 95.238098f 18.703800f 85.714302f 13.941900f 80.952400f 9.180000f 71.428596f 9.180000f 61.904800f 13.941900f 52.381001f 32.989498f 42.857101f 13.941900f 33.333302f 9.180000f 23.809500f 9.180000f 14.285700f 13.941900f 4.761900f 18.703800f 0.000000f 23.465700f -9.523800f 23.465700f -19.047600f 18.703800f -28.571400f] [23.465700f 38.095200f 13.941900f 28.571400f 13.941900f 19.047600f 18.703800f 9.523800f 23.465700f 4.761900f 28.227600f -4.761900f 28.227600f -14.285700f 23.465700f -23.809500f 18.703800f -28.571400f 9.180000f -33.333302f]])
-  '~' => Glyph(90.994400f, 152.381302f,  [[2.920000f 28.571400f 2.920000f 38.095200f 7.681900f 52.381001f 17.205700f 57.142899f 26.729500f 57.142899f 36.253300f 52.381001f 55.300999f 38.095200f 64.824799f 33.333302f 74.348602f 33.333302f 83.872398f 38.095200f 88.634300f 47.618999f] [2.920000f 38.095200f 7.681900f 47.618999f 17.205700f 52.381001f 26.729500f 52.381001f 36.253300f 47.618999f 55.300999f 33.333302f 64.824799f 28.571400f 74.348602f 28.571400f 83.872398f 33.333302f 88.634300f 47.618999f 88.634300f 57.142899f]])
+  ' ' => Glyph(104.762001, 152.381302,  [])
+  '!' => Glyph(26.483801, 152.381302,  [[13.381900 100.000000 13.381900 33.333302] [13.381900 9.523800 8.620000 4.761900 13.381900 0.000000 18.143801 4.761900 13.381900 9.523800]])
+  '\"' => Glyph(56.735199, 152.381302,  [[4.020000 100.000000 4.020000 66.666702] [42.115200 100.000000 42.115200 66.666702]])
+  '#' => Glyph(85.910606, 152.381302,  [[41.295200 119.047997 7.961900 -33.333302] [69.866699 119.047997 36.533298 -33.333302] [7.961900 57.142899 74.628601 57.142899] [3.200000 28.571400 69.866699 28.571400]])
+  '$' => Glyph(76.106804, 152.381302,  [[28.629499 119.047997 28.629499 -19.047600] [47.677101 119.047997 47.677101 -19.047600] [71.486702 85.714302 61.962898 95.238098 47.677101 100.000000 28.629499 100.000000 14.343800 95.238098 4.820000 85.714302 4.820000 76.190498 9.581900 66.666702 14.343800 61.904800 23.867599 57.142899 52.438999 47.618999 61.962898 42.857101 66.724800 38.095200 71.486702 28.571400 71.486702 14.285700 61.962898 4.761900 47.677101 0.000000 28.629499 0.000000 14.343800 4.761900 4.820000 14.285700]])
+  '%' => Glyph(94.714409, 152.381302,  [[92.074303 100.000000 6.360000 0.000000] [30.169500 100.000000 39.693298 90.476196 39.693298 80.952400 34.931400 71.428596 25.407600 66.666702 15.883800 66.666702 6.360000 76.190498 6.360000 85.714302 11.121900 95.238098 20.645700 100.000000 30.169500 100.000000 39.693298 95.238098 53.979000 90.476196 68.264801 90.476196 82.550499 95.238098 92.074303 100.000000] [73.026703 33.333302 63.502899 28.571400 58.741001 19.047600 58.741001 9.523800 68.264801 0.000000 77.788597 0.000000 87.312401 4.761900 92.074303 14.285700 92.074303 23.809500 82.550499 33.333302 73.026703 33.333302]])
+  '&' => Glyph(96.318008, 152.381302,  [[101.218002 57.142899 101.218002 61.904800 96.456200 66.666702 91.694298 66.666702 86.932404 61.904800 82.170502 52.381001 72.646698 28.571400 63.122898 14.285700 53.598999 4.761900 44.075199 0.000000 25.027599 0.000000 15.503800 4.761900 10.741900 9.523800 5.980000 19.047600 5.980000 28.571400 10.741900 38.095200 15.503800 42.857101 48.837101 61.904800 53.598999 66.666702 58.361000 76.190498 58.361000 85.714302 53.598999 95.238098 44.075199 100.000000 34.551399 95.238098 29.789499 85.714302 29.789499 76.190498 34.551399 61.904800 44.075199 47.618999 67.884804 14.285700 77.408600 4.761900 86.932404 0.000000 96.456200 0.000000 101.218002 4.761900 101.218002 9.523800]])
+  '\'' => Glyph(18.360001, 152.381302,  [[4.440000 100.000000 4.440000 66.666702]])
+  '(' => Glyph(50.615204, 152.381302,  [[40.913300 119.047997 31.389500 109.524002 21.865700 95.238098 12.341900 76.190498 7.580000 52.381001 7.580000 33.333302 12.341900 9.523800 21.865700 -9.523800 31.389500 -23.809500 40.913300 -33.333302]])
+  ')' => Glyph(46.411396, 152.381302,  [[5.280000 119.047997 14.803800 109.524002 24.327600 95.238098 33.851398 76.190498 38.613300 52.381001 38.613300 33.333302 33.851398 9.523800 24.327600 -9.523800 14.803800 -23.809500 5.280000 -33.333302]])
+  '*' => Glyph(57.338997, 152.381302,  [[30.769501 71.428596 30.769501 14.285700] [6.960000 57.142899 54.578999 28.571400] [54.578999 57.142899 6.960000 28.571400]])
+  '+' => Glyph(96.834404, 152.381302,  [[48.837101 85.714302 48.837101 0.000000] [5.980000 42.857101 91.694298 42.857101]])
+  ',' => Glyph(25.083801, 152.381302,  [[18.283800 4.761900 13.521900 0.000000 8.760000 4.761900 13.521900 9.523800 18.283800 4.761900 18.283800 -4.761900 13.521900 -14.285700 8.760000 -19.047600]])
+  '-' => Glyph(101.033798, 152.381302,  [[7.380000 42.857101 93.094299 42.857101]])
+  '.' => Glyph(26.763802, 152.381302,  [[13.101900 9.523800 8.340000 4.761900 13.101900 0.000000 17.863800 4.761900 13.101900 9.523800]])
+  '/' => Glyph(83.066795, 152.381302,  [[7.240000 -14.285700 73.906700 100.000000]])
+  '0' => Glyph(77.506805, 152.381302,  [[33.551399 100.000000 19.265699 95.238098 9.741900 80.952400 4.980000 57.142899 4.980000 42.857101 9.741900 19.047600 19.265699 4.761900 33.551399 0.000000 43.075199 0.000000 57.361000 4.761900 66.884804 19.047600 71.646698 42.857101 71.646698 57.142899 66.884804 80.952400 57.361000 95.238098 43.075199 100.000000 33.551399 100.000000]])
+  '1' => Glyph(71.323807, 152.381302,  [[11.820000 80.952400 21.343800 85.714302 35.629501 100.000000 35.629501 0.000000]])
+  '2' => Glyph(77.786797, 152.381302,  [[10.181900 76.190498 10.181900 80.952400 14.943800 90.476196 19.705700 95.238098 29.229500 100.000000 48.277100 100.000000 57.800999 95.238098 62.562901 90.476196 67.324799 80.952400 67.324799 71.428596 62.562901 61.904800 53.039001 47.618999 5.420000 0.000000 72.086700 0.000000]])
+  '3' => Glyph(77.426796, 152.381302,  [[14.523800 100.000000 66.904800 100.000000 38.333302 61.904800 52.618999 61.904800 62.142899 57.142899 66.904800 52.381001 71.666702 38.095200 71.666702 28.571400 66.904800 14.285700 57.381001 4.761900 43.095200 0.000000 28.809500 0.000000 14.523800 4.761900 9.761900 9.523800 5.000000 19.047600]])
+  '4' => Glyph(85.910606, 152.381302,  [[51.499001 100.000000 3.880000 33.333302 75.308601 33.333302] [51.499001 100.000000 51.499001 0.000000]])
+  '5' => Glyph(78.986801, 152.381302,  [[62.002899 100.000000 14.383800 100.000000 9.621900 57.142899 14.383800 61.904800 28.669500 66.666702 42.955200 66.666702 57.241001 61.904800 66.764801 52.381001 71.526703 38.095200 71.526703 28.571400 66.764801 14.285700 57.241001 4.761900 42.955200 0.000000 28.669500 0.000000 14.383800 4.761900 9.621900 9.523800 4.860000 19.047600]])
+  '6' => Glyph(79.306801, 152.381302,  [[62.722900 85.714302 57.960999 95.238098 43.675201 100.000000 34.151402 100.000000 19.865700 95.238098 10.341900 80.952400 5.580000 57.142899 5.580000 33.333302 10.341900 14.285700 19.865700 4.761900 34.151402 0.000000 38.913300 0.000000 53.199001 4.761900 62.722900 14.285700 67.484802 28.571400 67.484802 33.333302 62.722900 47.618999 53.199001 57.142899 38.913300 61.904800 34.151402 61.904800 19.865700 57.142899 10.341900 47.618999 5.580000 33.333302]])
+  '7' => Glyph(76.666801, 152.381302,  [[72.226700 100.000000 24.607599 0.000000] [5.560000 100.000000 72.226700 100.000000]])
+  '8' => Glyph(77.466805, 152.381302,  [[29.409500 100.000000 15.123800 95.238098 10.361900 85.714302 10.361900 76.190498 15.123800 66.666702 24.647600 61.904800 43.695202 57.142899 57.980999 52.381001 67.504799 42.857101 72.266701 33.333302 72.266701 19.047600 67.504799 9.523800 62.742901 4.761900 48.457100 0.000000 29.409500 0.000000 15.123800 4.761900 10.361900 9.523800 5.600000 19.047600 5.600000 33.333302 10.361900 42.857101 19.885700 52.381001 34.171398 57.142899 53.219002 61.904800 62.742901 66.666702 67.504799 76.190498 67.504799 85.714302 62.742901 95.238098 48.457100 100.000000 29.409500 100.000000]])
+  '9' => Glyph(68.262993, 152.381302,  [[68.504799 66.666702 63.742901 52.381001 54.219002 42.857101 39.933300 38.095200 35.171398 38.095200 20.885700 42.857101 11.361900 52.381001 6.600000 66.666702 6.600000 71.428596 11.361900 85.714302 20.885700 95.238098 35.171398 100.000000 39.933300 100.000000 54.219002 95.238098 63.742901 85.714302 68.504799 66.666702 68.504799 42.857101 63.742901 19.047600 54.219002 4.761900 39.933300 0.000000 30.409500 0.000000 16.123800 4.761900 11.361900 14.285700]])
+  ':' => Glyph(24.283802, 152.381302,  [[14.081900 66.666702 9.320000 61.904800 14.081900 57.142899 18.843800 61.904800 14.081900 66.666702] [14.081900 9.523800 9.320000 4.761900 14.081900 0.000000 18.843800 4.761900 14.081900 9.523800]])
+  ';' => Glyph(26.683802, 152.381302,  [[12.961900 66.666702 8.200000 61.904800 12.961900 57.142899 17.723801 61.904800 12.961900 66.666702] [17.723801 4.761900 12.961900 0.000000 8.200000 4.761900 12.961900 9.523800 17.723801 4.761900 17.723801 -4.761900 12.961900 -14.285700 8.200000 -19.047600]])
+  '<' => Glyph(80.910591, 152.381302,  [[79.250504 85.714302 3.060000 42.857101 79.250504 0.000000]])
+  '=' => Glyph(97.394409, 152.381302,  [[5.700000 57.142899 91.414299 57.142899] [5.700000 28.571400 91.414299 28.571400]])
+  '>' => Glyph(81.470596, 152.381302,  [[2.780000 85.714302 78.970497 42.857101 2.780000 0.000000]])
+  '?' => Glyph(73.822998, 152.381302,  [[8.420000 76.190498 8.420000 80.952400 13.181900 90.476196 17.943800 95.238098 27.467600 100.000000 46.515202 100.000000 56.039001 95.238098 60.800999 90.476196 65.562897 80.952400 65.562897 71.428596 60.800999 61.904800 56.039001 57.142899 36.991402 47.618999 36.991402 33.333302] [36.991402 9.523800 32.229500 4.761900 36.991402 0.000000 41.753300 4.761900 36.991402 9.523800]])
+  '@' => Glyph(78.866798, 152.381302,  [[49.217098 52.381001 39.693298 57.142899 30.169500 57.142899 25.407600 47.618999 25.407600 42.857101 30.169500 33.333302 39.693298 33.333302 49.217098 38.095200] [49.217098 57.142899 49.217098 38.095200 53.979000 33.333302 63.502899 33.333302 68.264801 42.857101 68.264801 47.618999 63.502899 61.904800 53.979000 71.428596 39.693298 76.190498 34.931400 76.190498 20.645700 71.428596 11.121900 61.904800 6.360000 47.618999 6.360000 42.857101 11.121900 28.571400 20.645700 19.047600 34.931400 14.285700 39.693298 14.285700 53.979000 19.047600]])
+  'A' => Glyph(79.790604, 152.381302,  [[40.595200 100.000000 2.500000 0.000000] [40.595200 100.000000 78.690498 0.000000] [16.785700 33.333302 64.404800 33.333302]])
+  'B' => Glyph(77.746803, 152.381302,  [[11.420000 100.000000 11.420000 0.000000] [11.420000 100.000000 54.277100 100.000000 68.562897 95.238098 73.324799 90.476196 78.086700 80.952400 78.086700 71.428596 73.324799 61.904800 68.562897 57.142899 54.277100 52.381001] [11.420000 52.381001 54.277100 52.381001 68.562897 47.618999 73.324799 42.857101 78.086700 33.333302 78.086700 19.047600 73.324799 9.523800 68.562897 4.761900 54.277100 0.000000 11.420000 0.000000]])
+  'C' => Glyph(88.990601, 152.381302,  [[78.088600 76.190498 73.326698 85.714302 63.802898 95.238098 54.278999 100.000000 35.231400 100.000000 25.707600 95.238098 16.183800 85.714302 11.421900 76.190498 6.660000 61.904800 6.660000 38.095200 11.421900 23.809500 16.183800 14.285700 25.707600 4.761900 35.231400 0.000000 54.278999 0.000000 63.802898 4.761900 73.326698 14.285700 78.088600 23.809500]])
+  'D' => Glyph(79.986794, 152.381302,  [[11.960000 100.000000 11.960000 0.000000] [11.960000 100.000000 45.293301 100.000000 59.578999 95.238098 69.102898 85.714302 73.864799 76.190498 78.626701 61.904800 78.626701 38.095200 73.864799 23.809500 69.102898 14.285700 59.578999 4.761900 45.293301 0.000000 11.960000 0.000000]])
+  'E' => Glyph(76.386795, 152.381302,  [[11.420000 100.000000 11.420000 0.000000] [11.420000 100.000000 73.324799 100.000000] [11.420000 52.381001 49.515202 52.381001] [11.420000 0.000000 73.324799 0.000000]])
+  'F' => Glyph(77.506790, 152.381302,  [[11.420000 100.000000 11.420000 0.000000] [11.420000 100.000000 73.324799 100.000000] [11.420000 52.381001 49.515202 52.381001]])
+  'G' => Glyph(98.750603, 152.381302,  [[78.488602 76.190498 73.726700 85.714302 64.202904 95.238098 54.679001 100.000000 35.631401 100.000000 26.107599 95.238098 16.583799 85.714302 11.821900 76.190498 7.060000 61.904800 7.060000 38.095200 11.821900 23.809500 16.583799 14.285700 26.107599 4.761900 35.631401 0.000000 54.679001 0.000000 64.202904 4.761900 73.726700 14.285700 78.488602 23.809500 78.488602 38.095200] [54.679001 38.095200 78.488602 38.095200]])
+  'H' => Glyph(88.666801, 152.381302,  [[11.420000 100.000000 11.420000 0.000000] [78.086700 100.000000 78.086700 0.000000] [11.420000 52.381001 78.086700 52.381001]])
+  'I' => Glyph(20.879999, 152.381302,  [[10.860000 100.000000 10.860000 0.000000]])
+  'J' => Glyph(57.855202, 152.381302,  [[50.118999 100.000000 50.118999 23.809500 45.357101 9.523800 40.595200 4.761900 31.071400 0.000000 21.547600 0.000000 12.023800 4.761900 7.261900 9.523800 2.500000 23.809500 2.500000 33.333302]])
+  'K' => Glyph(69.426796, 152.381302,  [[11.280000 100.000000 11.280000 0.000000] [77.946701 100.000000 11.280000 33.333302] [35.089500 57.142899 77.946701 0.000000]])
+  'L' => Glyph(62.142998, 152.381302,  [[11.680000 100.000000 11.680000 0.000000] [11.680000 0.000000 68.822899 0.000000]])
+  'M' => Glyph(96.510605, 152.381302,  [[10.860000 100.000000 10.860000 0.000000] [10.860000 100.000000 48.955200 0.000000] [87.050499 100.000000 48.955200 0.000000] [87.050499 100.000000 87.050499 0.000000]])
+  'N' => Glyph(88.666801, 152.381302,  [[11.140000 100.000000 11.140000 0.000000] [11.140000 100.000000 77.806702 0.000000] [77.806702 100.000000 77.806702 0.000000]])
+  'O' => Glyph(88.990593, 152.381302,  [[34.811401 100.000000 25.287600 95.238098 15.763800 85.714302 11.001900 76.190498 6.240000 61.904800 6.240000 38.095200 11.001900 23.809500 15.763800 14.285700 25.287600 4.761900 34.811401 0.000000 53.859001 0.000000 63.382900 4.761900 72.906700 14.285700 77.668602 23.809500 82.430496 38.095200 82.430496 61.904800 77.668602 76.190498 72.906700 85.714302 63.382900 95.238098 53.859001 100.000000 34.811401 100.000000]])
+  'P' => Glyph(80.466805, 152.381302,  [[12.100000 100.000000 12.100000 0.000000] [12.100000 100.000000 54.957100 100.000000 69.242897 95.238098 74.004799 90.476196 78.766701 80.952400 78.766701 66.666702 74.004799 57.142899 69.242897 52.381001 54.957100 47.618999 12.100000 47.618999]])
+  'Q' => Glyph(89.390602, 152.381302,  [[33.871399 100.000000 24.347601 95.238098 14.823800 85.714302 10.061900 76.190498 5.300000 61.904800 5.300000 38.095200 10.061900 23.809500 14.823800 14.285700 24.347601 4.761900 33.871399 0.000000 52.918999 0.000000 62.442902 4.761900 71.966698 14.285700 76.728600 23.809500 81.490501 38.095200 81.490501 61.904800 76.728600 76.190498 71.966698 85.714302 62.442902 95.238098 52.918999 100.000000 33.871399 100.000000] [48.157101 19.047600 76.728600 -9.523800]])
+  'R' => Glyph(74.706795, 152.381302,  [[11.680000 100.000000 11.680000 0.000000] [11.680000 100.000000 54.537102 100.000000 68.822899 95.238098 73.584801 90.476196 78.346703 80.952400 78.346703 71.428596 73.584801 61.904800 68.822899 57.142899 54.537102 52.381001 11.680000 52.381001] [45.013302 52.381001 78.346703 0.000000]])
+  'S' => Glyph(78.986794, 152.381302,  [[74.666702 85.714302 65.142899 95.238098 50.857101 100.000000 31.809500 100.000000 17.523800 95.238098 8.000000 85.714302 8.000000 76.190498 12.761900 66.666702 17.523800 61.904800 27.047600 57.142899 55.618999 47.618999 65.142899 42.857101 69.904800 38.095200 74.666702 28.571400 74.666702 14.285700 65.142899 4.761900 50.857101 0.000000 31.809500 0.000000 17.523800 4.761900 8.000000 14.285700]])
+  'T' => Glyph(72.506805, 152.381302,  [[35.693298 100.000000 35.693298 0.000000] [2.360000 100.000000 69.026703 100.000000]])
+  'U' => Glyph(89.226807, 152.381302,  [[11.540000 100.000000 11.540000 28.571400 16.301901 14.285700 25.825701 4.761900 40.111401 0.000000 49.635201 0.000000 63.921001 4.761900 73.444801 14.285700 78.206703 28.571400 78.206703 100.000000]])
+  'V' => Glyph(82.310593, 152.381302,  [[2.360000 100.000000 40.455200 0.000000] [78.550499 100.000000 40.455200 0.000000]])
+  'W' => Glyph(101.357994, 152.381302,  [[2.220000 100.000000 26.029499 0.000000] [49.839001 100.000000 26.029499 0.000000] [49.839001 100.000000 73.648598 0.000000] [97.458099 100.000000 73.648598 0.000000]])
+  'X' => Glyph(73.066795, 152.381302,  [[2.500000 100.000000 69.166702 0.000000] [69.166702 100.000000 2.500000 0.000000]])
+  'Y' => Glyph(80.070595, 152.381302,  [[1.520000 100.000000 39.615200 52.381001 39.615200 0.000000] [77.710503 100.000000 39.615200 52.381001]])
+  'Z' => Glyph(75.826790, 152.381302,  [[69.166702 100.000000 2.500000 0.000000] [2.500000 100.000000 69.166702 100.000000] [2.500000 0.000000 69.166702 0.000000]])
+  '[' => Glyph(48.095200, 152.381302,  [[7.780000 119.047997 7.780000 -33.333302] [12.541900 119.047997 12.541900 -33.333302] [7.780000 119.047997 41.113300 119.047997] [7.780000 -33.333302 41.113300 -33.333302]])
+  '\\' => Glyph(78.066803, 152.381302,  [[5.840000 100.000000 72.506699 -14.285700]])
+  ']' => Glyph(45.811398, 152.381302,  [[33.011398 119.047997 33.011398 -33.333302] [37.773300 119.047997 37.773300 -33.333302] [4.440000 119.047997 37.773300 119.047997] [4.440000 -33.333302 37.773300 -33.333302]])
+  '^' => Glyph(92.310600, 152.381302,  [[44.075199 109.524002 5.980000 42.857101] [44.075199 109.524002 82.170502 42.857101]])
+  '_' => Glyph(105.561996, 152.381302,  [[-1.100000 -33.333302 103.662003 -33.333302 103.662003 -28.571400 -1.100000 -28.571400 -1.100000 -33.333302]])
+  '`' => Glyph(82.051407, 152.381302,  [[33.021900 100.000000 56.831402 71.428596] [33.021900 100.000000 28.260000 95.238098 56.831402 71.428596]])
+  'a' => Glyph(62.702995, 152.381302,  [[63.822899 66.666702 63.822899 0.000000] [63.822899 52.381001 54.299000 61.904800 44.775200 66.666702 30.489500 66.666702 20.965700 61.904800 11.441900 52.381001 6.680000 38.095200 6.680000 28.571400 11.441900 14.285700 20.965700 4.761900 30.489500 0.000000 44.775200 0.000000 54.299000 4.761900 63.822899 14.285700]])
+  'b' => Glyph(66.262993, 152.381302,  [[8.760000 100.000000 8.760000 0.000000] [8.760000 52.381001 18.283800 61.904800 27.807600 66.666702 42.093300 66.666702 51.617100 61.904800 61.140999 52.381001 65.902901 38.095200 65.902901 28.571400 61.140999 14.285700 51.617100 4.761900 42.093300 0.000000 27.807600 0.000000 18.283800 4.761900 8.760000 14.285700]])
+  'c' => Glyph(69.662994, 152.381302,  [[62.662899 52.381001 53.139000 61.904800 43.615200 66.666702 29.329500 66.666702 19.805700 61.904800 10.281900 52.381001 5.520000 38.095200 5.520000 28.571400 10.281900 14.285700 19.805700 4.761900 29.329500 0.000000 43.615200 0.000000 53.139000 4.761900 62.662899 14.285700]])
+  'd' => Glyph(74.103004, 152.381302,  [[61.782902 100.000000 61.782902 0.000000] [61.782902 52.381001 52.258999 61.904800 42.735199 66.666702 28.449499 66.666702 18.925699 61.904800 9.401900 52.381001 4.640000 38.095200 4.640000 28.571400 9.401900 14.285700 18.925699 4.761900 28.449499 0.000000 42.735199 0.000000 52.258999 4.761900 61.782902 14.285700]])
+  'e' => Glyph(68.463005, 152.381302,  [[5.720000 38.095200 62.862900 38.095200 62.862900 47.618999 58.101002 57.142899 53.339001 61.904800 43.815201 66.666702 29.529499 66.666702 20.005699 61.904800 10.481900 52.381001 5.720000 38.095200 5.720000 28.571400 10.481900 14.285700 20.005699 4.761900 29.529499 0.000000 43.815201 0.000000 53.339001 4.761900 62.862900 14.285700]])
+  'f' => Glyph(47.379002, 152.381302,  [[38.775200 100.000000 29.251400 100.000000 19.727600 95.238098 14.965700 80.952400 14.965700 0.000000] [0.680000 66.666702 34.013302 66.666702]])
+  'g' => Glyph(74.103004, 152.381302,  [[62.502899 66.666702 62.502899 -9.523800 57.741001 -23.809500 52.979000 -28.571400 43.455200 -33.333302 29.169500 -33.333302 19.645700 -28.571400] [62.502899 52.381001 52.979000 61.904800 43.455200 66.666702 29.169500 66.666702 19.645700 61.904800 10.121900 52.381001 5.360000 38.095200 5.360000 28.571400 10.121900 14.285700 19.645700 4.761900 29.169500 0.000000 43.455200 0.000000 52.979000 4.761900 62.502899 14.285700]])
+  'h' => Glyph(75.223007, 152.381302,  [[9.600000 100.000000 9.600000 0.000000] [9.600000 47.618999 23.885700 61.904800 33.409500 66.666702 47.695202 66.666702 57.219002 61.904800 61.980999 47.618999 61.980999 0.000000]])
+  'i' => Glyph(28.163799, 152.381302,  [[10.020000 100.000000 14.781900 95.238098 19.543800 100.000000 14.781900 104.762001 10.020000 100.000000] [14.781900 66.666702 14.781900 0.000000]])
+  'j' => Glyph(37.687599, 152.381302,  [[17.387600 100.000000 22.149500 95.238098 26.911400 100.000000 22.149500 104.762001 17.387600 100.000000] [22.149500 66.666702 22.149500 -14.285700 17.387600 -28.571400 7.863800 -33.333302 -1.660000 -33.333302]])
+  'k' => Glyph(58.223000, 152.381302,  [[9.600000 100.000000 9.600000 0.000000] [57.219002 66.666702 9.600000 19.047600] [28.647600 38.095200 61.980999 0.000000]])
+  'l' => Glyph(18.639999, 152.381302,  [[10.020000 100.000000 10.020000 0.000000]])
+  'm' => Glyph(123.961998, 152.381302,  [[9.600000 66.666702 9.600000 0.000000] [9.600000 47.618999 23.885700 61.904800 33.409500 66.666702 47.695202 66.666702 57.219002 61.904800 61.980999 47.618999 61.980999 0.000000] [61.980999 47.618999 76.266701 61.904800 85.790497 66.666702 100.075996 66.666702 109.599998 61.904800 114.362000 47.618999 114.362000 0.000000]])
+  'n' => Glyph(75.782997, 152.381302,  [[9.180000 66.666702 9.180000 0.000000] [9.180000 47.618999 23.465700 61.904800 32.989498 66.666702 47.275200 66.666702 56.799000 61.904800 61.561001 47.618999 61.561001 0.000000]])
+  'o' => Glyph(76.386795, 152.381302,  [[28.789499 66.666702 19.265699 61.904800 9.741900 52.381001 4.980000 38.095200 4.980000 28.571400 9.741900 14.285700 19.265699 4.761900 28.789499 0.000000 43.075199 0.000000 52.598999 4.761900 62.122898 14.285700 66.884804 28.571400 66.884804 38.095200 62.122898 52.381001 52.598999 61.904800 43.075199 66.666702 28.789499 66.666702]])
+  'p' => Glyph(65.543007, 152.381302,  [[9.460000 66.666702 9.460000 -33.333302] [9.460000 52.381001 18.983801 61.904800 28.507601 66.666702 42.793301 66.666702 52.317101 61.904800 61.841000 52.381001 66.602898 38.095200 66.602898 28.571400 61.841000 14.285700 52.317101 4.761900 42.793301 0.000000 28.507601 0.000000 18.983801 4.761900 9.460000 14.285700]])
+  'q' => Glyph(74.662994, 152.381302,  [[61.982899 66.666702 61.982899 -33.333302] [61.982899 52.381001 52.459000 61.904800 42.935200 66.666702 28.649500 66.666702 19.125700 61.904800 9.601900 52.381001 4.840000 38.095200 4.840000 28.571400 9.601900 14.285700 19.125700 4.761900 28.649500 0.000000 42.935200 0.000000 52.459000 4.761900 61.982899 14.285700]])
+  'r' => Glyph(51.499001, 152.381302,  [[9.460000 66.666702 9.460000 0.000000] [9.460000 38.095200 14.221900 52.381001 23.745701 61.904800 33.269501 66.666702 47.555199 66.666702]])
+  's' => Glyph(67.623001, 152.381302,  [[57.081001 52.381001 52.319000 61.904800 38.033298 66.666702 23.747601 66.666702 9.461900 61.904800 4.700000 52.381001 9.461900 42.857101 18.985701 38.095200 42.795200 33.333302 52.319000 28.571400 57.081001 19.047600 57.081001 14.285700 52.319000 4.761900 38.033298 0.000000 23.747601 0.000000 9.461900 4.761900 4.700000 14.285700]])
+  't' => Glyph(48.979004, 152.381302,  [[14.825700 100.000000 14.825700 19.047600 19.587601 4.761900 29.111401 0.000000 38.635201 0.000000] [0.540000 66.666702 33.873299 66.666702]])
+  'u' => Glyph(75.783005, 152.381302,  [[9.460000 66.666702 9.460000 19.047600 14.221900 4.761900 23.745701 0.000000 38.031399 0.000000 47.555199 4.761900 61.841000 19.047600] [61.841000 66.666702 61.841000 0.000000]])
+  'v' => Glyph(60.463001, 152.381302,  [[1.800000 66.666702 30.371401 0.000000] [58.942902 66.666702 30.371401 0.000000]])
+  'w' => Glyph(79.790604, 152.381302,  [[2.500000 66.666702 21.547600 0.000000] [40.595200 66.666702 21.547600 0.000000] [40.595200 66.666702 59.642899 0.000000] [78.690498 66.666702 59.642899 0.000000]])
+  'x' => Glyph(61.863003, 152.381302,  [[1.660000 66.666702 54.041000 0.000000] [54.041000 66.666702 1.660000 0.000000]])
+  'y' => Glyph(61.862991, 152.381302,  [[6.561900 66.666702 35.133301 0.000000] [63.704800 66.666702 35.133301 0.000000 25.609501 -19.047600 16.085699 -28.571400 6.561900 -33.333302 1.800000 -33.333302]])
+  'z' => Glyph(67.142998, 152.381302,  [[56.820999 66.666702 4.440000 0.000000] [4.440000 66.666702 56.820999 66.666702] [4.440000 0.000000 56.820999 0.000000]])
+  '{' => Glyph(39.927601, 152.381302,  [[31.189501 119.047997 21.665701 114.286003 16.903799 109.524002 12.141900 100.000000 12.141900 90.476196 16.903799 80.952400 21.665701 76.190498 26.427601 66.666702 26.427601 57.142899 16.903799 47.618999] [21.665701 114.286003 16.903799 104.762001 16.903799 95.238098 21.665701 85.714302 26.427601 80.952400 31.189501 71.428596 31.189501 61.904800 26.427601 52.381001 7.380000 42.857101 26.427601 33.333302 31.189501 23.809500 31.189501 14.285700 26.427601 4.761900 21.665701 0.000000 16.903799 -9.523800 16.903799 -19.047600 21.665701 -28.571400] [16.903799 38.095200 26.427601 28.571400 26.427601 19.047600 21.665701 9.523800 16.903799 4.761900 12.141900 -4.761900 12.141900 -14.285700 16.903799 -23.809500 21.665701 -28.571400 31.189501 -33.333302]])
+  '|' => Glyph(24.480001, 152.381302,  [[11.540000 119.047997 11.540000 -33.333302]])
+  '}' => Glyph(45.531403, 152.381302,  [[9.180000 119.047997 18.703800 114.286003 23.465700 109.524002 28.227600 100.000000 28.227600 90.476196 23.465700 80.952400 18.703800 76.190498 13.941900 66.666702 13.941900 57.142899 23.465700 47.618999] [18.703800 114.286003 23.465700 104.762001 23.465700 95.238098 18.703800 85.714302 13.941900 80.952400 9.180000 71.428596 9.180000 61.904800 13.941900 52.381001 32.989498 42.857101 13.941900 33.333302 9.180000 23.809500 9.180000 14.285700 13.941900 4.761900 18.703800 0.000000 23.465700 -9.523800 23.465700 -19.047600 18.703800 -28.571400] [23.465700 38.095200 13.941900 28.571400 13.941900 19.047600 18.703800 9.523800 23.465700 4.761900 28.227600 -4.761900 28.227600 -14.285700 23.465700 -23.809500 18.703800 -28.571400 9.180000 -33.333302]])
+  '~' => Glyph(90.994400, 152.381302,  [[2.920000 28.571400 2.920000 38.095200 7.681900 52.381001 17.205700 57.142899 26.729500 57.142899 36.253300 52.381001 55.300999 38.095200 64.824799 33.333302 74.348602 33.333302 83.872398 38.095200 88.634300 47.618999] [2.920000 38.095200 7.681900 47.618999 17.205700 52.381001 26.729500 52.381001 36.253300 47.618999 55.300999 33.333302 64.824799 28.571400 74.348602 28.571400 83.872398 33.333302 88.634300 47.618999 88.634300 57.142899]])
 ]
 
 ;; 104.76
 val mono-roman-glyphs = [
-  ' ' => Glyph(90.0f, 152.381302f,  [])
-  '!' => Glyph(90.0f, 152.381302f,  [[52.381001f 100.000000f 52.381001f 33.333302f] [52.381001f 9.523800f 47.619099f 4.761900f 52.381001f 0.000000f 57.142899f 4.761900f 52.381001f 9.523800f]])
-  '\"' => Glyph(90.0f, 152.381302f,  [[33.333401f 100.000000f 33.333401f 66.666702f] [71.428596f 100.000000f 71.428596f 66.666702f]])
-  '#' => Glyph(90.0f, 152.381302f,  [[54.761902f 119.047997f 21.428600f -33.333302f] [83.333397f 119.047997f 50.000000f -33.333302f] [21.428600f 57.142899f 88.095200f 57.142899f] [16.666700f 28.571400f 83.333397f 28.571400f]])
-  '$' => Glyph(90.0f, 152.381302f,  [[42.857101f 119.047997f 42.857101f -19.047600f] [61.904701f 119.047997f 61.904701f -19.047600f] [85.714302f 85.714302f 76.190498f 95.238098f 61.904701f 100.000000f 42.857101f 100.000000f 28.571400f 95.238098f 19.047600f 85.714302f 19.047600f 76.190498f 23.809500f 66.666702f 28.571400f 61.904800f 38.095200f 57.142899f 66.666603f 47.618999f 76.190498f 42.857101f 80.952400f 38.095200f 85.714302f 28.571400f 85.714302f 14.285700f 76.190498f 4.761900f 61.904701f 0.000000f 42.857101f 0.000000f 28.571400f 4.761900f 19.047600f 14.285700f]])
-  '%' => Glyph(90.0f, 152.381302f,  [[95.238098f 100.000000f 9.523800f 0.000000f] [33.333302f 100.000000f 42.857101f 90.476196f 42.857101f 80.952400f 38.095200f 71.428596f 28.571400f 66.666702f 19.047600f 66.666702f 9.523800f 76.190498f 9.523800f 85.714302f 14.285700f 95.238098f 23.809500f 100.000000f 33.333302f 100.000000f 42.857101f 95.238098f 57.142799f 90.476196f 71.428596f 90.476196f 85.714302f 95.238098f 95.238098f 100.000000f] [76.190498f 33.333302f 66.666702f 28.571400f 61.904800f 19.047600f 61.904800f 9.523800f 71.428596f 0.000000f 80.952400f 0.000000f 90.476196f 4.761900f 95.238098f 14.285700f 95.238098f 23.809500f 85.714302f 33.333302f 76.190498f 33.333302f]])
-  '&' => Glyph(90.0f, 152.381302f,  [[100.000000f 57.142899f 100.000000f 61.904800f 95.238098f 66.666702f 90.476196f 66.666702f 85.714302f 61.904800f 80.952400f 52.381001f 71.428596f 28.571400f 61.904800f 14.285700f 52.380901f 4.761900f 42.857101f 0.000000f 23.809500f 0.000000f 14.285700f 4.761900f 9.523800f 9.523800f 4.761900f 19.047600f 4.761900f 28.571400f 9.523800f 38.095200f 14.285700f 42.857101f 47.618999f 61.904800f 52.380901f 66.666702f 57.142899f 76.190498f 57.142899f 85.714302f 52.380901f 95.238098f 42.857101f 100.000000f 33.333302f 95.238098f 28.571400f 85.714302f 28.571400f 76.190498f 33.333302f 61.904800f 42.857101f 47.618999f 66.666702f 14.285700f 76.190498f 4.761900f 85.714302f 0.000000f 95.238098f 0.000000f 100.000000f 4.761900f 100.000000f 9.523800f]])
-  '\'' => Glyph(90.0f, 152.381302f,  [[52.381001f 100.000000f 52.381001f 66.666702f]])
-  '(' => Glyph(90.0f, 152.381302f,  [[69.047600f 119.047997f 59.523800f 109.524002f 50.000000f 95.238098f 40.476200f 76.190498f 35.714298f 52.381001f 35.714298f 33.333302f 40.476200f 9.523800f 50.000000f -9.523800f 59.523800f -23.809500f 69.047600f -33.333302f]])
-  ')' => Glyph(90.0f, 152.381302f,  [[35.714298f 119.047997f 45.238098f 109.524002f 54.761902f 95.238098f 64.285698f 76.190498f 69.047600f 52.381001f 69.047600f 33.333302f 64.285698f 9.523800f 54.761902f -9.523800f 45.238098f -23.809500f 35.714298f -33.333302f]])
-  '*' => Glyph(90.0f, 152.381302f,  [[52.381001f 71.428596f 52.381001f 14.285700f] [28.571501f 57.142899f 76.190498f 28.571400f] [76.190498f 57.142899f 28.571501f 28.571400f]])
-  '+' => Glyph(90.0f, 152.381302f,  [[52.380901f 85.714302f 52.380901f 0.000000f] [9.523800f 42.857101f 95.238098f 42.857101f]])
-  ',' => Glyph(90.0f, 152.381302f,  [[57.142899f 4.761900f 52.381001f 0.000000f 47.619099f 4.761900f 52.381001f 9.523800f 57.142899f 4.761900f 57.142899f -4.761900f 52.381001f -14.285700f 47.619099f -19.047600f]])
-  '-' => Glyph(90.0f, 152.381302f,  [[9.523800f 42.857101f 95.238098f 42.857101f]])
-  '.' => Glyph(90.0f, 152.381302f,  [[52.381001f 9.523800f 47.619099f 4.761900f 52.381001f 0.000000f 57.142899f 4.761900f 52.381001f 9.523800f]])
-  '/' => Glyph(90.0f, 152.381302f,  [[19.047600f -14.285700f 85.714302f 100.000000f]])
-  '0' => Glyph(90.0f, 152.381302f,  [[47.618999f 100.000000f 33.333302f 95.238098f 23.809500f 80.952400f 19.047600f 57.142899f 19.047600f 42.857101f 23.809500f 19.047600f 33.333302f 4.761900f 47.618999f 0.000000f 57.142799f 0.000000f 71.428596f 4.761900f 80.952400f 19.047600f 85.714302f 42.857101f 85.714302f 57.142899f 80.952400f 80.952400f 71.428596f 95.238098f 57.142799f 100.000000f 47.618999f 100.000000f]])
-  '1' => Glyph(90.0f, 152.381302f,  [[40.476200f 80.952400f 50.000000f 85.714302f 64.285698f 100.000000f 64.285698f 0.000000f]])
-  '2' => Glyph(90.0f, 152.381302f,  [[23.809500f 76.190498f 23.809500f 80.952400f 28.571400f 90.476196f 33.333302f 95.238098f 42.857101f 100.000000f 61.904701f 100.000000f 71.428596f 95.238098f 76.190498f 90.476196f 80.952400f 80.952400f 80.952400f 71.428596f 76.190498f 61.904800f 66.666603f 47.618999f 19.047600f 0.000000f 85.714302f 0.000000f]])
-  '3' => Glyph(90.0f, 152.381302f,  [[28.571400f 100.000000f 80.952400f 100.000000f 52.380901f 61.904800f 66.666603f 61.904800f 76.190498f 57.142899f 80.952400f 52.381001f 85.714302f 38.095200f 85.714302f 28.571400f 80.952400f 14.285700f 71.428596f 4.761900f 57.142799f 0.000000f 42.857101f 0.000000f 28.571400f 4.761900f 23.809500f 9.523800f 19.047600f 19.047600f]])
-  '4' => Glyph(90.0f, 152.381302f,  [[64.285698f 100.000000f 16.666700f 33.333302f 88.095200f 33.333302f] [64.285698f 100.000000f 64.285698f 0.000000f]])
-  '5' => Glyph(90.0f, 152.381302f,  [[76.190498f 100.000000f 28.571400f 100.000000f 23.809500f 57.142899f 28.571400f 61.904800f 42.857101f 66.666702f 57.142799f 66.666702f 71.428596f 61.904800f 80.952400f 52.381001f 85.714302f 38.095200f 85.714302f 28.571400f 80.952400f 14.285700f 71.428596f 4.761900f 57.142799f 0.000000f 42.857101f 0.000000f 28.571400f 4.761900f 23.809500f 9.523800f 19.047600f 19.047600f]])
-  '6' => Glyph(90.0f, 152.381302f,  [[78.571404f 85.714302f 73.809601f 95.238098f 59.523800f 100.000000f 50.000000f 100.000000f 35.714298f 95.238098f 26.190500f 80.952400f 21.428600f 57.142899f 21.428600f 33.333302f 26.190500f 14.285700f 35.714298f 4.761900f 50.000000f 0.000000f 54.761902f 0.000000f 69.047600f 4.761900f 78.571404f 14.285700f 83.333397f 28.571400f 83.333397f 33.333302f 78.571404f 47.618999f 69.047600f 57.142899f 54.761902f 61.904800f 50.000000f 61.904800f 35.714298f 57.142899f 26.190500f 47.618999f 21.428600f 33.333302f]])
-  '7' => Glyph(90.0f, 152.381302f,  [[85.714302f 100.000000f 38.095200f 0.000000f] [19.047600f 100.000000f 85.714302f 100.000000f]])
-  '8' => Glyph(90.0f, 152.381302f,  [[42.857101f 100.000000f 28.571400f 95.238098f 23.809500f 85.714302f 23.809500f 76.190498f 28.571400f 66.666702f 38.095200f 61.904800f 57.142799f 57.142899f 71.428596f 52.381001f 80.952400f 42.857101f 85.714302f 33.333302f 85.714302f 19.047600f 80.952400f 9.523800f 76.190498f 4.761900f 61.904701f 0.000000f 42.857101f 0.000000f 28.571400f 4.761900f 23.809500f 9.523800f 19.047600f 19.047600f 19.047600f 33.333302f 23.809500f 42.857101f 33.333302f 52.381001f 47.618999f 57.142899f 66.666603f 61.904800f 76.190498f 66.666702f 80.952400f 76.190498f 80.952400f 85.714302f 76.190498f 95.238098f 61.904701f 100.000000f 42.857101f 100.000000f]])
-  '9' => Glyph(90.0f, 152.381302f,  [[83.333397f 66.666702f 78.571404f 52.381001f 69.047600f 42.857101f 54.761902f 38.095200f 50.000000f 38.095200f 35.714298f 42.857101f 26.190500f 52.381001f 21.428600f 66.666702f 21.428600f 71.428596f 26.190500f 85.714302f 35.714298f 95.238098f 50.000000f 100.000000f 54.761902f 100.000000f 69.047600f 95.238098f 78.571404f 85.714302f 83.333397f 66.666702f 83.333397f 42.857101f 78.571404f 19.047600f 69.047600f 4.761900f 54.761902f 0.000000f 45.238098f 0.000000f 30.952400f 4.761900f 26.190500f 14.285700f]])
-  ':' => Glyph(90.0f, 152.381302f,  [[52.381001f 66.666702f 47.619099f 61.904800f 52.381001f 57.142899f 57.142899f 61.904800f 52.381001f 66.666702f] [52.381001f 9.523800f 47.619099f 4.761900f 52.381001f 0.000000f 57.142899f 4.761900f 52.381001f 9.523800f]])
-  ';' => Glyph(90.0f, 152.381302f,  [[52.381001f 66.666702f 47.619099f 61.904800f 52.381001f 57.142899f 57.142899f 61.904800f 52.381001f 66.666702f] [57.142899f 4.761900f 52.381001f 0.000000f 47.619099f 4.761900f 52.381001f 9.523800f 57.142899f 4.761900f 57.142899f -4.761900f 52.381001f -14.285700f 47.619099f -19.047600f]])
-  '<' => Glyph(90.0f, 152.381302f,  [[90.476196f 85.714302f 14.285700f 42.857101f 90.476196f 0.000000f]])
-  '=' => Glyph(90.0f, 152.381302f,  [[9.523800f 57.142899f 95.238098f 57.142899f] [9.523800f 28.571400f 95.238098f 28.571400f]])
-  '>' => Glyph(90.0f, 152.381302f,  [[14.285700f 85.714302f 90.476196f 42.857101f 14.285700f 0.000000f]])
-  '?' => Glyph(90.0f, 152.381302f,  [[23.809500f 76.190498f 23.809500f 80.952400f 28.571400f 90.476196f 33.333302f 95.238098f 42.857101f 100.000000f 61.904701f 100.000000f 71.428497f 95.238098f 76.190498f 90.476196f 80.952400f 80.952400f 80.952400f 71.428596f 76.190498f 61.904800f 71.428497f 57.142899f 52.380901f 47.618999f 52.380901f 33.333302f] [52.380901f 9.523800f 47.618999f 4.761900f 52.380901f 0.000000f 57.142799f 4.761900f 52.380901f 9.523800f]])
-  '@' => Glyph(90.0f, 152.381302f,  [[64.285698f 52.381001f 54.761902f 57.142899f 45.238098f 57.142899f 40.476200f 47.618999f 40.476200f 42.857101f 45.238098f 33.333302f 54.761902f 33.333302f 64.285698f 38.095200f] [64.285698f 57.142899f 64.285698f 38.095200f 69.047600f 33.333302f 78.571404f 33.333302f 83.333397f 42.857101f 83.333397f 47.618999f 78.571404f 61.904800f 69.047600f 71.428596f 54.761902f 76.190498f 50.000000f 76.190498f 35.714298f 71.428596f 26.190500f 61.904800f 21.428600f 47.618999f 21.428600f 42.857101f 26.190500f 28.571400f 35.714298f 19.047600f 50.000000f 14.285700f 54.761902f 14.285700f 69.047600f 19.047600f]])
-  'A' => Glyph(90.0f, 152.381302f,  [[52.380901f 100.000000f 14.285700f 0.000000f] [52.380901f 100.000000f 90.476196f 0.000000f] [28.571400f 33.333302f 76.190498f 33.333302f]])
-  'B' => Glyph(90.0f, 152.381302f,  [[19.047600f 100.000000f 19.047600f 0.000000f] [19.047600f 100.000000f 61.904701f 100.000000f 76.190498f 95.238098f 80.952400f 90.476196f 85.714302f 80.952400f 85.714302f 71.428596f 80.952400f 61.904800f 76.190498f 57.142899f 61.904701f 52.381001f] [19.047600f 52.381001f 61.904701f 52.381001f 76.190498f 47.618999f 80.952400f 42.857101f 85.714302f 33.333302f 85.714302f 19.047600f 80.952400f 9.523800f 76.190498f 4.761900f 61.904701f 0.000000f 19.047600f 0.000000f]])
-  'C' => Glyph(90.0f, 152.381302f,  [[88.095200f 76.190498f 83.333397f 85.714302f 73.809601f 95.238098f 64.285698f 100.000000f 45.238098f 100.000000f 35.714298f 95.238098f 26.190500f 85.714302f 21.428600f 76.190498f 16.666700f 61.904800f 16.666700f 38.095200f 21.428600f 23.809500f 26.190500f 14.285700f 35.714298f 4.761900f 45.238098f 0.000000f 64.285698f 0.000000f 73.809601f 4.761900f 83.333397f 14.285700f 88.095200f 23.809500f]])
-  'D' => Glyph(90.0f, 152.381302f,  [[19.047600f 100.000000f 19.047600f 0.000000f] [19.047600f 100.000000f 52.380901f 100.000000f 66.666603f 95.238098f 76.190498f 85.714302f 80.952400f 76.190498f 85.714302f 61.904800f 85.714302f 38.095200f 80.952400f 23.809500f 76.190498f 14.285700f 66.666603f 4.761900f 52.380901f 0.000000f 19.047600f 0.000000f]])
-  'E' => Glyph(90.0f, 152.381302f,  [[21.428600f 100.000000f 21.428600f 0.000000f] [21.428600f 100.000000f 83.333397f 100.000000f] [21.428600f 52.381001f 59.523800f 52.381001f] [21.428600f 0.000000f 83.333397f 0.000000f]])
-  'F' => Glyph(90.0f, 152.381302f,  [[21.428600f 100.000000f 21.428600f 0.000000f] [21.428600f 100.000000f 83.333397f 100.000000f] [21.428600f 52.381001f 59.523800f 52.381001f]])
-  'G' => Glyph(90.0f, 152.381302f,  [[88.095200f 76.190498f 83.333397f 85.714302f 73.809601f 95.238098f 64.285698f 100.000000f 45.238098f 100.000000f 35.714298f 95.238098f 26.190500f 85.714302f 21.428600f 76.190498f 16.666700f 61.904800f 16.666700f 38.095200f 21.428600f 23.809500f 26.190500f 14.285700f 35.714298f 4.761900f 45.238098f 0.000000f 64.285698f 0.000000f 73.809601f 4.761900f 83.333397f 14.285700f 88.095200f 23.809500f 88.095200f 38.095200f] [64.285698f 38.095200f 88.095200f 38.095200f]])
-  'H' => Glyph(90.0f, 152.381302f,  [[19.047600f 100.000000f 19.047600f 0.000000f] [85.714302f 100.000000f 85.714302f 0.000000f] [19.047600f 52.381001f 85.714302f 52.381001f]])
-  'I' => Glyph(90.0f, 152.381302f,  [[52.381001f 100.000000f 52.381001f 0.000000f]])
-  'J' => Glyph(90.0f, 152.381302f,  [[76.190498f 100.000000f 76.190498f 23.809500f 71.428596f 9.523800f 66.666702f 4.761900f 57.142899f 0.000000f 47.619099f 0.000000f 38.095299f 4.761900f 33.333401f 9.523800f 28.571501f 23.809500f 28.571501f 33.333302f]])
-  'K' => Glyph(90.0f, 152.381302f,  [[19.047600f 100.000000f 19.047600f 0.000000f] [85.714302f 100.000000f 19.047600f 33.333302f] [42.857101f 57.142899f 85.714302f 0.000000f]])
-  'L' => Glyph(90.0f, 152.381302f,  [[23.809500f 100.000000f 23.809500f 0.000000f] [23.809500f 0.000000f 80.952400f 0.000000f]])
-  'M' => Glyph(90.0f, 152.381302f,  [[14.285700f 100.000000f 14.285700f 0.000000f] [14.285700f 100.000000f 52.380901f 0.000000f] [90.476196f 100.000000f 52.380901f 0.000000f] [90.476196f 100.000000f 90.476196f 0.000000f]])
-  'N' => Glyph(90.0f, 152.381302f,  [[19.047600f 100.000000f 19.047600f 0.000000f] [19.047600f 100.000000f 85.714302f 0.000000f] [85.714302f 100.000000f 85.714302f 0.000000f]])
-  'O' => Glyph(90.0f, 152.381302f,  [[42.857101f 100.000000f 33.333302f 95.238098f 23.809500f 85.714302f 19.047600f 76.190498f 14.285700f 61.904800f 14.285700f 38.095200f 19.047600f 23.809500f 23.809500f 14.285700f 33.333302f 4.761900f 42.857101f 0.000000f 61.904701f 0.000000f 71.428596f 4.761900f 80.952400f 14.285700f 85.714302f 23.809500f 90.476196f 38.095200f 90.476196f 61.904800f 85.714302f 76.190498f 80.952400f 85.714302f 71.428596f 95.238098f 61.904701f 100.000000f 42.857101f 100.000000f]])
-  'P' => Glyph(90.0f, 152.381302f,  [[19.047600f 100.000000f 19.047600f 0.000000f] [19.047600f 100.000000f 61.904701f 100.000000f 76.190498f 95.238098f 80.952400f 90.476196f 85.714302f 80.952400f 85.714302f 66.666702f 80.952400f 57.142899f 76.190498f 52.381001f 61.904701f 47.618999f 19.047600f 47.618999f]])
-  'Q' => Glyph(90.0f, 152.381302f,  [[42.857101f 100.000000f 33.333302f 95.238098f 23.809500f 85.714302f 19.047600f 76.190498f 14.285700f 61.904800f 14.285700f 38.095200f 19.047600f 23.809500f 23.809500f 14.285700f 33.333302f 4.761900f 42.857101f 0.000000f 61.904701f 0.000000f 71.428596f 4.761900f 80.952400f 14.285700f 85.714302f 23.809500f 90.476196f 38.095200f 90.476196f 61.904800f 85.714302f 76.190498f 80.952400f 85.714302f 71.428596f 95.238098f 61.904701f 100.000000f 42.857101f 100.000000f] [57.142799f 19.047600f 85.714302f -9.523800f]])
-  'R' => Glyph(90.0f, 152.381302f,  [[19.047600f 100.000000f 19.047600f 0.000000f] [19.047600f 100.000000f 61.904701f 100.000000f 76.190498f 95.238098f 80.952400f 90.476196f 85.714302f 80.952400f 85.714302f 71.428596f 80.952400f 61.904800f 76.190498f 57.142899f 61.904701f 52.381001f 19.047600f 52.381001f] [52.380901f 52.381001f 85.714302f 0.000000f]])
-  'S' => Glyph(90.0f, 152.381302f,  [[85.714302f 85.714302f 76.190498f 95.238098f 61.904701f 100.000000f 42.857101f 100.000000f 28.571400f 95.238098f 19.047600f 85.714302f 19.047600f 76.190498f 23.809500f 66.666702f 28.571400f 61.904800f 38.095200f 57.142899f 66.666603f 47.618999f 76.190498f 42.857101f 80.952400f 38.095200f 85.714302f 28.571400f 85.714302f 14.285700f 76.190498f 4.761900f 61.904701f 0.000000f 42.857101f 0.000000f 28.571400f 4.761900f 19.047600f 14.285700f]])
-  'T' => Glyph(90.0f, 152.381302f,  [[52.380901f 100.000000f 52.380901f 0.000000f] [19.047600f 100.000000f 85.714302f 100.000000f]])
-  'U' => Glyph(90.0f, 152.381302f,  [[19.047600f 100.000000f 19.047600f 28.571400f 23.809500f 14.285700f 33.333302f 4.761900f 47.618999f 0.000000f 57.142799f 0.000000f 71.428596f 4.761900f 80.952400f 14.285700f 85.714302f 28.571400f 85.714302f 100.000000f]])
-  'V' => Glyph(90.0f, 152.381302f,  [[14.285700f 100.000000f 52.380901f 0.000000f] [90.476196f 100.000000f 52.380901f 0.000000f]])
-  'W' => Glyph(90.0f, 152.381302f,  [[4.761900f 100.000000f 28.571400f 0.000000f] [52.380901f 100.000000f 28.571400f 0.000000f] [52.380901f 100.000000f 76.190498f 0.000000f] [100.000000f 100.000000f 76.190498f 0.000000f]])
-  'X' => Glyph(90.0f, 152.381302f,  [[19.047600f 100.000000f 85.714302f 0.000000f] [85.714302f 100.000000f 19.047600f 0.000000f]])
-  'Y' => Glyph(90.0f, 152.381302f,  [[14.285700f 100.000000f 52.380901f 52.381001f 52.380901f 0.000000f] [90.476196f 100.000000f 52.380901f 52.381001f]])
-  'Z' => Glyph(90.0f, 152.381302f,  [[85.714302f 100.000000f 19.047600f 0.000000f] [19.047600f 100.000000f 85.714302f 100.000000f] [19.047600f 0.000000f 85.714302f 0.000000f]])
-  '[' => Glyph(90.0f, 152.381302f,  [[35.714298f 119.047997f 35.714298f -33.333302f] [40.476200f 119.047997f 40.476200f -33.333302f] [35.714298f 119.047997f 69.047600f 119.047997f] [35.714298f -33.333302f 69.047600f -33.333302f]])
-  '\\' => Glyph(90.0f, 152.381302f,  [[19.047600f 100.000000f 85.714302f -14.285700f]])
-  ']' => Glyph(90.0f, 152.381302f,  [[64.285698f 119.047997f 64.285698f -33.333302f] [69.047600f 119.047997f 69.047600f -33.333302f] [35.714298f 119.047997f 69.047600f 119.047997f] [35.714298f -33.333302f 69.047600f -33.333302f]])
-  '^' => Glyph(90.0f, 152.381302f,  [[52.380901f 109.524002f 14.285700f 42.857101f] [52.380901f 109.524002f 90.476196f 42.857101f]])
-  '_' => Glyph(90.0f, 152.381302f,  [[0.000000f -33.333302f 90.0f -33.333302f 90.0f, -28.571400f 0.000000f -28.571400f 0.000000f -33.333302f]])
-  '`' => Glyph(90.0f, 152.381302f,  [[42.857201f 100.000000f 66.666702f 71.428596f] [42.857201f 100.000000f 38.095299f 95.238098f 66.666702f 71.428596f]])
-  'a' => Glyph(90.0f, 152.381302f,  [[80.952400f 66.666702f 80.952400f 0.000000f] [80.952400f 52.381001f 71.428497f 61.904800f 61.904701f 66.666702f 47.618999f 66.666702f 38.095200f 61.904800f 28.571400f 52.381001f 23.809500f 38.095200f 23.809500f 28.571400f 28.571400f 14.285700f 38.095200f 4.761900f 47.618999f 0.000000f 61.904701f 0.000000f 71.428497f 4.761900f 80.952400f 14.285700f]])
-  'b' => Glyph(90.0f, 152.381302f,  [[23.809500f 100.000000f 23.809500f 0.000000f] [23.809500f 52.381001f 33.333302f 61.904800f 42.857101f 66.666702f 57.142799f 66.666702f 66.666603f 61.904800f 76.190498f 52.381001f 80.952400f 38.095200f 80.952400f 28.571400f 76.190498f 14.285700f 66.666603f 4.761900f 57.142799f 0.000000f 42.857101f 0.000000f 33.333302f 4.761900f 23.809500f 14.285700f]])
-  'c' => Glyph(90.0f, 152.381302f,  [[80.952400f 52.381001f 71.428497f 61.904800f 61.904701f 66.666702f 47.618999f 66.666702f 38.095200f 61.904800f 28.571400f 52.381001f 23.809500f 38.095200f 23.809500f 28.571400f 28.571400f 14.285700f 38.095200f 4.761900f 47.618999f 0.000000f 61.904701f 0.000000f 71.428497f 4.761900f 80.952400f 14.285700f]])
-  'd' => Glyph(90.0f, 152.381302f,  [[80.952400f 100.000000f 80.952400f 0.000000f] [80.952400f 52.381001f 71.428497f 61.904800f 61.904701f 66.666702f 47.618999f 66.666702f 38.095200f 61.904800f 28.571400f 52.381001f 23.809500f 38.095200f 23.809500f 28.571400f 28.571400f 14.285700f 38.095200f 4.761900f 47.618999f 0.000000f 61.904701f 0.000000f 71.428497f 4.761900f 80.952400f 14.285700f]])
-  'e' => Glyph(90.0f, 152.381302f,  [[23.809500f 38.095200f 80.952400f 38.095200f 80.952400f 47.618999f 76.190498f 57.142899f 71.428497f 61.904800f 61.904701f 66.666702f 47.618999f 66.666702f 38.095200f 61.904800f 28.571400f 52.381001f 23.809500f 38.095200f 23.809500f 28.571400f 28.571400f 14.285700f 38.095200f 4.761900f 47.618999f 0.000000f 61.904701f 0.000000f 71.428497f 4.761900f 80.952400f 14.285700f]])
-  'f' => Glyph(90.0f, 152.381302f,  [[71.428596f 100.000000f 61.904800f 100.000000f 52.381001f 95.238098f 47.619099f 80.952400f 47.619099f 0.000000f] [33.333401f 66.666702f 66.666702f 66.666702f]])
-  'g' => Glyph(90.0f, 152.381302f,  [[80.952400f 66.666702f 80.952400f -9.523800f 76.190498f -23.809500f 71.428497f -28.571400f 61.904701f -33.333302f 47.618999f -33.333302f 38.095200f -28.571400f] [80.952400f 52.381001f 71.428497f 61.904800f 61.904701f 66.666702f 47.618999f 66.666702f 38.095200f 61.904800f 28.571400f 52.381001f 23.809500f 38.095200f 23.809500f 28.571400f 28.571400f 14.285700f 38.095200f 4.761900f 47.618999f 0.000000f 61.904701f 0.000000f 71.428497f 4.761900f 80.952400f 14.285700f]])
-  'h' => Glyph(90.0f, 152.381302f,  [[26.190500f 100.000000f 26.190500f 0.000000f] [26.190500f 47.618999f 40.476200f 61.904800f 50.000000f 66.666702f 64.285698f 66.666702f 73.809502f 61.904800f 78.571503f 47.618999f 78.571503f 0.000000f]])
-  'i' => Glyph(90.0f, 152.381302f,  [[47.619099f 100.000000f 52.381001f 95.238098f 57.142899f 100.000000f 52.381001f 104.762001f 47.619099f 100.000000f] [52.381001f 66.666702f 52.381001f 0.000000f]])
-  'j' => Glyph(90.0f, 152.381302f,  [[57.142899f 100.000000f 61.904800f 95.238098f 66.666702f 100.000000f 61.904800f 104.762001f 57.142899f 100.000000f] [61.904800f 66.666702f 61.904800f -14.285700f 57.142899f -28.571400f 47.619099f -33.333302f 38.095299f -33.333302f]])
-  'k' => Glyph(90.0f, 152.381302f,  [[26.190500f 100.000000f 26.190500f 0.000000f] [73.809502f 66.666702f 26.190500f 19.047600f] [45.238098f 38.095200f 78.571503f 0.000000f]])
-  'l' => Glyph(90.0f, 152.381302f,  [[52.381001f 100.000000f 52.381001f 0.000000f]])
-  'm' => Glyph(90.0f, 152.381302f,  [[0.000000f 66.666702f 0.000000f 0.000000f] [0.000000f 47.618999f 14.285700f 61.904800f 23.809500f 66.666702f 38.095200f 66.666702f 47.618999f 61.904800f 52.381001f 47.618999f 52.381001f 0.000000f] [52.381001f 47.618999f 66.666702f 61.904800f 76.190498f 66.666702f 90.476196f 66.666702f 100.000000f 61.904800f 104.762001f 47.618999f 104.762001f 0.000000f]])
-  'n' => Glyph(90.0f, 152.381302f,  [[26.190500f 66.666702f 26.190500f 0.000000f] [26.190500f 47.618999f 40.476200f 61.904800f 50.000000f 66.666702f 64.285698f 66.666702f 73.809502f 61.904800f 78.571503f 47.618999f 78.571503f 0.000000f]])
-  'o' => Glyph(90.0f, 152.381302f,  [[45.238098f 66.666702f 35.714298f 61.904800f 26.190500f 52.381001f 21.428600f 38.095200f 21.428600f 28.571400f 26.190500f 14.285700f 35.714298f 4.761900f 45.238098f 0.000000f 59.523800f 0.000000f 69.047600f 4.761900f 78.571404f 14.285700f 83.333397f 28.571400f 83.333397f 38.095200f 78.571404f 52.381001f 69.047600f 61.904800f 59.523800f 66.666702f 45.238098f 66.666702f]])
-  'p' => Glyph(90.0f, 152.381302f,  [[23.809500f 66.666702f 23.809500f -33.333302f] [23.809500f 52.381001f 33.333302f 61.904800f 42.857101f 66.666702f 57.142799f 66.666702f 66.666603f 61.904800f 76.190498f 52.381001f 80.952400f 38.095200f 80.952400f 28.571400f 76.190498f 14.285700f 66.666603f 4.761900f 57.142799f 0.000000f 42.857101f 0.000000f 33.333302f 4.761900f 23.809500f 14.285700f]])
-  'q' => Glyph(90.0f, 152.381302f,  [[80.952400f 66.666702f 80.952400f -33.333302f] [80.952400f 52.381001f 71.428497f 61.904800f 61.904701f 66.666702f 47.618999f 66.666702f 38.095200f 61.904800f 28.571400f 52.381001f 23.809500f 38.095200f 23.809500f 28.571400f 28.571400f 14.285700f 38.095200f 4.761900f 47.618999f 0.000000f 61.904701f 0.000000f 71.428497f 4.761900f 80.952400f 14.285700f]])
-  'r' => Glyph(90.0f, 152.381302f,  [[33.333401f 66.666702f 33.333401f 0.000000f] [33.333401f 38.095200f 38.095299f 52.381001f 47.619099f 61.904800f 57.142899f 66.666702f 71.428596f 66.666702f]])
-  's' => Glyph(90.0f, 152.381302f,  [[78.571503f 52.381001f 73.809502f 61.904800f 59.523800f 66.666702f 45.238098f 66.666702f 30.952400f 61.904800f 26.190500f 52.381001f 30.952400f 42.857101f 40.476200f 38.095200f 64.285698f 33.333302f 73.809502f 28.571400f 78.571503f 19.047600f 78.571503f 14.285700f 73.809502f 4.761900f 59.523800f 0.000000f 45.238098f 0.000000f 30.952400f 4.761900f 26.190500f 14.285700f]])
-  't' => Glyph(90.0f, 152.381302f,  [[47.619099f 100.000000f 47.619099f 19.047600f 52.381001f 4.761900f 61.904800f 0.000000f 71.428596f 0.000000f] [33.333401f 66.666702f 66.666702f 66.666702f]])
-  'u' => Glyph(90.0f, 152.381302f,  [[26.190500f 66.666702f 26.190500f 19.047600f 30.952400f 4.761900f 40.476200f 0.000000f 54.761902f 0.000000f 64.285698f 4.761900f 78.571503f 19.047600f] [78.571503f 66.666702f 78.571503f 0.000000f]])
-  'v' => Glyph(90.0f, 152.381302f,  [[23.809500f 66.666702f 52.380901f 0.000000f] [80.952400f 66.666702f 52.380901f 0.000000f]])
-  'w' => Glyph(90.0f, 152.381302f,  [[14.285700f 66.666702f 33.333302f 0.000000f] [52.380901f 66.666702f 33.333302f 0.000000f] [52.380901f 66.666702f 71.428596f 0.000000f] [90.476196f 66.666702f 71.428596f 0.000000f]])
-  'x' => Glyph(90.0f, 152.381302f,  [[26.190500f 66.666702f 78.571503f 0.000000f] [78.571503f 66.666702f 26.190500f 0.000000f]])
-  'y' => Glyph(90.0f, 152.381302f,  [[26.190500f 66.666702f 54.761902f 0.000000f] [83.333397f 66.666702f 54.761902f 0.000000f 45.238098f -19.047600f 35.714298f -28.571400f 26.190500f -33.333302f 21.428600f -33.333302f]])
-  'z' => Glyph(90.0f, 152.381302f,  [[78.571503f 66.666702f 26.190500f 0.000000f] [26.190500f 66.666702f 78.571503f 66.666702f] [26.190500f 0.000000f 78.571503f 0.000000f]])
-  '{' => Glyph(90.0f, 152.381302f,  [[64.285698f 119.047997f 54.761902f 114.286003f 50.000000f 109.524002f 45.238098f 100.000000f 45.238098f 90.476196f 50.000000f 80.952400f 54.761902f 76.190498f 59.523800f 66.666702f 59.523800f 57.142899f 50.000000f 47.618999f] [54.761902f 114.286003f 50.000000f 104.762001f 50.000000f 95.238098f 54.761902f 85.714302f 59.523800f 80.952400f 64.285698f 71.428596f 64.285698f 61.904800f 59.523800f 52.381001f 40.476200f 42.857101f 59.523800f 33.333302f 64.285698f 23.809500f 64.285698f 14.285700f 59.523800f 4.761900f 54.761902f 0.000000f 50.000000f -9.523800f 50.000000f -19.047600f 54.761902f -28.571400f] [50.000000f 38.095200f 59.523800f 28.571400f 59.523800f 19.047600f 54.761902f 9.523800f 50.000000f 4.761900f 45.238098f -4.761900f 45.238098f -14.285700f 50.000000f -23.809500f 54.761902f -28.571400f 64.285698f -33.333302f]])
-  '|' => Glyph(90.0f, 152.381302f,  [[52.381001f 119.047997f 52.381001f -33.333302f]])
-  '}' => Glyph(90.0f, 152.381302f,  [[40.476200f 119.047997f 50.000000f 114.286003f 54.761902f 109.524002f 59.523800f 100.000000f 59.523800f 90.476196f 54.761902f 80.952400f 50.000000f 76.190498f 45.238098f 66.666702f 45.238098f 57.142899f 54.761902f 47.618999f] [50.000000f 114.286003f 54.761902f 104.762001f 54.761902f 95.238098f 50.000000f 85.714302f 45.238098f 80.952400f 40.476200f 71.428596f 40.476200f 61.904800f 45.238098f 52.381001f 64.285698f 42.857101f 45.238098f 33.333302f 40.476200f 23.809500f 40.476200f 14.285700f 45.238098f 4.761900f 50.000000f 0.000000f 54.761902f -9.523800f 54.761902f -19.047600f 50.000000f -28.571400f] [54.761902f 38.095200f 45.238098f 28.571400f 45.238098f 19.047600f 50.000000f 9.523800f 54.761902f 4.761900f 59.523800f -4.761900f 59.523800f -14.285700f 54.761902f -23.809500f 50.000000f -28.571400f 40.476200f -33.333302f]])
-  '~' => Glyph(90.0f, 152.381302f,  [[9.523800f 28.571400f 9.523800f 38.095200f 14.285700f 52.381001f 23.809500f 57.142899f 33.333302f 57.142899f 42.857101f 52.381001f 61.904800f 38.095200f 71.428596f 33.333302f 80.952400f 33.333302f 90.476196f 38.095200f 95.238098f 47.618999f] [9.523800f 38.095200f 14.285700f 47.618999f 23.809500f 52.381001f 33.333302f 52.381001f 42.857101f 47.618999f 61.904800f 33.333302f 71.428596f 28.571400f 80.952400f 28.571400f 90.476196f 33.333302f 95.238098f 47.618999f 95.238098f 57.142899f]])
+  ' ' => Glyph(90.0, 152.381302,  [])
+  '!' => Glyph(90.0, 152.381302,  [[52.381001 100.000000 52.381001 33.333302] [52.381001 9.523800 47.619099 4.761900 52.381001 0.000000 57.142899 4.761900 52.381001 9.523800]])
+  '\"' => Glyph(90.0, 152.381302,  [[33.333401 100.000000 33.333401 66.666702] [71.428596 100.000000 71.428596 66.666702]])
+  '#' => Glyph(90.0, 152.381302,  [[54.761902 119.047997 21.428600 -33.333302] [83.333397 119.047997 50.000000 -33.333302] [21.428600 57.142899 88.095200 57.142899] [16.666700 28.571400 83.333397 28.571400]])
+  '$' => Glyph(90.0, 152.381302,  [[42.857101 119.047997 42.857101 -19.047600] [61.904701 119.047997 61.904701 -19.047600] [85.714302 85.714302 76.190498 95.238098 61.904701 100.000000 42.857101 100.000000 28.571400 95.238098 19.047600 85.714302 19.047600 76.190498 23.809500 66.666702 28.571400 61.904800 38.095200 57.142899 66.666603 47.618999 76.190498 42.857101 80.952400 38.095200 85.714302 28.571400 85.714302 14.285700 76.190498 4.761900 61.904701 0.000000 42.857101 0.000000 28.571400 4.761900 19.047600 14.285700]])
+  '%' => Glyph(90.0, 152.381302,  [[95.238098 100.000000 9.523800 0.000000] [33.333302 100.000000 42.857101 90.476196 42.857101 80.952400 38.095200 71.428596 28.571400 66.666702 19.047600 66.666702 9.523800 76.190498 9.523800 85.714302 14.285700 95.238098 23.809500 100.000000 33.333302 100.000000 42.857101 95.238098 57.142799 90.476196 71.428596 90.476196 85.714302 95.238098 95.238098 100.000000] [76.190498 33.333302 66.666702 28.571400 61.904800 19.047600 61.904800 9.523800 71.428596 0.000000 80.952400 0.000000 90.476196 4.761900 95.238098 14.285700 95.238098 23.809500 85.714302 33.333302 76.190498 33.333302]])
+  '&' => Glyph(90.0, 152.381302,  [[100.000000 57.142899 100.000000 61.904800 95.238098 66.666702 90.476196 66.666702 85.714302 61.904800 80.952400 52.381001 71.428596 28.571400 61.904800 14.285700 52.380901 4.761900 42.857101 0.000000 23.809500 0.000000 14.285700 4.761900 9.523800 9.523800 4.761900 19.047600 4.761900 28.571400 9.523800 38.095200 14.285700 42.857101 47.618999 61.904800 52.380901 66.666702 57.142899 76.190498 57.142899 85.714302 52.380901 95.238098 42.857101 100.000000 33.333302 95.238098 28.571400 85.714302 28.571400 76.190498 33.333302 61.904800 42.857101 47.618999 66.666702 14.285700 76.190498 4.761900 85.714302 0.000000 95.238098 0.000000 100.000000 4.761900 100.000000 9.523800]])
+  '\'' => Glyph(90.0, 152.381302,  [[52.381001 100.000000 52.381001 66.666702]])
+  '(' => Glyph(90.0, 152.381302,  [[69.047600 119.047997 59.523800 109.524002 50.000000 95.238098 40.476200 76.190498 35.714298 52.381001 35.714298 33.333302 40.476200 9.523800 50.000000 -9.523800 59.523800 -23.809500 69.047600 -33.333302]])
+  ')' => Glyph(90.0, 152.381302,  [[35.714298 119.047997 45.238098 109.524002 54.761902 95.238098 64.285698 76.190498 69.047600 52.381001 69.047600 33.333302 64.285698 9.523800 54.761902 -9.523800 45.238098 -23.809500 35.714298 -33.333302]])
+  '*' => Glyph(90.0, 152.381302,  [[52.381001 71.428596 52.381001 14.285700] [28.571501 57.142899 76.190498 28.571400] [76.190498 57.142899 28.571501 28.571400]])
+  '+' => Glyph(90.0, 152.381302,  [[52.380901 85.714302 52.380901 0.000000] [9.523800 42.857101 95.238098 42.857101]])
+  ',' => Glyph(90.0, 152.381302,  [[57.142899 4.761900 52.381001 0.000000 47.619099 4.761900 52.381001 9.523800 57.142899 4.761900 57.142899 -4.761900 52.381001 -14.285700 47.619099 -19.047600]])
+  '-' => Glyph(90.0, 152.381302,  [[9.523800 42.857101 95.238098 42.857101]])
+  '.' => Glyph(90.0, 152.381302,  [[52.381001 9.523800 47.619099 4.761900 52.381001 0.000000 57.142899 4.761900 52.381001 9.523800]])
+  '/' => Glyph(90.0, 152.381302,  [[19.047600 -14.285700 85.714302 100.000000]])
+  '0' => Glyph(90.0, 152.381302,  [[47.618999 100.000000 33.333302 95.238098 23.809500 80.952400 19.047600 57.142899 19.047600 42.857101 23.809500 19.047600 33.333302 4.761900 47.618999 0.000000 57.142799 0.000000 71.428596 4.761900 80.952400 19.047600 85.714302 42.857101 85.714302 57.142899 80.952400 80.952400 71.428596 95.238098 57.142799 100.000000 47.618999 100.000000]])
+  '1' => Glyph(90.0, 152.381302,  [[40.476200 80.952400 50.000000 85.714302 64.285698 100.000000 64.285698 0.000000]])
+  '2' => Glyph(90.0, 152.381302,  [[23.809500 76.190498 23.809500 80.952400 28.571400 90.476196 33.333302 95.238098 42.857101 100.000000 61.904701 100.000000 71.428596 95.238098 76.190498 90.476196 80.952400 80.952400 80.952400 71.428596 76.190498 61.904800 66.666603 47.618999 19.047600 0.000000 85.714302 0.000000]])
+  '3' => Glyph(90.0, 152.381302,  [[28.571400 100.000000 80.952400 100.000000 52.380901 61.904800 66.666603 61.904800 76.190498 57.142899 80.952400 52.381001 85.714302 38.095200 85.714302 28.571400 80.952400 14.285700 71.428596 4.761900 57.142799 0.000000 42.857101 0.000000 28.571400 4.761900 23.809500 9.523800 19.047600 19.047600]])
+  '4' => Glyph(90.0, 152.381302,  [[64.285698 100.000000 16.666700 33.333302 88.095200 33.333302] [64.285698 100.000000 64.285698 0.000000]])
+  '5' => Glyph(90.0, 152.381302,  [[76.190498 100.000000 28.571400 100.000000 23.809500 57.142899 28.571400 61.904800 42.857101 66.666702 57.142799 66.666702 71.428596 61.904800 80.952400 52.381001 85.714302 38.095200 85.714302 28.571400 80.952400 14.285700 71.428596 4.761900 57.142799 0.000000 42.857101 0.000000 28.571400 4.761900 23.809500 9.523800 19.047600 19.047600]])
+  '6' => Glyph(90.0, 152.381302,  [[78.571404 85.714302 73.809601 95.238098 59.523800 100.000000 50.000000 100.000000 35.714298 95.238098 26.190500 80.952400 21.428600 57.142899 21.428600 33.333302 26.190500 14.285700 35.714298 4.761900 50.000000 0.000000 54.761902 0.000000 69.047600 4.761900 78.571404 14.285700 83.333397 28.571400 83.333397 33.333302 78.571404 47.618999 69.047600 57.142899 54.761902 61.904800 50.000000 61.904800 35.714298 57.142899 26.190500 47.618999 21.428600 33.333302]])
+  '7' => Glyph(90.0, 152.381302,  [[85.714302 100.000000 38.095200 0.000000] [19.047600 100.000000 85.714302 100.000000]])
+  '8' => Glyph(90.0, 152.381302,  [[42.857101 100.000000 28.571400 95.238098 23.809500 85.714302 23.809500 76.190498 28.571400 66.666702 38.095200 61.904800 57.142799 57.142899 71.428596 52.381001 80.952400 42.857101 85.714302 33.333302 85.714302 19.047600 80.952400 9.523800 76.190498 4.761900 61.904701 0.000000 42.857101 0.000000 28.571400 4.761900 23.809500 9.523800 19.047600 19.047600 19.047600 33.333302 23.809500 42.857101 33.333302 52.381001 47.618999 57.142899 66.666603 61.904800 76.190498 66.666702 80.952400 76.190498 80.952400 85.714302 76.190498 95.238098 61.904701 100.000000 42.857101 100.000000]])
+  '9' => Glyph(90.0, 152.381302,  [[83.333397 66.666702 78.571404 52.381001 69.047600 42.857101 54.761902 38.095200 50.000000 38.095200 35.714298 42.857101 26.190500 52.381001 21.428600 66.666702 21.428600 71.428596 26.190500 85.714302 35.714298 95.238098 50.000000 100.000000 54.761902 100.000000 69.047600 95.238098 78.571404 85.714302 83.333397 66.666702 83.333397 42.857101 78.571404 19.047600 69.047600 4.761900 54.761902 0.000000 45.238098 0.000000 30.952400 4.761900 26.190500 14.285700]])
+  ':' => Glyph(90.0, 152.381302,  [[52.381001 66.666702 47.619099 61.904800 52.381001 57.142899 57.142899 61.904800 52.381001 66.666702] [52.381001 9.523800 47.619099 4.761900 52.381001 0.000000 57.142899 4.761900 52.381001 9.523800]])
+  ';' => Glyph(90.0, 152.381302,  [[52.381001 66.666702 47.619099 61.904800 52.381001 57.142899 57.142899 61.904800 52.381001 66.666702] [57.142899 4.761900 52.381001 0.000000 47.619099 4.761900 52.381001 9.523800 57.142899 4.761900 57.142899 -4.761900 52.381001 -14.285700 47.619099 -19.047600]])
+  '<' => Glyph(90.0, 152.381302,  [[90.476196 85.714302 14.285700 42.857101 90.476196 0.000000]])
+  '=' => Glyph(90.0, 152.381302,  [[9.523800 57.142899 95.238098 57.142899] [9.523800 28.571400 95.238098 28.571400]])
+  '>' => Glyph(90.0, 152.381302,  [[14.285700 85.714302 90.476196 42.857101 14.285700 0.000000]])
+  '?' => Glyph(90.0, 152.381302,  [[23.809500 76.190498 23.809500 80.952400 28.571400 90.476196 33.333302 95.238098 42.857101 100.000000 61.904701 100.000000 71.428497 95.238098 76.190498 90.476196 80.952400 80.952400 80.952400 71.428596 76.190498 61.904800 71.428497 57.142899 52.380901 47.618999 52.380901 33.333302] [52.380901 9.523800 47.618999 4.761900 52.380901 0.000000 57.142799 4.761900 52.380901 9.523800]])
+  '@' => Glyph(90.0, 152.381302,  [[64.285698 52.381001 54.761902 57.142899 45.238098 57.142899 40.476200 47.618999 40.476200 42.857101 45.238098 33.333302 54.761902 33.333302 64.285698 38.095200] [64.285698 57.142899 64.285698 38.095200 69.047600 33.333302 78.571404 33.333302 83.333397 42.857101 83.333397 47.618999 78.571404 61.904800 69.047600 71.428596 54.761902 76.190498 50.000000 76.190498 35.714298 71.428596 26.190500 61.904800 21.428600 47.618999 21.428600 42.857101 26.190500 28.571400 35.714298 19.047600 50.000000 14.285700 54.761902 14.285700 69.047600 19.047600]])
+  'A' => Glyph(90.0, 152.381302,  [[52.380901 100.000000 14.285700 0.000000] [52.380901 100.000000 90.476196 0.000000] [28.571400 33.333302 76.190498 33.333302]])
+  'B' => Glyph(90.0, 152.381302,  [[19.047600 100.000000 19.047600 0.000000] [19.047600 100.000000 61.904701 100.000000 76.190498 95.238098 80.952400 90.476196 85.714302 80.952400 85.714302 71.428596 80.952400 61.904800 76.190498 57.142899 61.904701 52.381001] [19.047600 52.381001 61.904701 52.381001 76.190498 47.618999 80.952400 42.857101 85.714302 33.333302 85.714302 19.047600 80.952400 9.523800 76.190498 4.761900 61.904701 0.000000 19.047600 0.000000]])
+  'C' => Glyph(90.0, 152.381302,  [[88.095200 76.190498 83.333397 85.714302 73.809601 95.238098 64.285698 100.000000 45.238098 100.000000 35.714298 95.238098 26.190500 85.714302 21.428600 76.190498 16.666700 61.904800 16.666700 38.095200 21.428600 23.809500 26.190500 14.285700 35.714298 4.761900 45.238098 0.000000 64.285698 0.000000 73.809601 4.761900 83.333397 14.285700 88.095200 23.809500]])
+  'D' => Glyph(90.0, 152.381302,  [[19.047600 100.000000 19.047600 0.000000] [19.047600 100.000000 52.380901 100.000000 66.666603 95.238098 76.190498 85.714302 80.952400 76.190498 85.714302 61.904800 85.714302 38.095200 80.952400 23.809500 76.190498 14.285700 66.666603 4.761900 52.380901 0.000000 19.047600 0.000000]])
+  'E' => Glyph(90.0, 152.381302,  [[21.428600 100.000000 21.428600 0.000000] [21.428600 100.000000 83.333397 100.000000] [21.428600 52.381001 59.523800 52.381001] [21.428600 0.000000 83.333397 0.000000]])
+  'F' => Glyph(90.0, 152.381302,  [[21.428600 100.000000 21.428600 0.000000] [21.428600 100.000000 83.333397 100.000000] [21.428600 52.381001 59.523800 52.381001]])
+  'G' => Glyph(90.0, 152.381302,  [[88.095200 76.190498 83.333397 85.714302 73.809601 95.238098 64.285698 100.000000 45.238098 100.000000 35.714298 95.238098 26.190500 85.714302 21.428600 76.190498 16.666700 61.904800 16.666700 38.095200 21.428600 23.809500 26.190500 14.285700 35.714298 4.761900 45.238098 0.000000 64.285698 0.000000 73.809601 4.761900 83.333397 14.285700 88.095200 23.809500 88.095200 38.095200] [64.285698 38.095200 88.095200 38.095200]])
+  'H' => Glyph(90.0, 152.381302,  [[19.047600 100.000000 19.047600 0.000000] [85.714302 100.000000 85.714302 0.000000] [19.047600 52.381001 85.714302 52.381001]])
+  'I' => Glyph(90.0, 152.381302,  [[52.381001 100.000000 52.381001 0.000000]])
+  'J' => Glyph(90.0, 152.381302,  [[76.190498 100.000000 76.190498 23.809500 71.428596 9.523800 66.666702 4.761900 57.142899 0.000000 47.619099 0.000000 38.095299 4.761900 33.333401 9.523800 28.571501 23.809500 28.571501 33.333302]])
+  'K' => Glyph(90.0, 152.381302,  [[19.047600 100.000000 19.047600 0.000000] [85.714302 100.000000 19.047600 33.333302] [42.857101 57.142899 85.714302 0.000000]])
+  'L' => Glyph(90.0, 152.381302,  [[23.809500 100.000000 23.809500 0.000000] [23.809500 0.000000 80.952400 0.000000]])
+  'M' => Glyph(90.0, 152.381302,  [[14.285700 100.000000 14.285700 0.000000] [14.285700 100.000000 52.380901 0.000000] [90.476196 100.000000 52.380901 0.000000] [90.476196 100.000000 90.476196 0.000000]])
+  'N' => Glyph(90.0, 152.381302,  [[19.047600 100.000000 19.047600 0.000000] [19.047600 100.000000 85.714302 0.000000] [85.714302 100.000000 85.714302 0.000000]])
+  'O' => Glyph(90.0, 152.381302,  [[42.857101 100.000000 33.333302 95.238098 23.809500 85.714302 19.047600 76.190498 14.285700 61.904800 14.285700 38.095200 19.047600 23.809500 23.809500 14.285700 33.333302 4.761900 42.857101 0.000000 61.904701 0.000000 71.428596 4.761900 80.952400 14.285700 85.714302 23.809500 90.476196 38.095200 90.476196 61.904800 85.714302 76.190498 80.952400 85.714302 71.428596 95.238098 61.904701 100.000000 42.857101 100.000000]])
+  'P' => Glyph(90.0, 152.381302,  [[19.047600 100.000000 19.047600 0.000000] [19.047600 100.000000 61.904701 100.000000 76.190498 95.238098 80.952400 90.476196 85.714302 80.952400 85.714302 66.666702 80.952400 57.142899 76.190498 52.381001 61.904701 47.618999 19.047600 47.618999]])
+  'Q' => Glyph(90.0, 152.381302,  [[42.857101 100.000000 33.333302 95.238098 23.809500 85.714302 19.047600 76.190498 14.285700 61.904800 14.285700 38.095200 19.047600 23.809500 23.809500 14.285700 33.333302 4.761900 42.857101 0.000000 61.904701 0.000000 71.428596 4.761900 80.952400 14.285700 85.714302 23.809500 90.476196 38.095200 90.476196 61.904800 85.714302 76.190498 80.952400 85.714302 71.428596 95.238098 61.904701 100.000000 42.857101 100.000000] [57.142799 19.047600 85.714302 -9.523800]])
+  'R' => Glyph(90.0, 152.381302,  [[19.047600 100.000000 19.047600 0.000000] [19.047600 100.000000 61.904701 100.000000 76.190498 95.238098 80.952400 90.476196 85.714302 80.952400 85.714302 71.428596 80.952400 61.904800 76.190498 57.142899 61.904701 52.381001 19.047600 52.381001] [52.380901 52.381001 85.714302 0.000000]])
+  'S' => Glyph(90.0, 152.381302,  [[85.714302 85.714302 76.190498 95.238098 61.904701 100.000000 42.857101 100.000000 28.571400 95.238098 19.047600 85.714302 19.047600 76.190498 23.809500 66.666702 28.571400 61.904800 38.095200 57.142899 66.666603 47.618999 76.190498 42.857101 80.952400 38.095200 85.714302 28.571400 85.714302 14.285700 76.190498 4.761900 61.904701 0.000000 42.857101 0.000000 28.571400 4.761900 19.047600 14.285700]])
+  'T' => Glyph(90.0, 152.381302,  [[52.380901 100.000000 52.380901 0.000000] [19.047600 100.000000 85.714302 100.000000]])
+  'U' => Glyph(90.0, 152.381302,  [[19.047600 100.000000 19.047600 28.571400 23.809500 14.285700 33.333302 4.761900 47.618999 0.000000 57.142799 0.000000 71.428596 4.761900 80.952400 14.285700 85.714302 28.571400 85.714302 100.000000]])
+  'V' => Glyph(90.0, 152.381302,  [[14.285700 100.000000 52.380901 0.000000] [90.476196 100.000000 52.380901 0.000000]])
+  'W' => Glyph(90.0, 152.381302,  [[4.761900 100.000000 28.571400 0.000000] [52.380901 100.000000 28.571400 0.000000] [52.380901 100.000000 76.190498 0.000000] [100.000000 100.000000 76.190498 0.000000]])
+  'X' => Glyph(90.0, 152.381302,  [[19.047600 100.000000 85.714302 0.000000] [85.714302 100.000000 19.047600 0.000000]])
+  'Y' => Glyph(90.0, 152.381302,  [[14.285700 100.000000 52.380901 52.381001 52.380901 0.000000] [90.476196 100.000000 52.380901 52.381001]])
+  'Z' => Glyph(90.0, 152.381302,  [[85.714302 100.000000 19.047600 0.000000] [19.047600 100.000000 85.714302 100.000000] [19.047600 0.000000 85.714302 0.000000]])
+  '[' => Glyph(90.0, 152.381302,  [[35.714298 119.047997 35.714298 -33.333302] [40.476200 119.047997 40.476200 -33.333302] [35.714298 119.047997 69.047600 119.047997] [35.714298 -33.333302 69.047600 -33.333302]])
+  '\\' => Glyph(90.0, 152.381302,  [[19.047600 100.000000 85.714302 -14.285700]])
+  ']' => Glyph(90.0, 152.381302,  [[64.285698 119.047997 64.285698 -33.333302] [69.047600 119.047997 69.047600 -33.333302] [35.714298 119.047997 69.047600 119.047997] [35.714298 -33.333302 69.047600 -33.333302]])
+  '^' => Glyph(90.0, 152.381302,  [[52.380901 109.524002 14.285700 42.857101] [52.380901 109.524002 90.476196 42.857101]])
+  '_' => Glyph(90.0, 152.381302,  [[0.000000 -33.333302 90.0 -33.333302 90.0, -28.571400 0.000000 -28.571400 0.000000 -33.333302]])
+  '`' => Glyph(90.0, 152.381302,  [[42.857201 100.000000 66.666702 71.428596] [42.857201 100.000000 38.095299 95.238098 66.666702 71.428596]])
+  'a' => Glyph(90.0, 152.381302,  [[80.952400 66.666702 80.952400 0.000000] [80.952400 52.381001 71.428497 61.904800 61.904701 66.666702 47.618999 66.666702 38.095200 61.904800 28.571400 52.381001 23.809500 38.095200 23.809500 28.571400 28.571400 14.285700 38.095200 4.761900 47.618999 0.000000 61.904701 0.000000 71.428497 4.761900 80.952400 14.285700]])
+  'b' => Glyph(90.0, 152.381302,  [[23.809500 100.000000 23.809500 0.000000] [23.809500 52.381001 33.333302 61.904800 42.857101 66.666702 57.142799 66.666702 66.666603 61.904800 76.190498 52.381001 80.952400 38.095200 80.952400 28.571400 76.190498 14.285700 66.666603 4.761900 57.142799 0.000000 42.857101 0.000000 33.333302 4.761900 23.809500 14.285700]])
+  'c' => Glyph(90.0, 152.381302,  [[80.952400 52.381001 71.428497 61.904800 61.904701 66.666702 47.618999 66.666702 38.095200 61.904800 28.571400 52.381001 23.809500 38.095200 23.809500 28.571400 28.571400 14.285700 38.095200 4.761900 47.618999 0.000000 61.904701 0.000000 71.428497 4.761900 80.952400 14.285700]])
+  'd' => Glyph(90.0, 152.381302,  [[80.952400 100.000000 80.952400 0.000000] [80.952400 52.381001 71.428497 61.904800 61.904701 66.666702 47.618999 66.666702 38.095200 61.904800 28.571400 52.381001 23.809500 38.095200 23.809500 28.571400 28.571400 14.285700 38.095200 4.761900 47.618999 0.000000 61.904701 0.000000 71.428497 4.761900 80.952400 14.285700]])
+  'e' => Glyph(90.0, 152.381302,  [[23.809500 38.095200 80.952400 38.095200 80.952400 47.618999 76.190498 57.142899 71.428497 61.904800 61.904701 66.666702 47.618999 66.666702 38.095200 61.904800 28.571400 52.381001 23.809500 38.095200 23.809500 28.571400 28.571400 14.285700 38.095200 4.761900 47.618999 0.000000 61.904701 0.000000 71.428497 4.761900 80.952400 14.285700]])
+  'f' => Glyph(90.0, 152.381302,  [[71.428596 100.000000 61.904800 100.000000 52.381001 95.238098 47.619099 80.952400 47.619099 0.000000] [33.333401 66.666702 66.666702 66.666702]])
+  'g' => Glyph(90.0, 152.381302,  [[80.952400 66.666702 80.952400 -9.523800 76.190498 -23.809500 71.428497 -28.571400 61.904701 -33.333302 47.618999 -33.333302 38.095200 -28.571400] [80.952400 52.381001 71.428497 61.904800 61.904701 66.666702 47.618999 66.666702 38.095200 61.904800 28.571400 52.381001 23.809500 38.095200 23.809500 28.571400 28.571400 14.285700 38.095200 4.761900 47.618999 0.000000 61.904701 0.000000 71.428497 4.761900 80.952400 14.285700]])
+  'h' => Glyph(90.0, 152.381302,  [[26.190500 100.000000 26.190500 0.000000] [26.190500 47.618999 40.476200 61.904800 50.000000 66.666702 64.285698 66.666702 73.809502 61.904800 78.571503 47.618999 78.571503 0.000000]])
+  'i' => Glyph(90.0, 152.381302,  [[47.619099 100.000000 52.381001 95.238098 57.142899 100.000000 52.381001 104.762001 47.619099 100.000000] [52.381001 66.666702 52.381001 0.000000]])
+  'j' => Glyph(90.0, 152.381302,  [[57.142899 100.000000 61.904800 95.238098 66.666702 100.000000 61.904800 104.762001 57.142899 100.000000] [61.904800 66.666702 61.904800 -14.285700 57.142899 -28.571400 47.619099 -33.333302 38.095299 -33.333302]])
+  'k' => Glyph(90.0, 152.381302,  [[26.190500 100.000000 26.190500 0.000000] [73.809502 66.666702 26.190500 19.047600] [45.238098 38.095200 78.571503 0.000000]])
+  'l' => Glyph(90.0, 152.381302,  [[52.381001 100.000000 52.381001 0.000000]])
+  'm' => Glyph(90.0, 152.381302,  [[0.000000 66.666702 0.000000 0.000000] [0.000000 47.618999 14.285700 61.904800 23.809500 66.666702 38.095200 66.666702 47.618999 61.904800 52.381001 47.618999 52.381001 0.000000] [52.381001 47.618999 66.666702 61.904800 76.190498 66.666702 90.476196 66.666702 100.000000 61.904800 104.762001 47.618999 104.762001 0.000000]])
+  'n' => Glyph(90.0, 152.381302,  [[26.190500 66.666702 26.190500 0.000000] [26.190500 47.618999 40.476200 61.904800 50.000000 66.666702 64.285698 66.666702 73.809502 61.904800 78.571503 47.618999 78.571503 0.000000]])
+  'o' => Glyph(90.0, 152.381302,  [[45.238098 66.666702 35.714298 61.904800 26.190500 52.381001 21.428600 38.095200 21.428600 28.571400 26.190500 14.285700 35.714298 4.761900 45.238098 0.000000 59.523800 0.000000 69.047600 4.761900 78.571404 14.285700 83.333397 28.571400 83.333397 38.095200 78.571404 52.381001 69.047600 61.904800 59.523800 66.666702 45.238098 66.666702]])
+  'p' => Glyph(90.0, 152.381302,  [[23.809500 66.666702 23.809500 -33.333302] [23.809500 52.381001 33.333302 61.904800 42.857101 66.666702 57.142799 66.666702 66.666603 61.904800 76.190498 52.381001 80.952400 38.095200 80.952400 28.571400 76.190498 14.285700 66.666603 4.761900 57.142799 0.000000 42.857101 0.000000 33.333302 4.761900 23.809500 14.285700]])
+  'q' => Glyph(90.0, 152.381302,  [[80.952400 66.666702 80.952400 -33.333302] [80.952400 52.381001 71.428497 61.904800 61.904701 66.666702 47.618999 66.666702 38.095200 61.904800 28.571400 52.381001 23.809500 38.095200 23.809500 28.571400 28.571400 14.285700 38.095200 4.761900 47.618999 0.000000 61.904701 0.000000 71.428497 4.761900 80.952400 14.285700]])
+  'r' => Glyph(90.0, 152.381302,  [[33.333401 66.666702 33.333401 0.000000] [33.333401 38.095200 38.095299 52.381001 47.619099 61.904800 57.142899 66.666702 71.428596 66.666702]])
+  's' => Glyph(90.0, 152.381302,  [[78.571503 52.381001 73.809502 61.904800 59.523800 66.666702 45.238098 66.666702 30.952400 61.904800 26.190500 52.381001 30.952400 42.857101 40.476200 38.095200 64.285698 33.333302 73.809502 28.571400 78.571503 19.047600 78.571503 14.285700 73.809502 4.761900 59.523800 0.000000 45.238098 0.000000 30.952400 4.761900 26.190500 14.285700]])
+  't' => Glyph(90.0, 152.381302,  [[47.619099 100.000000 47.619099 19.047600 52.381001 4.761900 61.904800 0.000000 71.428596 0.000000] [33.333401 66.666702 66.666702 66.666702]])
+  'u' => Glyph(90.0, 152.381302,  [[26.190500 66.666702 26.190500 19.047600 30.952400 4.761900 40.476200 0.000000 54.761902 0.000000 64.285698 4.761900 78.571503 19.047600] [78.571503 66.666702 78.571503 0.000000]])
+  'v' => Glyph(90.0, 152.381302,  [[23.809500 66.666702 52.380901 0.000000] [80.952400 66.666702 52.380901 0.000000]])
+  'w' => Glyph(90.0, 152.381302,  [[14.285700 66.666702 33.333302 0.000000] [52.380901 66.666702 33.333302 0.000000] [52.380901 66.666702 71.428596 0.000000] [90.476196 66.666702 71.428596 0.000000]])
+  'x' => Glyph(90.0, 152.381302,  [[26.190500 66.666702 78.571503 0.000000] [78.571503 66.666702 26.190500 0.000000]])
+  'y' => Glyph(90.0, 152.381302,  [[26.190500 66.666702 54.761902 0.000000] [83.333397 66.666702 54.761902 0.000000 45.238098 -19.047600 35.714298 -28.571400 26.190500 -33.333302 21.428600 -33.333302]])
+  'z' => Glyph(90.0, 152.381302,  [[78.571503 66.666702 26.190500 0.000000] [26.190500 66.666702 78.571503 66.666702] [26.190500 0.000000 78.571503 0.000000]])
+  '{' => Glyph(90.0, 152.381302,  [[64.285698 119.047997 54.761902 114.286003 50.000000 109.524002 45.238098 100.000000 45.238098 90.476196 50.000000 80.952400 54.761902 76.190498 59.523800 66.666702 59.523800 57.142899 50.000000 47.618999] [54.761902 114.286003 50.000000 104.762001 50.000000 95.238098 54.761902 85.714302 59.523800 80.952400 64.285698 71.428596 64.285698 61.904800 59.523800 52.381001 40.476200 42.857101 59.523800 33.333302 64.285698 23.809500 64.285698 14.285700 59.523800 4.761900 54.761902 0.000000 50.000000 -9.523800 50.000000 -19.047600 54.761902 -28.571400] [50.000000 38.095200 59.523800 28.571400 59.523800 19.047600 54.761902 9.523800 50.000000 4.761900 45.238098 -4.761900 45.238098 -14.285700 50.000000 -23.809500 54.761902 -28.571400 64.285698 -33.333302]])
+  '|' => Glyph(90.0, 152.381302,  [[52.381001 119.047997 52.381001 -33.333302]])
+  '}' => Glyph(90.0, 152.381302,  [[40.476200 119.047997 50.000000 114.286003 54.761902 109.524002 59.523800 100.000000 59.523800 90.476196 54.761902 80.952400 50.000000 76.190498 45.238098 66.666702 45.238098 57.142899 54.761902 47.618999] [50.000000 114.286003 54.761902 104.762001 54.761902 95.238098 50.000000 85.714302 45.238098 80.952400 40.476200 71.428596 40.476200 61.904800 45.238098 52.381001 64.285698 42.857101 45.238098 33.333302 40.476200 23.809500 40.476200 14.285700 45.238098 4.761900 50.000000 0.000000 54.761902 -9.523800 54.761902 -19.047600 50.000000 -28.571400] [54.761902 38.095200 45.238098 28.571400 45.238098 19.047600 50.000000 9.523800 54.761902 4.761900 59.523800 -4.761900 59.523800 -14.285700 54.761902 -23.809500 50.000000 -28.571400 40.476200 -33.333302]])
+  '~' => Glyph(90.0, 152.381302,  [[9.523800 28.571400 9.523800 38.095200 14.285700 52.381001 23.809500 57.142899 33.333302 57.142899 42.857101 52.381001 61.904800 38.095200 71.428596 33.333302 80.952400 33.333302 90.476196 38.095200 95.238098 47.618999] [9.523800 38.095200 14.285700 47.618999 23.809500 52.381001 33.333302 52.381001 42.857101 47.618999 61.904800 33.333302 71.428596 28.571400 80.952400 28.571400 90.476196 33.333302 95.238098 47.618999 95.238098 57.142899]])
 ]
 
-public val mono-roman-font = Font(152.381f, 33.3333f - 152.381001f / 2.0f, mono-roman-glyphs)
-public val roman-font = Font(119.048f, 33.3333f - 119.048f / 2.0f, roman-glyphs)
+public val mono-roman-font = Font(152.381, 33.3333 - 152.381001 / 2.0, mono-roman-glyphs)
+public val roman-font = Font(119.048, 33.3333 - 119.048 / 2.0, roman-glyphs)
 
 public var *font* = mono-roman-font
 ;; public var *font* = roman-font
@@ -590,47 +590,47 @@ public defn get-glyph (font:Font, char:Char) -> Glyph :
 public defn get-glyph (char:Char) -> Glyph :
   get-glyph(*font*, char)
 
-public defn glyphs-width (ts:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> Float :
-  ;; val ttw = reduce(f+, 0.0f, seq({ width(get-glyph(font, _)) }, tstr))
-  val tw  = reduce(f+, 0.0f, seq({ width(get-glyph(font, _)) }, str))
+public defn glyphs-width (ts:Double, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> Double :
+  ;; val ttw = reduce(plus, 0.0, seq({ width(get-glyph(font, _)) }, tstr))
+  val tw  = reduce(plus, 0.0, seq({ width(get-glyph(font, _)) }, str))
   ts * tw
   
-public defn glyphs-width (ts:Float, font:Font, s:Collection<Char>) -> Float :
+public defn glyphs-width (ts:Double, font:Font, s:Collection<Char>) -> Double :
   glyphs-width(ts, font, s, s) ;; seq({ _ }, s))
 
-public defn glyphs-width-for-height (h:Float, font:Font, str:Seqable<Char>) -> Float :
-  val tw = reduce(f+, 0.0f, seq({ width(get-glyph(font, _)) }, str))
+public defn glyphs-width-for-height (h:Double, font:Font, str:Seqable<Char>) -> Double :
+  val tw = reduce(plus, 0.0, seq({ width(get-glyph(font, _)) }, str))
   val th = height(font)
   tw * (h / th)
   
-public defn glyphs-mag (w:Float, h:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> Float :
-  val ttw = reduce(f+, 0.0f, seq({ width(get-glyph(font, _)) }, tstr))
+public defn glyphs-mag (w:Double, h:Double, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> Double :
+  val ttw = reduce(plus, 0.0, seq({ width(get-glyph(font, _)) }, tstr))
   val th = height(font)
   min(w / ttw, h / th)
 
-public defn glyphs-mag (w:Float, h:Float, font:Font, s:Collection<Char>) -> Float :
+public defn glyphs-mag (w:Double, h:Double, font:Font, s:Collection<Char>) -> Double :
   glyphs-mag(w, h, font, s, s) ;; seq({ _ }, s)
 
-public defn font-size (w:Float, h:Float, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> [Float, Float, Float] :
-  val ttw = reduce(f+, 0.0f, seq({ width(get-glyph(font, _)) }, tstr))
+public defn font-size (w:Double, h:Double, font:Font, tstr:Collection<Char>, str:Seqable<Char>) -> [Double, Double, Double] :
+  val ttw = reduce(plus, 0.0, seq({ width(get-glyph(font, _)) }, tstr))
   val th = height(font)
   val ts = min(w / ttw, h / th)
-  val tw = reduce(f+, 0.0f, seq({ width(get-glyph(font, _)) }, str))
+  val tw = reduce(plus, 0.0, seq({ width(get-glyph(font, _)) }, str))
   val aw = ts * tw
   val ah = ts * th
   [aw, ah, ts]
 
-public defn font-size (w:Float, h:Float, font:Font, s:Collection<Char>) -> [Float, Float, Float] :
+public defn font-size (w:Double, h:Double, font:Font, s:Collection<Char>) -> [Double, Double, Double] :
   font-size(w, h, font, s, seq({ _ }, s))
 
-public defn stroke (x:Char, font:Font) -> PolyLine2f  : polyline(get-glyph(font, x))
+public defn stroke (x:Char, font:Font) -> PolyLine2  : polyline(get-glyph(font, x))
 
-public defn stroke (x:Char) -> PolyLine2f : stroke(x, *font*)
+public defn stroke (x:Char) -> PolyLine2 : stroke(x, *font*)
 
-public defn stroke (x:String, font:Font) -> PolyLine2f :
+public defn stroke (x:String, font:Font) -> PolyLine2 :
   reduce(bit-or, space-x(width(get-glyph(font, 'M')), seq(stroke{_, font}, x)))
 
-public defn stroke (x:String) -> PolyLine2f : stroke(x, *font*)
+public defn stroke (x:String) -> PolyLine2 : stroke(x, *font*)
 
 ;; stop(timer)
 ;; println("FONT END %_" % [timer])

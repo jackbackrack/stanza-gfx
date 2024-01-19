@@ -307,34 +307,34 @@ public lostanza defn gui-get-mouse-button (w:ref<Window>, b:ref<Int>) -> ref<Int
 lostanza var *cursor-x*:double = 0.0
 lostanza var *cursor-y*:double = 0.0
 
-public lostanza defn gui-get-cursor-pos (w:ref<Window>) -> ref<[Float, Float]> :
+public lostanza defn gui-get-cursor-pos (w:ref<Window>) -> ref<[Double, Double]> :
   call-c glfwGetCursorPos(w.value, addr(*cursor-x*), addr(*cursor-y*))
-  return (new Tuple{2, new Float{*cursor-x* as float}, new Float{*cursor-y* as float}}) as ref<[Float, Float]>
+  return (new Tuple{2, new Double{*cursor-x* as double}, new Double{*cursor-y* as double}}) as ref<[Double, Double]>
 
-defn default-cursor-pos-callback (w:Window, x:Float, y:Float) -> False: false
+defn default-cursor-pos-callback (w:Window, x:Double, y:Double) -> False: false
 
-var *cursor-pos-callback*:((Window,Float,Float) -> False) = default-cursor-pos-callback
+var *cursor-pos-callback*:((Window,Double,Double) -> False) = default-cursor-pos-callback
 
 extern defn do_cursor_pos_callback (w:ptr<?>, x:double, y:double) -> int :
   val win = new Window{w}
-  [*cursor-pos-callback*](win, new Float{x as float}, new Float{y as float})
+  [*cursor-pos-callback*](win, new Double{x as double}, new Double{y as double})
   return 0
 
-public lostanza defn gui-set-cursor-callback (w:ref<Window>,f:ref<((Window,Float,Float) -> False)>) -> ref<False> :
+public lostanza defn gui-set-cursor-callback (w:ref<Window>,f:ref<((Window,Double,Double) -> False)>) -> ref<False> :
   *cursor-pos-callback* = f
   call-c glfwSetCursorPosCallback(w.value, addr(do_cursor_pos_callback))
   return false
 
-defn default-scroll-callback (w:Window, x:Float, y:Float) -> False: false
+defn default-scroll-callback (w:Window, x:Double, y:Double) -> False: false
 
-var *scroll-callback*:((Window,Float,Float) -> False) = default-scroll-callback
+var *scroll-callback*:((Window,Double,Double) -> False) = default-scroll-callback
 
 extern defn do_scroll_callback (w:ptr<?>, x:double, y:double) -> int :
   val win = new Window{w}
-  [*scroll-callback*](win, new Float{x as float}, new Float{y as float})
+  [*scroll-callback*](win, new Double{x as double}, new Double{y as double})
   return 0
 
-public lostanza defn gui-set-scroll-callback (w:ref<Window>,f:ref<((Window,Float,Float) -> False)>) -> ref<False> :
+public lostanza defn gui-set-scroll-callback (w:ref<Window>,f:ref<((Window,Double,Double) -> False)>) -> ref<False> :
   *scroll-callback* = f
   call-c glfwSetScrollCallback(w.value, addr(do_scroll_callback))
   return false
@@ -431,23 +431,23 @@ public lostanza defn gui-get-key (w:ref<Window>, k:ref<Int>) -> ref<Int> :
   val res = call-c glfwGetKey(w.value, k.value)
   return new Int{res}
 
-public defn unproject (win:Window, ix:Float, iy:Float) -> [V2f, V2f] :
-  val uxy = glu-unproject(V3i(to-int(ix), to-int(iy), 0), 0.0f)
+public defn unproject (win:Window, ix:Double, iy:Double) -> [V2d, V2d] :
+  val uxy = glu-unproject(V3i(to-int(ix), to-int(iy), 0), 0.0)
   ;; println("POS [%_ %_] %_ MAG %_ MOV %_" % [ix iy uxy mag(xform) mov(xform)])
   val [fw, fh] = gui-get-framebuffer-size(win)
   val [ww, wh] = gui-get-window-size(win)
-  val ratio  = to-float(ww) / to-float(wh)
-  val dh = 2.0f
+  val ratio  = to-double(ww) / to-double(wh)
+  val dh = 2.0
   val dw = dh * ratio
   ;; TODO: HACK -- WHAT IS GOING ON HERE? -- perhaps 
-  ;; val mag = 2.0f
-  val mag = to-float(fw / ww)
+  ;; val mag = 2.0
+  val mag = to-double(fw / ww)
   val pos =
-    if mag == 1.0f :
+    if mag == 1.0 :
       xy(uxy)
     else :
       val raw = mag * xy(uxy)
-      val off-mag = 1.0f - 1.0f / mag
-      V2f(x(raw) + dw * off-mag, y(raw) - dh * off-mag)
+      val off-mag = 1.0 - 1.0 / mag
+      V2d(x(raw) + dw * off-mag, y(raw) - dh * off-mag)
   ;; println("FW %_ FH %_ WW %_ WH %_ DW %_ DH %_ RAW %_" % [fw, fh, ww, wh, dw, dh, pos])
-  [pos, V2f(dw, dh)]
+  [pos, V2d(dw, dh)]

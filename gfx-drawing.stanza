@@ -12,121 +12,121 @@ defpackage gfx/drawing :
   import gfx/gl
   import gfx/font
 
-public defn gl-color (v:V3f) :
-  gl-color3f(x(v), y(v), z(v))
+public defn gl-color (v:V3d) :
+  gl-color(x(v), y(v), z(v))
 
-public defn gl-color (v:V4f) :
-  gl-color4f(x(v), y(v), z(v), a(v))
+public defn gl-color (v:V4d) :
+  gl-color(x(v), y(v), z(v), a(v))
 
-public defn gl-vertex (v:V3f) :
-  gl-vertex3f(x(v), y(v), z(v))
+public defn gl-vertex (v:V3d) :
+  gl-vertex(x(v), y(v), z(v))
 
-public defn gl-translate (v:V3f) :
-  gl-translatef(x(v), y(v), z(v))
+public defn gl-translate (v:V3d) :
+  gl-translate(x(v), y(v), z(v))
 
-public defn gl-scale (v:V3f) :
-  gl-scalef(x(v), y(v), z(v))
+public defn gl-scale (v:V3d) :
+  gl-scale(x(v), y(v), z(v))
 
-public defn gl-rotate (a:Float, v:V3f) :
-  gl-rotatef(a, x(v), y(v), z(v))
+public defn gl-rotate (a:Double, v:V3d) :
+  gl-rotate(a, x(v), y(v), z(v))
 
-public defn gl-vertex (v:V2f) :
-  gl-vertex2f(x(v), y(v))
+public defn gl-vertex (v:V2d) :
+  gl-vertex(x(v), y(v))
 
-public defn gl-translate (v:V2f) :
-  gl-translatef(x(v), y(v), 0.0f)
+public defn gl-translate (v:V2d) :
+  gl-translate(x(v), y(v), 0.0)
 
-public defn gl-scale (v:V2f) :
-  gl-scalef(x(v), y(v), 1.0f)
+public defn gl-scale (v:V2d) :
+  gl-scale(x(v), y(v), 1.0)
 
-defn do-draw-rect3 (w:Float, h:Float, d:Float, k:Int) :
+defn do-draw-rect3 (w:Double, h:Double, d:Double, k:Int) :
   gl-push-matrix()
-  gl-scalef(w * 0.5f, h * 0.5f, d * 0.5f)
+  gl-scale(w * 0.5, h * 0.5, d * 0.5)
   gl-begin(k)
-  gl-vertex3f(-1.0f, -1.0f, -1.0f)
-  gl-vertex3f(-1.0f,  1.0f, -1.0f)
-  gl-vertex3f( 1.0f,  1.0f, -1.0f)
-  gl-vertex3f( 1.0f, -1.0f, -1.0f)
+  gl-vertex(-1.0, -1.0, -1.0)
+  gl-vertex(-1.0,  1.0, -1.0)
+  gl-vertex( 1.0,  1.0, -1.0)
+  gl-vertex( 1.0, -1.0, -1.0)
   gl-end()
   gl-begin(k)
-  gl-vertex3f(-1.0f, -1.0f,  1.0f)
-  gl-vertex3f(-1.0f,  1.0f,  1.0f)
-  gl-vertex3f( 1.0f,  1.0f,  1.0f)
-  gl-vertex3f( 1.0f, -1.0f,  1.0f)
+  gl-vertex(-1.0, -1.0,  1.0)
+  gl-vertex(-1.0,  1.0,  1.0)
+  gl-vertex( 1.0,  1.0,  1.0)
+  gl-vertex( 1.0, -1.0,  1.0)
   gl-end()
   gl-begin(k)
-  gl-vertex3f(-1.0f, -1.0f, -1.0f)
-  gl-vertex3f(-1.0f, -1.0f,  1.0f)
-  gl-vertex3f(-1.0f,  1.0f,  1.0f)
-  gl-vertex3f(-1.0f,  1.0f, -1.0f)
+  gl-vertex(-1.0, -1.0, -1.0)
+  gl-vertex(-1.0, -1.0,  1.0)
+  gl-vertex(-1.0,  1.0,  1.0)
+  gl-vertex(-1.0,  1.0, -1.0)
   gl-end()
   gl-begin(k)
-  gl-vertex3f( 1.0f, -1.0f, -1.0f)
-  gl-vertex3f( 1.0f, -1.0f,  1.0f)
-  gl-vertex3f( 1.0f,  1.0f,  1.0f)
-  gl-vertex3f( 1.0f,  1.0f, -1.0f)
+  gl-vertex( 1.0, -1.0, -1.0)
+  gl-vertex( 1.0, -1.0,  1.0)
+  gl-vertex( 1.0,  1.0,  1.0)
+  gl-vertex( 1.0,  1.0, -1.0)
   gl-end()
   gl-begin(k)
-  gl-vertex3f(-1.0f, -1.0f, -1.0f)
-  gl-vertex3f(-1.0f, -1.0f,  1.0f)
-  gl-vertex3f( 1.0f, -1.0f,  1.0f)
-  gl-vertex3f( 1.0f, -1.0f, -1.0f)
+  gl-vertex(-1.0, -1.0, -1.0)
+  gl-vertex(-1.0, -1.0,  1.0)
+  gl-vertex( 1.0, -1.0,  1.0)
+  gl-vertex( 1.0, -1.0, -1.0)
   gl-end()
   gl-begin(k)
-  gl-vertex3f(-1.0f   1.0f, -1.0f)
-  gl-vertex3f(-1.0f   1.0f,  1.0f)
-  gl-vertex3f( 1.0f   1.0f,  1.0f)
-  gl-vertex3f( 1.0f   1.0f, -1.0f)
+  gl-vertex(-1.0   1.0, -1.0)
+  gl-vertex(-1.0   1.0,  1.0)
+  gl-vertex( 1.0   1.0,  1.0)
+  gl-vertex( 1.0   1.0, -1.0)
   gl-end()
   gl-pop-matrix()
 
-public defn draw-rect3 (w:Float, h:Float, d:Float) : do-draw-rect3(w, h, d, GL-LINE-LOOP)
-public defn draw-quad3 (w:Float, h:Float, d:Float) : do-draw-rect3(w, h, d, GL-QUADS)
+public defn draw-rect3 (w:Double, h:Double, d:Double) : do-draw-rect3(w, h, d, GL-LINE-LOOP)
+public defn draw-quad3 (w:Double, h:Double, d:Double) : do-draw-rect3(w, h, d, GL-QUADS)
 
-defn do-draw-rect (w:Float, h:Float, k:Int) :
+defn do-draw-rect (w:Double, h:Double, k:Int) :
   gl-push-matrix()
-  gl-scalef(w * 0.5f, h * 0.5f, 1.0f)
+  gl-scale(w * 0.5, h * 0.5, 1.0)
   gl-begin(k)
-  gl-vertex2f(-1.0f, -1.0f)
-  gl-vertex2f(-1.0f,  1.0f)
-  gl-vertex2f( 1.0f,  1.0f)
-  gl-vertex2f( 1.0f, -1.0f)
+  gl-vertex(-1.0, -1.0)
+  gl-vertex(-1.0,  1.0)
+  gl-vertex( 1.0,  1.0)
+  gl-vertex( 1.0, -1.0)
   gl-end()
   gl-pop-matrix()
 
-public defn draw-rect (w:Float, h:Float) : do-draw-rect(w, h, GL-LINE-LOOP)
-public defn draw-quad (w:Float, h:Float) : do-draw-rect(w, h, GL-QUADS)
+public defn draw-rect (w:Double, h:Double) : do-draw-rect(w, h, GL-LINE-LOOP)
+public defn draw-quad (w:Double, h:Double) : do-draw-rect(w, h, GL-QUADS)
 
 val N-CIRCLE-VERTICES = 16
-val circle-vertices = Vector<V3f>()
+val circle-vertices = Vector<V3d>()
 for i in 0 to N-CIRCLE-VERTICES do :
-  val f = to-float(i) / to-float(N-CIRCLE-VERTICES)
-  val t = 2.0f * PI-F * (1.0f - f)
-  add(circle-vertices, V3f(sin(t), cos(t), 0.0f))
+  val f = to-double(i) / to-double(N-CIRCLE-VERTICES)
+  val t = 2.0 * PI * (1.0 - f)
+  add(circle-vertices, V3d(sin(t), cos(t), 0.0))
 
-public defn draw-circle (r:Float) :
+public defn draw-circle (r:Double) :
   gl-push-matrix()
-  gl-scalef(r, r, r)
+  gl-scale(r, r, r)
   gl-begin(GL-LINE-LOOP)
   for v in circle-vertices do :
     gl-vertex(v)
   gl-end()
   gl-pop-matrix()
 
-public defn draw-circle (r:Float, n:Int) :
+public defn draw-circle (r:Double, n:Int) :
   gl-push-matrix()
-  gl-scalef(r, r, r)
+  gl-scale(r, r, r)
   gl-begin(GL-LINE-LOOP)
   for i in 0 to n do :
-    val a = to-float(i) * 2.0f * PI-F / to-float(n)
-    gl-vertex2f(cos(a), sin(a))
+    val a = to-double(i) * 2.0 * PI / to-double(n)
+    gl-vertex(cos(a), sin(a))
   gl-end()
   gl-pop-matrix()
 
-public defn draw-segment (src:V2f, dst:V2f, rad:Float) :
+public defn draw-segment (src:V2d, dst:V2d, rad:Double) :
   val v = normalize(dst - src)
-  val u = rad * V2f(   y(v), (- x(v)))
-  val d = rad * V2f((- y(v)),   x(v))
+  val u = rad * V2d(   y(v), (- x(v)))
+  val d = rad * V2d((- y(v)),   x(v))
   gl-begin(GL-QUADS)
   gl-vertex(src + u)
   gl-vertex(src + d)
@@ -134,19 +134,19 @@ public defn draw-segment (src:V2f, dst:V2f, rad:Float) :
   gl-vertex(dst + u)
   gl-end()
 
-public defn draw-disk (r:Float) :
+public defn draw-disk (r:Double) :
   gl-push-matrix()
-  gl-scalef(r, r, 1.0f)
+  gl-scale(r, r, 1.0)
   gl-begin(GL-TRIANGLES)
   for i in 0 to N-CIRCLE-VERTICES do :
     val j = (i + 1) % N-CIRCLE-VERTICES
     gl-vertex(circle-vertices[i])
     gl-vertex(circle-vertices[j])
-    gl-vertex2f(0.0f, 0.0f)
+    gl-vertex(0.0, 0.0)
   gl-end()
   gl-pop-matrix()
 
-public defn draw-fat-line (a:V2f, b:V2f, t:Float) :
+public defn draw-fat-line (a:V2d, b:V2d, t:Double) :
   gl-push-matrix()
   gl-translate(a)
   draw-disk(t)
@@ -157,34 +157,34 @@ public defn draw-fat-line (a:V2f, b:V2f, t:Float) :
   draw-disk(t)
   gl-pop-matrix()
 
-public defn draw-cylinder (h:Float, r:Float) :
-  val ph = 0.5f * h
+public defn draw-cylinder (h:Double, r:Double) :
+  val ph = 0.5 * h
   val nh = (- ph)
   gl-push-matrix()
-  gl-translatef(0.0f, 0.0f, nh)
+  gl-translate(0.0, 0.0, nh)
   draw-disk(r)
   gl-pop-matrix()
   gl-push-matrix()
-  gl-translatef(0.0f, 0.0f, ph)
+  gl-translate(0.0, 0.0, ph)
   draw-disk(r)
   gl-pop-matrix()
   gl-push-matrix()
-  gl-scalef(r, r, 1.0f)
+  gl-scale(r, r, 1.0)
   gl-begin(GL-TRIANGLES)
   for i in 0 to N-CIRCLE-VERTICES do :
     val j = (i + 1) % N-CIRCLE-VERTICES
     val vi = circle-vertices[i]
     val vj = circle-vertices[j]
-    gl-vertex3f(x(vi), y(vi), nh)
-    gl-vertex3f(x(vj), y(vj), nh)
-    gl-vertex3f(x(vj), y(vj), ph)
-    gl-vertex3f(x(vj), y(vj), ph)
-    gl-vertex3f(x(vi), y(vi), ph)
-    gl-vertex3f(x(vi), y(vi), nh)
+    gl-vertex(x(vi), y(vi), nh)
+    gl-vertex(x(vj), y(vj), nh)
+    gl-vertex(x(vj), y(vj), ph)
+    gl-vertex(x(vj), y(vj), ph)
+    gl-vertex(x(vi), y(vi), ph)
+    gl-vertex(x(vi), y(vi), nh)
   gl-end()
   gl-pop-matrix()
 
-public defn stroke (pl:PolyLine2f) :
+public defn stroke (pl:PolyLine2) :
   for line in strokes(pl) do :
     gl-begin(GL-LINE-STRIP)
     do(gl-vertex, line)
@@ -208,103 +208,103 @@ public defn stroke-char (glyph:Glyph) :
 defn stroke-text (s:Seqable<Glyph>) :
   for g in s do :
     val w = width(g)
-    gl-translatef(0.5f * w, 0.0f, 0.0f)
+    gl-translate(0.5 * w, 0.0, 0.0)
     stroke-char(g)
-    gl-translatef(0.5f * w, 0.0f, 0.0f)
+    gl-translate(0.5 * w, 0.0, 0.0)
 
-defn draw-text-at (tx:Float, ty:Float, sx:Float, sy:Float, s:Seqable<Glyph>) :
+defn draw-text-at (tx:Double, ty:Double, sx:Double, sy:Double, s:Seqable<Glyph>) :
   gl-push-matrix()
-  gl-translatef(tx, ty, 0.0f)
-  gl-scalef(sx, sy, 1.0f)
+  gl-translate(tx, ty, 0.0)
+  gl-scale(sx, sy, 1.0)
   stroke-text(s)
   gl-pop-matrix()
 
-public defn draw-text-mag (w:Float, ts:Float, font:Font, s:Collection<Char>&Lengthable) :
+public defn draw-text-mag (w:Double, ts:Double, font:Font, s:Collection<Char>&Lengthable) :
   val aw = glyphs-width(ts, font, s)
-  draw-text-at(-0.5f * aw, 0.0f, ts, ts, seq({ get-glyph(font, _) }, s))
+  draw-text-at(-0.5 * aw, 0.0, ts, ts, seq({ get-glyph(font, _) }, s))
 
-public defn draw-text-left-mag (w:Float, ts:Float, font:Font, s:Collection<Char>&Lengthable) :
+public defn draw-text-left-mag (w:Double, ts:Double, font:Font, s:Collection<Char>&Lengthable) :
   val aw = glyphs-width(ts, font, s)
-  draw-text-at(-0.5f * w, 0.0f, ts, ts, seq({ get-glyph(font, _) }, s))
+  draw-text-at(-0.5 * w, 0.0, ts, ts, seq({ get-glyph(font, _) }, s))
 
-public defn draw-text-right-mag (w:Float, ts:Float, font:Font, s:Collection<Char>&Lengthable) :
+public defn draw-text-right-mag (w:Double, ts:Double, font:Font, s:Collection<Char>&Lengthable) :
   val aw = glyphs-width(ts, font, s)
-  draw-text-at(0.5f * w - aw, 0.0f, ts, ts, seq({ get-glyph(font, _) }, s))
+  draw-text-at(0.5 * w - aw, 0.0, ts, ts, seq({ get-glyph(font, _) }, s))
 
-public defn draw-text (w:Float, h:Float, font:Font, dir:Symbol, s:Collection<Char>&Lengthable) :
+public defn draw-text (w:Double, h:Double, font:Font, dir:Symbol, s:Collection<Char>&Lengthable) :
   val ts = glyphs-mag(w, h, font, s)
   val aw = glyphs-width(ts, font, s)
   val ah = height(font) * ts
   val p  = switch(dir) :
-    `C  : V2f(-0.5f * aw,      0.0f)
-    `W  : V2f(-0.5f * w,       0.0f)
-    `E  : V2f( 0.5f * w - aw,  0.0f)
-    `N  : V2f(-0.5f * aw,     -0.5f * (h - ah))
-    `S  : V2f(-0.5f * aw,      0.5f * (h - ah))
-    `NW : V2f(-0.5f * w,      -0.5f * (h - ah))
-    `NE : V2f( 0.5f * w - aw, -0.5f * (h - ah))
-    `SW : V2f(-0.5f * w,       0.5f * (h - ah))
-    `SE : V2f( 0.5f * w - aw,  0.5f * (h - ah))
+    `C  : V2d(-0.5 * aw,      0.0)
+    `W  : V2d(-0.5 * w,       0.0)
+    `E  : V2d( 0.5 * w - aw,  0.0)
+    `N  : V2d(-0.5 * aw,     -0.5 * (h - ah))
+    `S  : V2d(-0.5 * aw,      0.5 * (h - ah))
+    `NW : V2d(-0.5 * w,      -0.5 * (h - ah))
+    `NE : V2d( 0.5 * w - aw, -0.5 * (h - ah))
+    `SW : V2d(-0.5 * w,       0.5 * (h - ah))
+    `SE : V2d( 0.5 * w - aw,  0.5 * (h - ah))
   draw-text-at(x(p), y(p), ts, ts, seq({ get-glyph(font, _) }, s))
 
-public defn draw-text (w:Float, h:Float, font:Font, s:Collection<Char>&Lengthable) :
+public defn draw-text (w:Double, h:Double, font:Font, s:Collection<Char>&Lengthable) :
   draw-text-mag(w, glyphs-mag(w, h, font, s), font, s)
 
-public defn draw-text-left (w:Float, h:Float, font:Font, s:Collection<Char>&Lengthable) :
+public defn draw-text-left (w:Double, h:Double, font:Font, s:Collection<Char>&Lengthable) :
   draw-text-left-mag(w, glyphs-mag(w, h, font, s), font, s)
 
-public defn draw-text-right (w:Float, h:Float, font:Font, s:Collection<Char>&Lengthable) :
+public defn draw-text-right (w:Double, h:Double, font:Font, s:Collection<Char>&Lengthable) :
   draw-text-right-mag(w, glyphs-mag(w, h, font, s), font, s)
 
-defn clip (x:Float, mn:Float, mx:Float) : max(mn, min(mx, x))
+defn clip (x:Double, mn:Double, mx:Double) : max(mn, min(mx, x))
 
 ;; Convert hue/saturation/value to red/green/blue.  Output returned in args.
-public defn hsv-to-rgb (h:Float, sa:Float, v:Float) -> [Float, Float, Float] :
-  val s = clip(sa, 0.0f, 1.0f);
+public defn hsv-to-rgb (h:Double, sa:Double, v:Double) -> [Double, Double, Double] :
+  val s = clip(sa, 0.0, 1.0);
   val [rt, gt, bt] = 
-    if s == 0.0f :
+    if s == 0.0 :
       [v, v, v]
     else :
-      val h_temp = (if h == 360.0f : 0.0f else: h) / 60.0f
+      val h_temp = (if h == 360.0 : 0.0 else: h) / 60.0
       val i = to-int(h_temp)
-      val f = h_temp - to-float(i)
-      val p = v * (1.0f - s)
-      val q = v * (1.0f - (s * f))
-      val t = v * (1.0f - (s * (1.0f - f)));
+      val f = h_temp - to-double(i)
+      val p = v * (1.0 - s)
+      val q = v * (1.0 - (s * f))
+      val t = v * (1.0 - (s * (1.0 - f)));
       if i == 0 : [v, t, p]
       else if i == 1 : [q, v, p]
       else if i == 2 : [p, v, t]
       else if i == 3 : [p, q, v]
       else if i == 4 : [v, p, q]
       else  : [v, p, q] ;; if i == 5
-  [clip(rt, 0.0f, 255.0f), clip(gt, 0.0f, 255.0f), clip(bt, 0.0f, 255.0f)]
+  [clip(rt, 0.0, 255.0), clip(gt, 0.0, 255.0), clip(bt, 0.0, 255.0)]
 
-public defn hsv-to-rgb (hsv:V3f) -> V3f :
+public defn hsv-to-rgb (hsv:V3d) -> V3d :
   val [r, g, b] = hsv-to-rgb(x(hsv), y(hsv), z(hsv))
-  V3f(r, g, b)
+  V3d(r, g, b)
 
 ;; Convert hue/saturation/value to red/green/blue.  Output returned in args.
-public defn rgb-to-hsv (r:Float, g:Float, b:Float) -> [Float, Float, Float] :
+public defn rgb-to-hsv (r:Double, g:Double, b:Double) -> [Double, Double, Double] :
   val mn    = min(r, min(g, b));
   val mx    = max(r, max(g, b));
   val delta = mx - mn
-  val v     = mx / 255.0f
-  if mx == 0.0f :
-    [0.0f, 0.0f, v]
+  val v     = mx / 255.0
+  if mx == 0.0 :
+    [0.0, 0.0, v]
   else :
     val s = delta / mx
     val h0 = 
       if r == mx :
         (g - b) / delta
       else if g == mx :
-        2.0f + (b - r) / delta
+        2.0 + (b - r) / delta
       else :
-        4.0f + (r - g) / delta
-    val h1 = h0 * 60.0f
-    val h = if h1 < 0.0f : h1 + 360.f else : h1
+        4.0 + (r - g) / delta
+    val h1 = h0 * 60.0
+    val h = if h1 < 0.0 : h1 + 360.0 else : h1
     [h, s, v]
 
-public defn rgb-to-hsv (rgb:V3f) -> V3f :
+public defn rgb-to-hsv (rgb:V3d) -> V3d :
   val [h, s, v] = rgb-to-hsv(x(rgb), y(rgb), z(rgb))
-  V3f(h, s, v)
+  V3d(h, s, v)
 

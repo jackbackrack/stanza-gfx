@@ -12,31 +12,31 @@ defpackage gfx/drawing :
   import gfx/gl
   import gfx/font
 
-public defn gl-color (v:V3d) :
+public defn gl-color (v:Vec3) :
   gl-color(x(v), y(v), z(v))
 
-public defn gl-color (v:V4d) :
+public defn gl-color (v:Vec4) :
   gl-color(x(v), y(v), z(v), a(v))
 
-public defn gl-vertex (v:V3d) :
+public defn gl-vertex (v:Vec3) :
   gl-vertex(x(v), y(v), z(v))
 
-public defn gl-translate (v:V3d) :
+public defn gl-translate (v:Vec3) :
   gl-translate(x(v), y(v), z(v))
 
-public defn gl-scale (v:V3d) :
+public defn gl-scale (v:Vec3) :
   gl-scale(x(v), y(v), z(v))
 
-public defn gl-rotate (a:Double, v:V3d) :
+public defn gl-rotate (a:Double, v:Vec3) :
   gl-rotate(a, x(v), y(v), z(v))
 
-public defn gl-vertex (v:V2d) :
+public defn gl-vertex (v:Vec2) :
   gl-vertex(x(v), y(v))
 
-public defn gl-translate (v:V2d) :
+public defn gl-translate (v:Vec2) :
   gl-translate(x(v), y(v), 0.0)
 
-public defn gl-scale (v:V2d) :
+public defn gl-scale (v:Vec2) :
   gl-scale(x(v), y(v), 1.0)
 
 defn do-draw-rect3 (w:Double, h:Double, d:Double, k:Int) :
@@ -98,11 +98,11 @@ public defn draw-rect (w:Double, h:Double) : do-draw-rect(w, h, GL-LINE-LOOP)
 public defn draw-quad (w:Double, h:Double) : do-draw-rect(w, h, GL-QUADS)
 
 val N-CIRCLE-VERTICES = 16
-val circle-vertices = Vector<V3d>()
+val circle-vertices = Vector<Vec3>()
 for i in 0 to N-CIRCLE-VERTICES do :
   val f = to-double(i) / to-double(N-CIRCLE-VERTICES)
   val t = 2.0 * PI * (1.0 - f)
-  add(circle-vertices, V3d(sin(t), cos(t), 0.0))
+  add(circle-vertices, Vec3(sin(t), cos(t), 0.0))
 
 public defn draw-circle (r:Double) :
   gl-push-matrix()
@@ -123,10 +123,10 @@ public defn draw-circle (r:Double, n:Int) :
   gl-end()
   gl-pop-matrix()
 
-public defn draw-segment (src:V2d, dst:V2d, rad:Double) :
+public defn draw-segment (src:Vec2, dst:Vec2, rad:Double) :
   val v = normalize(dst - src)
-  val u = rad * V2d(   y(v), (- x(v)))
-  val d = rad * V2d((- y(v)),   x(v))
+  val u = rad * Vec2(   y(v), (- x(v)))
+  val d = rad * Vec2((- y(v)),   x(v))
   gl-begin(GL-QUADS)
   gl-vertex(src + u)
   gl-vertex(src + d)
@@ -146,7 +146,7 @@ public defn draw-disk (r:Double) :
   gl-end()
   gl-pop-matrix()
 
-public defn draw-fat-line (a:V2d, b:V2d, t:Double) :
+public defn draw-fat-line (a:Vec2, b:Vec2, t:Double) :
   gl-push-matrix()
   gl-translate(a)
   draw-disk(t)
@@ -236,15 +236,15 @@ public defn draw-text (w:Double, h:Double, font:Font, dir:Symbol, s:Collection<C
   val aw = glyphs-width(ts, font, s)
   val ah = height(font) * ts
   val p  = switch(dir) :
-    `C  : V2d(-0.5 * aw,      0.0)
-    `W  : V2d(-0.5 * w,       0.0)
-    `E  : V2d( 0.5 * w - aw,  0.0)
-    `N  : V2d(-0.5 * aw,     -0.5 * (h - ah))
-    `S  : V2d(-0.5 * aw,      0.5 * (h - ah))
-    `NW : V2d(-0.5 * w,      -0.5 * (h - ah))
-    `NE : V2d( 0.5 * w - aw, -0.5 * (h - ah))
-    `SW : V2d(-0.5 * w,       0.5 * (h - ah))
-    `SE : V2d( 0.5 * w - aw,  0.5 * (h - ah))
+    `C  : Vec2(-0.5 * aw,      0.0)
+    `W  : Vec2(-0.5 * w,       0.0)
+    `E  : Vec2( 0.5 * w - aw,  0.0)
+    `N  : Vec2(-0.5 * aw,     -0.5 * (h - ah))
+    `S  : Vec2(-0.5 * aw,      0.5 * (h - ah))
+    `NW : Vec2(-0.5 * w,      -0.5 * (h - ah))
+    `NE : Vec2( 0.5 * w - aw, -0.5 * (h - ah))
+    `SW : Vec2(-0.5 * w,       0.5 * (h - ah))
+    `SE : Vec2( 0.5 * w - aw,  0.5 * (h - ah))
   draw-text-at(x(p), y(p), ts, ts, seq({ get-glyph(font, _) }, s))
 
 public defn draw-text (w:Double, h:Double, font:Font, s:Collection<Char>&Lengthable) :
@@ -279,9 +279,9 @@ public defn hsv-to-rgb (h:Double, sa:Double, v:Double) -> [Double, Double, Doubl
       else  : [v, p, q] ;; if i == 5
   [clip(rt, 0.0, 255.0), clip(gt, 0.0, 255.0), clip(bt, 0.0, 255.0)]
 
-public defn hsv-to-rgb (hsv:V3d) -> V3d :
+public defn hsv-to-rgb (hsv:Vec3) -> Vec3 :
   val [r, g, b] = hsv-to-rgb(x(hsv), y(hsv), z(hsv))
-  V3d(r, g, b)
+  Vec3(r, g, b)
 
 ;; Convert hue/saturation/value to red/green/blue.  Output returned in args.
 public defn rgb-to-hsv (r:Double, g:Double, b:Double) -> [Double, Double, Double] :
@@ -304,7 +304,7 @@ public defn rgb-to-hsv (r:Double, g:Double, b:Double) -> [Double, Double, Double
     val h = if h1 < 0.0 : h1 + 360.0 else : h1
     [h, s, v]
 
-public defn rgb-to-hsv (rgb:V3d) -> V3d :
+public defn rgb-to-hsv (rgb:Vec3) -> Vec3 :
   val [h, s, v] = rgb-to-hsv(x(rgb), y(rgb), z(rgb))
-  V3d(h, s, v)
+  Vec3(h, s, v)
 

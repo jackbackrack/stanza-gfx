@@ -431,8 +431,8 @@ public lostanza defn gui-get-key (w:ref<Window>, k:ref<Int>) -> ref<Int> :
   val res = call-c glfwGetKey(w.value, k.value)
   return new Int{res}
 
-public defn unproject (win:Window, ix:Double, iy:Double) -> [V2d, V2d] :
-  val uxy = glu-unproject(V3i(to-int(ix), to-int(iy), 0), 0.0)
+public defn unproject (win:Window, ix:Double, iy:Double) -> [Vec2, Vec2] :
+  val uxy = glu-unproject(Vec3i(to-int(ix), to-int(iy), 0), 0.0)
   ;; println("POS [%_ %_] %_ MAG %_ MOV %_" % [ix iy uxy mag(xform) mov(xform)])
   val [fw, fh] = gui-get-framebuffer-size(win)
   val [ww, wh] = gui-get-window-size(win)
@@ -448,6 +448,6 @@ public defn unproject (win:Window, ix:Double, iy:Double) -> [V2d, V2d] :
     else :
       val raw = mag * xy(uxy)
       val off-mag = 1.0 - 1.0 / mag
-      V2d(x(raw) + dw * off-mag, y(raw) - dh * off-mag)
+      Vec2(x(raw) + dw * off-mag, y(raw) - dh * off-mag)
   ;; println("FW %_ FH %_ WW %_ WH %_ DW %_ DH %_ RAW %_" % [fw, fh, ww, wh, dw, dh, pos])
-  [pos, V2d(dw, dh)]
+  [pos, Vec2(dw, dh)]

@@ -40,7 +40,7 @@ public defn Glyph (width:Double, height:Double, istrokes:Tuple<Tuple<Double>>) :
   val polyline = 
     PolyLine2 $ to-tuple $ for stroke in istrokes seq :
       to-tuple $ for i in 0 to length(stroke) / 2 seq :
-        V2d(stroke[i * 2], stroke[i * 2 + 1])
+        Vec2(stroke[i * 2], stroke[i * 2 + 1])
   Glyph(width, height, polyline)
 
 public defn Glyphi (width:Double, height:Double, istrokes:Tuple<Tuple<Int>>) :
@@ -243,7 +243,7 @@ public defn Font (h:Double, off:Double, glyphs : Tuple<KeyValue<Char, Glyph>>) -
     val dms = dims(bounds(pl))
     val npl = 
       if key(lc) != '_' and x(dms) > (0.8 * w) : 
-        mag(xyz(V2d(0.8 * w / x(dms), 1.0)), pl) 
+        mag(xyz(Vec2(0.8 * w / x(dms), 1.0)), pl) 
       else : 
         pl
     polys[key(lc)] = Glyph(w, height(g), npl)

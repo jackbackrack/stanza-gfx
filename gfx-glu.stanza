@@ -53,13 +53,13 @@ lostanza deftype tess_mesh :
 lostanza deftype TessMesh :
   var value : ptr<tess_mesh>
 
-public lostanza defn get-vert-value (m:ref<TessMesh>, i:ref<Int>) -> ref<V3d> :
+public lostanza defn get-vert-value (m:ref<TessMesh>, i:ref<Int>) -> ref<Vec3> :
   val vert = m.value.verts[i.value]
-  return V3d(new Double{vert.x}, new Double{vert.y}, new Double{vert.z})
+  return Vec3(new Double{vert.x}, new Double{vert.y}, new Double{vert.z})
 
-public lostanza defn get-vert-index (m:ref<TessMesh>, i:ref<Int>) -> ref<V3i> :
+public lostanza defn get-vert-index (m:ref<TessMesh>, i:ref<Int>) -> ref<Vec3i> :
   val tri = m.value.tris[i.value]
-  return V3i(new Int{tri.a}, new Int{tri.b}, new Int{tri.c})
+  return Vec3i(new Int{tri.a}, new Int{tri.b}, new Int{tri.c})
 
 public lostanza defn tri-count (m:ref<TessMesh>) -> ref<Int> :
   return new Int{m.value.tri-count}
@@ -122,35 +122,35 @@ lostanza defn load-project-data () -> ref<False> :
   call-c glGetIntegerv( GL-VIEWPORT.value, *view* )
   return false
 
-public lostanza defn glu-project (obj:ref<V3d>) -> ref<V3d> :
+public lostanza defn glu-project (obj:ref<Vec3>) -> ref<Vec3> :
   load-project-data()
   call-c gluProject(x(obj).value as double, y(obj).value as double, z(obj).value as double,
                     *model*, *proj*, *view*, *ptx*, *pty*, *ptz*)
-  return new V3d{[*ptx*] as double, [*pty*] as double, [*ptz*] as double}
+  return new Vec3{[*ptx*] as double, [*pty*] as double, [*ptz*] as double}
 
-public defn glu-project-dims (dims:V3d) -> Box3d :
-  Box3d(glu-project(-0.5 * dims), glu-project(0.5 * dims))
+public defn glu-project-dims (dims:Vec3) -> Box3 :
+  Box3(glu-project(-0.5 * dims), glu-project(0.5 * dims))
 
 lostanza val *win-z* : ptr<double> = call-c malloc(1 * sizeof(double))
 
-public lostanza defn glu-unproject (win:ref<V3i>, win-z:ref<Double>) -> ref<V3d> :
+public lostanza defn glu-unproject (win:ref<Vec3i>, win-z:ref<Double>) -> ref<Vec3> :
   load-project-data()
   val win-y = *view*[3] - y(win).value
   call-c gluUnProject(x(win).value as double, win-y as double, win-z.value as double,
                       *model*, *proj*, *view*, *ptx*, *pty*, *ptz*)
-  return new V3d{[*ptx*] as double, [*pty*] as double, [*ptz*] as double}
+  return new Vec3{[*ptx*] as double, [*pty*] as double, [*ptz*] as double}
 
-public lostanza defn glu-unproject (win:ref<V3i>) -> ref<V3d> :
+public lostanza defn glu-unproject (win:ref<Vec3i>) -> ref<Vec3> :
   val win-y = *view*[3] - y(win).value
   call-c glReadPixels(x(win).value, win-y, 1, 1, GL-DEPTH-COMPONENT.value, GL-FLOAT.value, *win-z*)
   return glu-unproject(win, new Double{[*win-z*] as double})
 
-;; public lostanza defn glu-unproject (x:Int, y:Int) -> ref<V3d> :
+;; public lostanza defn glu-unproject (x:Int, y:Int) -> ref<Vec3> :
 ;;   load-project-data()
 ;;   val win-x = x
 ;;   call-c glReadPixels(x, win-y, 1, 1, GL-DEPTH-COMPONENT, GL-DOUBLE, *win-z*)
 ;;   call-c gluUnProject(to-double(x), to-double(win-y), [*win-z*], *model*, *proj*, *view*, *ptx*, *pty*, *ptz*)
-;;   return new V3d{[*ptx*] as double, [*pty*] as double, [*ptz*] as double}
+;;   return new Vec3{[*ptx*] as double, [*pty*] as double, [*ptz*] as double}
 
 public lostanza defn glu-ortho2d (l:ref<Double>, r:ref<Double>, b:ref<Double>, t:ref<Double>) -> ref<False> :
   call-c gluOrtho2D(l.value as double, r.value as double, b.value as double, t.value as double)
@@ -164,7 +164,7 @@ public lostanza defn glu-look-at (ex:ref<Double>, ey:ref<Double>, ez:ref<Double>
                    ux.value as double, uy.value as double, uz.value as double)
   return false
 
-public defn glu-look-at (eye:V3d, center:V3d, up:V3d) :
+public defn glu-look-at (eye:Vec3, center:Vec3, up:Vec3) :
   glu-look-at(x(eye), y(eye), z(eye), x(center), y(center), z(center), x(up), y(up), z(up))
 
 public lostanza defn glu-pick-matrix (ex:ref<Double>, ey:ref<Double>, ew:ref<Double>, eh:ref<Double>, viewport:ref<IntArray>) -> ref<False> :
